@@ -23,7 +23,8 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
     keep swap ; inline
 
 : (check-strains) ( strains hitstack value -- strains hitstack value strain/f )
-    pick [ check ] map-find drop ; inline
+    pick [ check ] map-find drop
+    dup [ 1 should-trace? [ "!!! failure: " write dup . ] when ] when ; inline
 
 : (backtrack) ( slipstack hitstack strain -- slipstack' hitstack' )
     1 should-trace? [
@@ -31,14 +32,14 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
         ". slipstack snap: " write pick .
     ] when
     over length 1 > [ drop ] [ throw ] if
-    [ 1 cut* drop ] bi@ ; inline
+    dup pop* ; inline
 
 : (sidestep) ( slipstack -- slipstack' value/f )
     1 should-trace? [
         "@ sidestep slips: " write dup .
     ] when
     dup empty? [ f ] [
-        1 cut* first [
+        dup pop [
             call( -- value slip'/f )
             pick push
         ] [ f ] if*

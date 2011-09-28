@@ -27,11 +27,13 @@ SYMBOL: strain-chain
         1 + f
     ] curry ;
 
-: hotpo ( start first-slip-maker next-slip-maker -- seq ? )
+: hotpo ( start first-slip-maker next-slip-maker -- hitlist ? )
     strain-chain get clone
     [ 1 <= ]
     [ dup odd? [ 3 * 1 + ] [ 2 /i ] if ]
     verge ; inline
+
+t set-trace
 
 [ V{ 13 40 20 10 5 16 8 4 2 1 } t ]
 [ reset-strains 13 [ f ] dup hotpo ] unit-test
@@ -41,6 +43,9 @@ SYMBOL: strain-chain
 
 [ V{ 13 40 20 11 34 17 52 26 13 40 20 11 34 17 52 26 13 40 20 } f ]
 [ 11 set-min-value 13 [ f ] [ make-slip ] hotpo reset-strains ] unit-test
+
+[ V{ 13 40 21 64 32 16 } f ]
+[ 12 set-min-value 13 [ f ] [ make-slip ] hotpo reset-strains ] unit-test
 
 [ V{ 13 } f ]
 [ 5 set-max-loops 15 set-max-value 13 [ f ] dup hotpo reset-strains ] unit-test

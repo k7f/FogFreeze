@@ -23,10 +23,17 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
     pick [ check ] map-find drop ; inline
 
 : (backtrack) ( slipstack hitstack strain -- slipstack' hitstack' )
+    trace? get [
+        "* backtrack hits: " write over .
+        "  slipstack snap: " write pick .
+    ] when
     over length 1 > [ drop ] [ throw ] if
     [ 1 cut* drop ] bi@ ; inline
 
 : (sidestep) ( slipstack -- slipstack' value/f )
+    trace? get [
+        "@ sidestep slips: " write dup .
+    ] when
     dup last [
         call( -- value slip'/f )
         pick push
@@ -45,14 +52,14 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
 : (push-slip) ( slipstack strains hitstack value slip -- slipstack' strains hitstack value )
     -rot [ pick push ] 2dip ; inline
 
-: (push-hit) ( hitstack value -- hitstack' value )
+: (push-hit) ( hitstack value -- hitstack' )
     [ trace? get [ drop . ] [ 2drop ] if ]
-    [ dup pick push ] 2bi ; inline
+    [ over push ] 2bi ; inline
 
 : (after-step) ( slipstack strains hitstack value slip -- slipstack' strains hitstack' value' )
     (push-slip)
     [ (check-strains) dup ] [ (fallback) ] while drop
-    (push-hit) ; inline
+    [ (push-hit) ] keep ; inline
 
 ! FIXME benchmark the performance costs of using packed and unpacked state
 : (initialize) ( state goal step -- slipstack strains hitstack start goal step )
@@ -89,10 +96,17 @@ PRIVATE>
     swapd swap [ (make-hitstack) ] keep
     \ verge-state boa ;
 
-: (verge) ( state goal: ( hitstack value -- hitstack ? )
+: (verge) ( state
+            goal: ( hitstack value -- hitstack ? )
             step: ( hitstack value -- hitstack value' slip: ( -- value'' slip' ) )
-            -- hitstack ? )
+            -- hitlist ? )
     (initialize) (wrap) (run) ; inline
 
-: verge ( start first-slip-maker next-slip-maker strains goal step -- seq ? )
+: verge ( start
+          first-slip-maker: ( value -- value slip: ( -- value' slip ) )
+          next-slip-maker: ( value -- value slip: ( -- value' slip ) )
+          strains
+          goal: ( hitstack value -- hitstack ? )
+          step: ( hitstack value -- hitstack value' )
+          -- hitlist ? )
     [ swap [ [ call ] dip <verge-state> ] dip ] 2dip rot compose (verge) ; inline

@@ -33,7 +33,7 @@ SYMBOL: strain-chain
     [ dup odd? [ 3 * 1 + ] [ 2 /i ] if ]
     verge ; inline
 
-t set-trace
+1 set-trace
 
 [ V{ 13 40 20 10 5 16 8 4 2 1 } t ]
 [ reset-strains 13 [ f ] dup hotpo ] unit-test

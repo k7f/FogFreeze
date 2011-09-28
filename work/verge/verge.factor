@@ -11,7 +11,10 @@ IN: verge
 SYMBOL: trace?
 PRIVATE>
 
-: set-trace ( ? -- ) trace? set ;
+: set-trace ( level/? -- ) trace? set ;
+: get-trace ( -- level/? ) trace? get ;
+: should-trace? ( min-level -- ? )
+    trace? get dup fixnum? [ <= ] [ drop zero? ] if ;
 
 TUPLE: verge-state strains slipstack hitstack current-value ;
 
@@ -23,15 +26,15 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
     pick [ check ] map-find drop ; inline
 
 : (backtrack) ( slipstack hitstack strain -- slipstack' hitstack' )
-    trace? get [
+    1 should-trace? [
         "* backtrack hits: " write over .
-        "  slipstack snap: " write pick .
+        ". slipstack snap: " write pick .
     ] when
     over length 1 > [ drop ] [ throw ] if
     [ 1 cut* drop ] bi@ ; inline
 
 : (sidestep) ( slipstack -- slipstack' value/f )
-    trace? get [
+    1 should-trace? [
         "@ sidestep slips: " write dup .
     ] when
     dup last [
@@ -49,17 +52,24 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
     [ drop (try-fallback) dup not ] loop
     [ swap ] 3dip nip ; inline
 
-: (push-slip) ( slipstack strains hitstack value slip -- slipstack' strains hitstack value )
-    -rot [ pick push ] 2dip ; inline
+: (push-slip) ( slipstack slip -- )
+    [
+        1 should-trace? [
+            "push slip " write 2 should-trace? [ pprint " -> " write . ] [ . drop ] if
+        ] [ 2drop ] if
+    ] [ swap push ] 2bi ; inline
 
-: (push-hit) ( hitstack value -- hitstack' )
-    [ trace? get [ drop . ] [ 2drop ] if ]
-    [ over push ] 2bi ; inline
+: (push-hit) ( hitstack value -- )
+    [
+        get-trace [
+            "hit " write 1 should-trace? [ pprint " -> " write . ] [ . drop ] if
+        ] [ 2drop ] if ]
+    [ swap push ] 2bi ; inline
 
 : (after-step) ( slipstack strains hitstack value slip -- slipstack' strains hitstack' value' )
-    (push-slip)
+    [ pick ] 2dip swapd (push-slip)
     [ (check-strains) dup ] [ (fallback) ] while drop
-    [ (push-hit) ] keep ; inline
+    [ (push-hit) ] 2keep ; inline
 
 ! FIXME benchmark the performance costs of using packed and unpacked state
 : (initialize) ( state goal step -- slipstack strains hitstack start goal step )

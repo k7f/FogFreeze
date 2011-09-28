@@ -1,7 +1,7 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors combinators continuations debugger io kernel locals
+USING: accessors combinators continuations debugger io kernel
        math namespaces prettyprint sequences strains ;
 IN: verge
 
@@ -94,7 +94,5 @@ PRIVATE>
             -- hitstack ? )
     (initialize) (wrap) (run) ; inline
 
-:: verge ( start first-slip-maker next-slip-maker strains goal step -- seq ? )
-    start first-slip-maker call strains <verge-state>
-    goal next-slip-maker step prepose
-    (verge) ; inline
+: verge ( start first-slip-maker next-slip-maker strains goal step -- seq ? )
+    [ swap [ [ call ] dip <verge-state> ] dip ] 2dip rot compose (verge) ; inline

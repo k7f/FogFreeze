@@ -14,7 +14,7 @@ PRIVATE>
 : set-trace ( level/? -- ) trace? set ;
 : get-trace ( -- level/? ) trace? get ;
 : should-trace? ( min-level -- ? )
-    trace? get dup fixnum? [ <= ] [ drop zero? ] if ;
+    trace? get dup fixnum? [ <= ] [ 2drop f ] if ;
 
 TUPLE: verge-state strains slipstack hitstack current-value ;
 
@@ -37,10 +37,12 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
     1 should-trace? [
         "@ sidestep slips: " write dup .
     ] when
-    dup last [
-        call( -- value slip'/f )
-        pick push
-    ] [ f ] if* ; inline
+    dup empty? [ f ] [
+        1 cut* first [
+            call( -- value slip'/f )
+            pick push
+        ] [ f ] if*
+    ] if ; inline
 
 : (try-fallback) ( slipstack hitstack strain -- slipstack' hitstack' strain value/f )
     [ (sidestep) ] 2dip rot
@@ -55,14 +57,14 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
 : (push-slip) ( slipstack slip -- )
     [
         1 should-trace? [
-            "push slip " write 2 should-trace? [ pprint " -> " write . ] [ . drop ] if
+            "push slip " write 3 should-trace? [ pprint " -> " write . ] [ . drop ] if
         ] [ 2drop ] if
     ] [ swap push ] 2bi ; inline
 
 : (push-hit) ( hitstack value -- )
     [
         get-trace [
-            "hit " write 1 should-trace? [ pprint " -> " write . ] [ . drop ] if
+            "hit " write 2 should-trace? [ pprint " -> " write . ] [ . drop ] if
         ] [ 2drop ] if ]
     [ swap push ] 2bi ; inline
 

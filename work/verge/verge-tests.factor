@@ -9,7 +9,7 @@ SYMBOL: strain-chain
 
 : reset-strains ( -- ) strain-chain reset-chain ;
 
-: set-max-loops ( guard count -- ) [ strain-chain ] 2dip set-overloop ;
+: set-max-depth ( guard count -- ) [ strain-chain ] 2dip set-overdepth ;
 : set-max-value ( guard value -- ) [ strain-chain ] 2dip set-overflow ;
 : set-min-value ( guard value -- ) [ strain-chain ] 2dip set-underflow ;
 
@@ -30,10 +30,10 @@ SYMBOL: strain-chain
 [ reset-strains 13 [ f ] dup hotpo ] unit-test
 
 [ V{ 13 40 20 10 5 } f ]
-[ 0 5 set-max-loops 13 [ f ] dup hotpo reset-strains ] unit-test
+[ 0 5 set-max-depth 13 [ f ] dup hotpo reset-strains ] unit-test
 
 [ V{ 13 } f ]
-[ 0 5 set-max-loops 0 15 set-max-value 13 [ f ] dup hotpo reset-strains ] unit-test
+[ 0 5 set-max-depth 0 15 set-max-value 13 [ f ] dup hotpo reset-strains ] unit-test
 
 [ V{ 13 40 20 11 34 17 52 26 13 40 20 11 34 17 52 26 13 40 20 } f ]
 [ 2 11 set-min-value 13 [ f ] [ make-slip ] hotpo reset-strains ] unit-test
@@ -42,7 +42,7 @@ SYMBOL: strain-chain
 [ 2 12 set-min-value 13 [ f ] [ make-slip ] hotpo reset-strains ] unit-test
 
 [ V{ 13 40 21 65 197 } f ]
-[ 7 5 set-max-loops 2 12 set-min-value 13 [ f ] [ make-slip ] hotpo reset-strains ] unit-test
+[ 7 5 set-max-depth 2 12 set-min-value 13 [ f ] [ make-slip ] hotpo reset-strains ] unit-test
 
 : vary ( start -- hitlist ? )
     strain-chain 3 set-all-different

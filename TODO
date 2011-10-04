@@ -1,0 +1,14 @@
+
+* strain state
+
+   synced to the hitstack, needs to be updated incrementally whenever
+   possible
+
+* slip-back
+
+   to allow slip-flipping needed for search control
+
+* flipstack
+
+   maintained optionally, stores flip-lists corresponding to slipstack
+   entries

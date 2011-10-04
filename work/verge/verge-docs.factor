@@ -70,7 +70,7 @@ $nl
 ARTICLE: "main-loop" "main loop"
 "The implementation of a single verge starts from the initial node of a verge space, then enters the loop, which may be presented schematically, using fictitious words, as"
 { $code "[ <goal-reached?> ] [ <do-step> <maybe-slip> ] until" }
-"The " { $snippet "<do-step>" } " part executes the currently valid step transition, i.e. the one directed from the current node.  It does so repeatedly until " { $snippet "<goal-reached?>" } " reports that the current node is final."
+"The " { $snippet "<do-step>" } " part executes the currently valid step transition, i.e. the one directed from the current node.  It does so repeatedly, followed by the " { $snippet "<maybe-slip>" } " part (and unless an exception is thrown), until " { $snippet "<goal-reached?>" } " reports that the current node is final."
 $nl
 "The skeleton of " { $snippet "<maybe-slip>" } " is"
 { $code "[ <strains-failed?> ] [ <fallback> ] while" }
@@ -80,13 +80,13 @@ $nl
 { $code "[ [ <do-slip> ] [ <do-backtrack> ] unless* ] loop" }
 "where " { $snippet "<do-slip>" } " executes the currently valid slip transition, and " { $snippet "<do-backtrack>" } " executes the currently valid backtracking transition."
 $nl
-"If there is no valid slip transition, the return value of " { $snippet "<do-slip>" } " is " { $link f } ".  " { $snippet "<do-backtrack>" } " however, returns " { $link f } " whenever it actually backtracks \u{em-dash} otherwise it throws an error.  Therefore, every backtracking transition is directly or indirectly (i.e. after further backtracking) followed by a slip transition, unless the whole main loop longjumps due to a backtracking error \u{em-dash} which indicates exhaustion of the space."
+"If there is no valid slip transition, the return value of " { $snippet "<do-slip>" } " is " { $link f } ".  " { $snippet "<do-backtrack>" } " however, returns " { $link f } " whenever it actually backtracks \u{em-dash} otherwise it throws an error.  Therefore, every backtracking transition is directly or indirectly (i.e. after further backtracking) followed by a slip transition, unless the whole main loop longjumps due to a backtracking error \u{em-dash} which indicates exhaustion of the feasible subset of the space."
 $nl
 "Note, that slip and backtracking transitions, as well as the step, are always unique or nonexistent, because all " { $link "verge-space" } "s are non-branching.";
 
 ARTICLE: "invariants" "invariants"
 { $list
-  { "FIXME (untrue at the top) The current node's LPP is always feasible, because the implementation guarantees that infeasible node cannot be expanded.  This property simplifies the implementation of certain " { $link "strains" } "." }
+  { "FIXME (untrue at the top) The current node's LPP is always feasible, because the implementation guarantees that infeasible node's step transition is never executed.  This property simplifies the implementation of certain " { $link "strains" } "." }
 } ;
 
 ARTICLE: "backtracking" "backtracking"
@@ -118,7 +118,11 @@ ARTICLE: "verge-space" "verge space"
 { $emphasis "Verge space" } " is a non-branching sequence space without jump transitions and containing all backtracking transitions.  Furthermore it is required, that every node of a verge space must be reachable from its initial node, which is necessarily a non-empty sequence.  The graph induced by the set of backtracking transitions of such a space is always a tree."
 $nl
 "The nodes of a verge space are partitioned into " { $emphasis "feasible" } " and " { $emphasis "unfeasible" } " subsets.  The partition is controlled by a set of " { $emphasis "strains" } " (cf the "
-{ $link "strains" } " vocabulary).";
+{ $link "strains" } " vocabulary), and it should fulfill two conditions:"
+{ $list
+  { "the feasible subset is finite;" }
+  { "no infeasible sequence may ever be a prefix of a feasible one." }
+} ;
 
 ARTICLE: "verging" "verging"
 "\u00201c" { $emphasis "Verging" } "\u00201d is simply short for \u00201csearching in a verge space\u00201d.  A single " { $emphasis "verge" } " is such a process of verging, which starts from the initial sequence, and stops whenever any of the two conditions is met:"

@@ -2,7 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors combinators continuations debugger io kernel
-       math namespaces prettyprint sequences strains ;
+       math namespaces prettyprint sequences strains strings
+       vectors ;
 IN: verge
 
 <PRIVATE
@@ -13,6 +14,19 @@ PRIVATE>
 : get-trace ( -- level/? ) trace? get ;
 : should-trace? ( min-level -- ? )
     trace? get dup fixnum? [ <= ] [ 2drop f ] if ;
+
+<PRIVATE
+TUPLE: (invalid-input-string) { message string read-only } ;
+M: (invalid-input-string) error. "Invalid input: " write message>> . ;
+
+TUPLE: (invalid-input-strain) { error strain read-only } ;
+M: (invalid-input-strain) error. "Invalid input: " write error>> error. ;
+PRIVATE>
+
+: invalid-input ( string/strain -- * )
+    dup string?
+    [ \ (invalid-input-string) boa ]
+    [ \ (invalid-input-strain) boa ] if throw ;
 
 TUPLE: verge-state strains slipstack hitstack current-value ;
 
@@ -95,17 +109,23 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
         3drop f
     ] recover [ 2drop ] 2dip ; inline
 
+: (>lifo) ( seq -- lifo )
+    dup sequence? [
+        [ "empty sequence" invalid-input ] [ >vector ] if-empty
+    ] [ "not a sequence" invalid-input ] if ; inline
+
 : (1lifo) ( obj -- lifo )
     V{ } clone [ push ] keep ; inline
 
-: (make-hitstack) ( start -- hitstack ) (1lifo) ; inline
+: (make-hitstack) ( start -- hitstack ) (>lifo) ; inline
 : (make-slipstack) ( slip -- slipstack ) (1lifo) ; inline
 PRIVATE>
 
 : <verge-state> ( start slip: ( -- value slip' ) strains -- state )
-    swap (make-slipstack)
-    swapd swap [ (make-hitstack) ] keep
-    \ verge-state boa ;
+    swapd swap (make-hitstack)
+    [ unclip-last (check-strains) [ invalid-input ] when* 2drop ] keep
+    [ swap (make-slipstack) ] dip
+    dup last \ verge-state boa ;
 
 : (verge) ( state
             goal: ( hitstack value -- hitstack ? )

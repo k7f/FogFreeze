@@ -10,7 +10,7 @@ INSTANCE: f maybe-fixnum
 INSTANCE: fixnum maybe-fixnum
 
 GENERIC: strain= ( strain1 strain2 -- ? )
-GENERIC: check ( state value strain -- state value strain/f )
+GENERIC: check ( state new-value strain -- state new-value strain/f )
 
 TUPLE: strain { failure# fixnum } { max-failures maybe-fixnum } ;
 : new-strain ( class -- strain )

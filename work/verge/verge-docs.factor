@@ -25,7 +25,7 @@ HELP: should-trace?
 
 HELP: <verge-state>
 { $values
-  { "start" object }
+  { "start" "a nonempty " { $link sequence } }
   { "slip" quotation }
   { "strains" sequence }
   { "state" "a " { $link verge-state } }
@@ -41,11 +41,11 @@ HELP: (verge)
   { "hitlist" sequence }
   { "?" boolean }
 }
-{ $description "The result sequence is never empty, and its first element is always the value passed as " { $snippet "start" } " to " { $link <verge-state> } ".  If the result boolean is true, then the last element fulfills the goal." } ;
+{ $description "The result sequence is never empty, and it always contains a prefix equal to the value passed as " { $snippet "start" } " to " { $link <verge-state> } ".  If the result boolean is true, then the result sequence fulfills the goal." } ;
 
 HELP: verge
 { $values
-  { "start" object }
+  { "start" "a nonempty " { $link sequence } }
   { "first-slip-maker" quotation }
   { "next-slip-maker" quotation }
   { "strains" sequence }
@@ -54,7 +54,7 @@ HELP: verge
   { "hitlist" sequence }
   { "?" boolean }
 }
-{ $description "The result sequence is never empty, and its first element is always " { $snippet "start" } ".  If the result boolean is true, then the last element fulfills the goal." } ;
+{ $description "The result sequence is never empty, and it always contains " { $snippet "start" } " as a prefix.  If the result boolean is true, then the result sequence fulfills the goal." } ;
 
 ARTICLE: "transitions-and-goal" "transitions and goal"
 "Step and slip transitions, as well as the goal, are specified by quotations."
@@ -128,11 +128,13 @@ ARTICLE: "verging" "verging"
 "\u00201c" { $emphasis "Verging" } "\u00201d is simply short for \u00201csearching in a verge space\u00201d.  A single " { $emphasis "verge" } " is such a process of verging, which starts from the initial sequence, and stops whenever any of the two conditions is met:"
 $nl
 { $list
-  { "current node satisfies the goal quotation;" }
+  { "current node satisfies the goal predicate;" }
   { "current node is unfeasible, and there is no more backtracking credit left." }
 }
 $nl
-"If searching ends due to the first condition, then the verge is " { $emphasis "successful" } ", even if the node is unfeasible.  Otherwise \u{em-dash} the verge " { $emphasis "fails" } "." ;
+"If searching ends due to the first condition, then the verge is " { $emphasis "successful" } ", even if the node is unfeasible.  Otherwise \u{em-dash} the verge " { $emphasis "fails" } "." 
+$nl
+"(Note that in the current implementation goal predicate is never evaluated for unfeasible sequences.  Thus, the two conditions are effectively disjoint.)" ;
 
 ARTICLE: "foundations" "foundations"
 { $subsections

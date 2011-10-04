@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors kernel math namespaces sequences strains strains.generic
-       strains.simple tools.test verge ;
+USING: accessors arrays kernel math namespaces sequences strains
+       strains.generic strains.simple tools.test verge ;
 IN: verge.tests
 
 SYMBOL: strain-chain
@@ -19,6 +19,7 @@ SYMBOL: strain-chain
     ] curry ;
 
 : hotpo ( start first-slip-maker next-slip-maker -- hitlist ? )
+    [ 1array ] 2dip
     strain-chain get clone
     [ 1 <= ]
     [ dup odd? [ 3 * 1 + ] [ 2 /i ] if ]
@@ -52,4 +53,4 @@ SYMBOL: strain-chain
     verge ; inline
 
 [ V{ 13 14 15 16 17 18 19 } t ]
-[ 13 vary reset-strains ] unit-test
+[ { 13 } vary reset-strains ] unit-test

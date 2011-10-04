@@ -10,10 +10,10 @@ HELP: strain
 HELP: check
 { $values
   { "state" sequence }
-  { "value" object }
+  { "new-value" object }
   { "strain" "a " { $link strain } }
   { "state" sequence }
-  { "value" object }
+  { "new-value" object }
   { "strain/f" { $maybe strain } }
 }
 { $contract "The three possible outcomes of calling " { $link check } " are soft failure, hard failure and success.  Soft failure is indicated by retaining the " { $link strain } " object at the top of the stack.  Hard failure happens when the word throws the input " { $link strain } " object as an error.  The return value of " { $link f } " indicates a success."

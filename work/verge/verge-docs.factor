@@ -67,12 +67,36 @@ $nl
 $nl
 "The actual stack effects of step and goal quotations are extended, redundantly, for the sake of efficiency.  They contain the last element of an input sequence as an additional argument and retain the entire input sequence as an additional result." ;
 
+ARTICLE: "main-loop" "main loop"
+"The implementation of a single verge starts from the initial node of a verge space, then enters the loop, which may be presented schematically, using fictitious words, as"
+{ $code "[ <goal-reached?> ] [ <do-step> <maybe-slip> ] until" }
+"The " { $snippet "<do-step>" } " part executes the currently valid step transition, i.e. the one directed from the current node.  It does so repeatedly until " { $snippet "<goal-reached?>" } " reports that the current node is final."
+$nl
+"The skeleton of " { $snippet "<maybe-slip>" } " is"
+{ $code "[ <strains-failed?> ] [ <fallback> ] while" }
+"This is the inner loop guarded by the " { $snippet "<strains-failed?>" } " part, which performs feasibility checks."
+$nl
+"The " { $snippet "<fallback>" } " is yet another loop:"
+{ $code "[ [ <do-slip> ] [ <do-backtrack> ] unless* ] loop" }
+"where " { $snippet "<do-slip>" } " executes the currently valid slip transition, and " { $snippet "<do-backtrack>" } " executes the currently valid backtracking transition."
+$nl
+"If there is no valid slip transition, the return value of " { $snippet "<do-slip>" } " is " { $link f } ".  " { $snippet "<do-backtrack>" } " however, returns " { $link f } " whenever it actually backtracks \u{em-dash} otherwise it throws an error.  Therefore, every backtracking transition is directly or indirectly (i.e. after further backtracking) followed by a slip transition, unless the whole main loop longjumps due to a backtracking error \u{em-dash} which indicates exhaustion of the space."
+$nl
+"Note, that slip and backtracking transitions, as well as the step, are always unique or nonexistent, because all " { $link "verge-space" } "s are non-branching.";
+
+ARTICLE: "invariants" "invariants"
+{ $list
+  { "FIXME (untrue at the top) The current node's LPP is always feasible, because the implementation guarantees that infeasible node cannot be expanded.  This property simplifies the implementation of certain " { $link "strains" } "." }
+} ;
+
 ARTICLE: "backtracking" "backtracking"
 "Backtracking is implemented in a lightweight (hopefully...) way, by using two dedicated stacks, instead of full-blown continuations." ;
 
 ARTICLE: "implementation" "implementation"
 { $subsections
   "transitions-and-goal"
+  "main-loop"
+  "invariants"
   "backtracking"
 } ;
 

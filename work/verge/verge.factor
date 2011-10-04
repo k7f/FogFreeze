@@ -5,8 +5,6 @@ USING: accessors combinators continuations debugger io kernel
        math namespaces prettyprint sequences strains ;
 IN: verge
 
-! the main loop skeleton is: [ [ goal ] (test-goal) ] [ step (after-step) ] until
-
 <PRIVATE
 SYMBOL: trace?
 PRIVATE>

@@ -38,7 +38,7 @@ TUPLE: all-different < strain ;
     all-different set-strain ;
 
 M: all-different check
-    pick all-unique? [ drop f ] [ call-next-method ] if ; inline
+    pick pick swap member? [ call-next-method ] [ drop f ] if ; inline
 
 M: all-different error.
     drop "The \"all different\" goal not reached" print ;

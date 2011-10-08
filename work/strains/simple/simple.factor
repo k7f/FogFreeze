@@ -4,7 +4,7 @@
 USING: accessors debugger io kernel math prettyprint sequences strains ;
 IN: strains.simple
 
-TUPLE: overflow < strain { value real } { limit real } ;
+STRAIN: overflow { value real } { limit real } ;
 
 : <overflow> ( limit -- strain )
     \ overflow new-strain 0 >>max-failures swap >>limit ;
@@ -25,7 +25,7 @@ M: overflow error.
     "Value " write dup value>> pprint
     " is over the limit of " write limit>> . ;
 
-TUPLE: underflow < strain { value real } { limit real } ;
+STRAIN: underflow { value real } { limit real } ;
 
 : <underflow> ( limit -- strain )
     \ underflow new-strain 0 >>max-failures swap >>limit ;

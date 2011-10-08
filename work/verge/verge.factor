@@ -38,22 +38,54 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
     pick [ check ] map-find drop
     dup [ 1 should-trace? [ "!!! failure: " write dup . ] when ] when ; inline
 
+! FIXME LPP invariant does not hold here
+: (check-strains-initial) ( strains hitstack value -- strains hitstack value strain/f )
+    (check-strains) ; inline
+
+: (push-hit) ( value hitstack -- )
+    [
+        get-trace [
+            "hit " write 2 should-trace? [ swap pprint " -> " write . ] [ drop . ] if
+        ] [ 2drop ] if
+    ] [
+        2drop  ! FIXME update strain-state
+    ] [ push ] 2tri ; inline
+
+: (drop-hit) ( hitstack -- )
+    [ get-trace [ "drop " write last . ] [ drop ] if ] [
+        drop  ! FIXME update strain-state
+    ] [ pop* ] tri ; inline
+
+: (push-slip) ( slip slipstack -- )
+    [
+        1 should-trace? [
+            "push slip " write 3 should-trace? [ swap pprint " -> " write . ] [ drop . ] if
+        ] [ 2drop ] if
+    ] [ push ] 2bi ; inline
+
+: (pop-slip) ( slipstack -- slip )
+    pop
+    1 should-trace? [
+        "pop slip " write dup .
+    ] when ; inline
+
 : (backtrack) ( slipstack hitstack strain -- slipstack' hitstack' )
     1 should-trace? [
         "* backtrack hits: " write over .
         ". slipstack snap: " write pick .
     ] when
-    over length 1 > [ drop ] [ throw ] if
-    dup pop* ; inline
+    ! FIXME report exhaustion not a credit runout
+    pick length 1 > [ drop ] [ throw ] if
+    dup (drop-hit) ; inline
 
 : (sidestep) ( slipstack -- slipstack' value/f )
     1 should-trace? [
         "@ sidestep slips: " write dup .
     ] when
     dup empty? [ f ] [
-        dup pop [
+        dup (pop-slip) [
             call( -- value slip'/f )
-            pick push
+            pick (push-slip)
         ] [ f ] if*
     ] if ; inline
 
@@ -67,24 +99,10 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
     [ drop (try-fallback) dup not ] loop
     [ swap ] 3dip nip ; inline
 
-: (push-slip) ( slipstack slip -- )
-    [
-        1 should-trace? [
-            "push slip " write 3 should-trace? [ pprint " -> " write . ] [ . drop ] if
-        ] [ 2drop ] if
-    ] [ swap push ] 2bi ; inline
-
-: (push-hit) ( hitstack value -- )
-    [
-        get-trace [
-            "hit " write 2 should-trace? [ pprint " -> " write . ] [ . drop ] if
-        ] [ 2drop ] if ]
-    [ swap push ] 2bi ; inline
-
 : (after-step) ( slipstack strains hitstack value slip -- slipstack' strains hitstack' value' )
-    [ pick ] 2dip swapd (push-slip)
+    [ pick ] 2dip rot (push-slip)
     [ (check-strains) dup ] [ (fallback) ] while drop
-    [ (push-hit) ] 2keep ; inline
+    [ swap (push-hit) ] 2keep ; inline
 
 ! FIXME benchmark the performance costs of using packed and unpacked state
 : (initialize) ( state goal step -- slipstack strains hitstack start goal step )
@@ -123,7 +141,7 @@ PRIVATE>
 
 : <verge-state> ( start slip: ( -- value slip' ) strains -- state )
     swapd swap (make-hitstack)
-    [ unclip-last (check-strains) [ invalid-input ] when* 2drop ] keep
+    [ unclip-last (check-strains-initial) [ invalid-input ] when* 2drop ] keep
     [ swap (make-slipstack) ] dip
     dup last \ verge-state boa ;
 

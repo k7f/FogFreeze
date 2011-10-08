@@ -7,5 +7,10 @@
    maintained optionally, stores flip-lists corresponding to slipstack
    entries
 * credits
-   clean up backtracking credit, implement forward credit, document
+   clean up side/backtracking credit, implement forward credit, document
    both
+* first-verge, next-verge
+   these should return verge-state, but keep plain verge returning
+   just the hitstack
+* verge hierarchies
+   defining slip as inner verge

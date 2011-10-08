@@ -59,7 +59,7 @@ HELP: verge
 ARTICLE: "transitions-and-goal" "transitions and goal"
 "Step and slip transitions, as well as the goal, are specified by quotations."
 $nl
-"Step quotation takes a predecessor sequence and returns two values: the last element of a successor sequence, and a slip quotation.  There is always exactly one step quotation used for a single verge.  The returned slip quotation may be empty (i.e. equal " { $link f } ").  If it is not empty, then it computes the consecutive slip transition."
+"Step quotation takes a predecessor sequence and returns two values: the last element of a successor sequence, and a slip quotation.  There is always exactly one step quotation used for a single verge.  The returned slip quotation may be empty (i.e. equal to " { $link f } ").  If it is not empty, then it computes the consecutive slip transition."
 $nl
 "Slip quotation takes nothing and returns two values: the last element of a successor sequence, and another slip quotation or " { $link f } "."
 $nl
@@ -70,7 +70,7 @@ $nl
 ARTICLE: "main-loop" "main loop"
 "The implementation of a single verge starts from the initial node of a verge space, then enters the loop, which may be presented schematically, using fictitious words, as"
 { $code "[ <goal-reached?> ] [ <do-step> <maybe-slip> ] until" }
-"The " { $snippet "<do-step>" } " part executes the currently valid step transition, i.e. the one directed from the current node.  It does so repeatedly, followed by the " { $snippet "<maybe-slip>" } " part (and unless an exception is thrown), until " { $snippet "<goal-reached?>" } " reports that the current node is final."
+"The " { $snippet "<do-step>" } " part executes the currently valid step transition, i.e. the one directed from the current node.  It does so (followed by the " { $snippet "<maybe-slip>" } " part) repeatedly, unless an exception is thrown, until " { $snippet "<goal-reached?>" } " reports that the current node is final."
 $nl
 "The skeleton of " { $snippet "<maybe-slip>" } " is"
 { $code "[ <strains-failed?> ] [ <fallback> ] while" }
@@ -86,7 +86,7 @@ $nl
 
 ARTICLE: "invariants" "invariants"
 { $list
-  { "FIXME (untrue at the top) The current node's LPP is always feasible, because the implementation guarantees that infeasible node's step transition is never executed.  This property simplifies the implementation of certain " { $link "strains" } "." }
+  { "The current non-initial node's LPP is always feasible, because the implementation enforces feasibility of the initial node and guarantees that unfeasible node's step transition is never executed.  This property simplifies the implementation of certain " { $link "strains" } "." }
 } ;
 
 ARTICLE: "backtracking" "backtracking"
@@ -108,7 +108,7 @@ $nl
 { $list
   { { $emphasis "Step transition" } " connects a sequence to one of its shortest proper suffixes (SPS)." }
   { { $emphasis "Backtracking transition" } " is the inverted arc of a step transition of the same space: it connects a sequence to its longest proper prefix (LPP)." }
-  { { $emphasis "Slip transition" } " connects two different sequences of equal LPP." }
+  { { $emphasis "Slip transition" } " connects two different sequences both having the same LPP." }
   { { $emphasis "Jump transition" } " is any transition other than backtracking, step or slip." }
 }
 $nl
@@ -121,7 +121,7 @@ $nl
 { $link "strains" } " vocabulary), and it should fulfill two conditions:"
 { $list
   { "the feasible subset is finite;" }
-  { "no infeasible sequence may ever be a prefix of a feasible one." }
+  { "no unfeasible sequence may ever be a prefix of a feasible one." }
 } ;
 
 ARTICLE: "verging" "verging"

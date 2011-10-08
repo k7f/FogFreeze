@@ -1,26 +1,56 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors classes classes.tuple debugger io kernel math
-       namespaces sequences strings ;
+USING: accessors classes classes.parser classes.tuple classes.tuple.parser
+       combinators debugger io kernel lexer make math namespaces parser
+       quotations sequences strings ;
 IN: strains
 
 MIXIN: maybe-fixnum
 INSTANCE: f maybe-fixnum
 INSTANCE: fixnum maybe-fixnum
 
+MIXIN: maybe-quotation
+INSTANCE: f maybe-quotation
+INSTANCE: quotation maybe-quotation
+
 GENERIC: strain= ( strain1 strain2 -- ? )
 GENERIC: check ( state new-value strain -- state new-value strain/f )
 
-TUPLE: strain { failure# fixnum } { max-failures maybe-fixnum } ;
+TUPLE: strain
+    { failure# fixnum }
+    { max-failures maybe-fixnum }
+    { push-quotation maybe-quotation }
+    { pop-quotation maybe-quotation } ;
+
 : new-strain ( class -- strain )
-    new 0 >>failure# f >>max-failures ;
+    new 0 >>failure# f >>max-failures f >>push-quotation f >>pop-quotation ;
+
+! stateful strain
+: new-vstrain ( push-quot pop-quot class -- strain )
+    new 0 >>failure# f >>max-failures
+    swap >>pop-quotation swap >>push-quotation ;
+
 M: strain strain= tuple= ; inline
+
 M: strain check
     dup failure#>> 1 +
     over max-failures>> [
         over < [ drop throw ] when
     ] when* >>failure# ; inline
+
+: parse-strain-definition ( -- class superclass slots )
+    CREATE-CLASS scan {
+        { ";" [ strain f ] }
+        { "<" [ scan-word [ parse-tuple-slots ] { } make ] }
+        [
+            strain swap
+            [ parse-slot-name [ parse-tuple-slots ] when ] { }
+            make
+        ]
+    } case dup check-duplicate-slots 3dup check-slot-shadowing ;
+
+SYNTAX: STRAIN: parse-strain-definition define-tuple-class ;
 
 TUPLE: in-vein < strain message ;
 : <in-vein> ( message/f -- strain )

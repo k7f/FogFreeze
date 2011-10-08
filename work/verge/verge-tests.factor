@@ -9,13 +9,18 @@ SYMBOL: strain-chain
 
 : reset-strains ( -- ) strain-chain reset-chain ;
 
-: set-max-depth ( guard count -- ) [ strain-chain ] 2dip set-overdepth ;
+: set-max-depth ( guard depth -- ) [ strain-chain ] 2dip set-overdepth ;
 : set-max-value ( guard value -- ) [ strain-chain ] 2dip set-overflow ;
 : set-min-value ( guard value -- ) [ strain-chain ] 2dip set-underflow ;
 
 : make-slip ( value -- value slip )
     dup [
         1 + f
+    ] curry ;
+
+: make-slip2 ( value -- value slip )
+    dup [
+        1 + make-slip
     ] curry ;
 
 : hotpo ( start first-slip-maker next-slip-maker -- hitlist ? )
@@ -46,11 +51,17 @@ SYMBOL: strain-chain
 [ 7 5 set-max-depth 2 12 set-min-value 13 [ f ] [ make-slip ] hotpo reset-strains ] unit-test
 
 : vary ( start -- hitlist ? )
-    strain-chain 3 set-all-different
-    [ f ] [ make-slip ] strain-chain get clone
-    [ drop dup length 7 = ]
-    [ 1 + ]
+    strain-chain 7 set-all-different
+    [ f ] [ make-slip2 ] strain-chain get clone
+    [ drop dup length dup 7 = swap 2 = or ]
+    [ ]
     verge ; inline
 
 [ V{ 13 14 15 16 17 18 19 } t ]
-[ { 13 } vary reset-strains ] unit-test
+[ { 13 14 15 } vary reset-strains ] unit-test
+
+[ V{ 13 14 } t ]
+[ 7 3 set-max-depth { 13 14 } vary reset-strains ] unit-test
+
+[ V{ 13 14 15 } f ]
+[ 7 3 set-max-depth { 13 14 15 } vary reset-strains ] unit-test

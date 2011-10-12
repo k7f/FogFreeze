@@ -13,15 +13,20 @@ SYMBOL: strain-chain
 : set-max-value ( guard value -- ) [ strain-chain ] 2dip set-overflow ;
 : set-min-value ( guard value -- ) [ strain-chain ] 2dip set-underflow ;
 
-: make-slip ( value -- value slip )
+: slip-once+1 ( value -- value slip )
     dup [
         1 + f
     ] curry ;
 
-: make-slip2 ( value -- value slip )
+: slip-twice+1 ( value -- value slip )
     dup [
-        1 + make-slip
+        1 + slip-once+1
     ] curry ;
+
+: slip-ntimes+1 ( value slip# -- value slip )
+    over [
+        1 + swap 1 - dup 0 > [ slip-ntimes+1 ] [ drop f ] if
+    ] 2curry ;
 
 : hotpo ( start first-slip-maker next-slip-maker -- hitlist ? )
     [ 1array ] 2dip
@@ -42,26 +47,38 @@ SYMBOL: strain-chain
 [ 0 5 set-max-depth 0 15 set-max-value 13 [ f ] dup hotpo reset-strains ] unit-test
 
 [ V{ 13 40 20 11 34 17 52 26 13 40 20 11 34 17 52 26 13 40 20 } f ]
-[ 2 11 set-min-value 13 [ f ] [ make-slip ] hotpo reset-strains ] unit-test
+[ 2 11 set-min-value 13 [ f ] [ slip-once+1 ] hotpo reset-strains ] unit-test
 
 [ V{ 13 40 21 64 32 16 } f ]
-[ 2 12 set-min-value 13 [ f ] [ make-slip ] hotpo reset-strains ] unit-test
+[ 2 12 set-min-value 13 [ f ] [ slip-once+1 ] hotpo reset-strains ] unit-test
 
 [ V{ 13 40 21 65 197 } f ]
-[ 7 5 set-max-depth 2 12 set-min-value 13 [ f ] [ make-slip ] hotpo reset-strains ] unit-test
+[ 7 5 set-max-depth 2 12 set-min-value 13 [ f ] [ slip-once+1 ] hotpo reset-strains ] unit-test
 
-: vary ( start -- hitlist ? )
-    strain-chain 7 set-all-different
-    [ f ] [ make-slip2 ] strain-chain get clone
+: (vary-set-strains) ( ctor -- )
+    [ strain-chain 7 ] dip execute ; inline
+
+: (vary-slip-makers) ( slip# -- first-slip-maker next-slip-maker )
+    [ f ] swap [ slip-ntimes+1 ] curry ; inline
+
+: vary ( start slip# ctor -- hitlist ? )
+    (vary-set-strains) (vary-slip-makers) 
+    strain-chain get clone
     [ drop dup length dup 7 = swap 2 = or ]
     [ ]
     verge ; inline
 
 [ V{ 13 14 15 16 17 18 19 } t ]
-[ { 13 14 15 } vary reset-strains ] unit-test
+[ { 13 14 15 } 2 \ set-all-different vary reset-strains ] unit-test
 
 [ V{ 13 14 } t ]
-[ 7 3 set-max-depth { 13 14 } vary reset-strains ] unit-test
+[ 7 3 set-max-depth { 13 14 } 2 \ set-all-different vary reset-strains ] unit-test
 
 [ V{ 13 14 15 } f ]
-[ 7 3 set-max-depth { 13 14 15 } vary reset-strains ] unit-test
+[ 7 3 set-max-depth { 13 14 15 } 2 \ set-all-different vary reset-strains ] unit-test
+
+[ V{ 13 14 15 16 17 18 19 } t ]
+[ { 13 14 16 } 7 \ set-all-different-delta vary reset-strains ] unit-test
+
+! [ T{ (invalid-input-strain) ... } ]
+! [ { 13 14 15 } 7 \ set-all-different-delta [ vary ] [ ] recover reset-strains ] unit-test

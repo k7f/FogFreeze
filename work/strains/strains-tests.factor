@@ -29,7 +29,7 @@ SYMBOL: strain-chain
 
 [ { all-different-delta } ]
 [ reset-strains strain-chain 0 set-all-different-delta
-  strain-chain get dup first [ push-quotation>> ] [ pop-quotation>> ] bi . .
+  strain-chain get dup first [ push-quotation>> ] [ drop-quotation>> ] bi . .
   [ class ] map ] unit-test
 
 [ f ]

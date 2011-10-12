@@ -21,6 +21,13 @@ M: (invalid-input-string) error. "Invalid input: " write message>> . ;
 
 TUPLE: (invalid-input-strain) { error strain read-only } ;
 M: (invalid-input-strain) error. "Invalid input: " write error>> error. ;
+
+TUPLE: (bad-strain) { error strain read-only } { message string read-only } ;
+
+: (bad-strain) ( strain string -- * ) \ (bad-strain) boa throw ;
+
+M: (bad-strain) error.
+    "Bad strain (" over message>> "): " [ write ] tri@ error>> . ;
 PRIVATE>
 
 : invalid-input ( string/strain -- * )
@@ -28,7 +35,7 @@ PRIVATE>
     [ \ (invalid-input-string) boa ]
     [ \ (invalid-input-strain) boa ] if throw ;
 
-TUPLE: verge-state strains slipstack hitstack current-value ;
+TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
 
 <PRIVATE
 : (test-goal) ( hitstack value goal: ( hitstack value -- hitstack ? ) -- hitstack value ? )
@@ -38,22 +45,32 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
     pick [ check ] map-find drop
     dup [ 1 should-trace? [ "!!! failure: " write dup . ] when ] when ; inline
 
+: (push-vstrains) ( hitstack value vstrains -- )
+    [
+        dup push-quotation>> [
+            [ 2dup ] 2dip call( hitstack value strain -- )
+        ] [ drop ] if*
+    ] each 2drop ; inline
+
+: (drop-vstrains) ( vstrains -- )
+    [ dup drop-quotation>> [ call( strain -- ) ] [ drop ] if* ] each ; inline
+
 ! FIXME LPP invariant does not hold here
 : (check-strains-initial) ( strains hitstack value -- strains hitstack value strain/f )
     (check-strains) ; inline
 
-: (push-hit) ( value hitstack -- )
+: (push-hit) ( vstrains value hitstack -- )
     [
         get-trace [
             "hit " write 2 should-trace? [ swap pprint " -> " write . ] [ drop . ] if
         ] [ 2drop ] if
     ] [
-        2drop  ! FIXME update strain-state
+        swap rot (push-vstrains)
     ] [ push ] 2tri ; inline
 
-: (drop-hit) ( hitstack -- )
+: (drop-hit) ( vstrains hitstack -- )
     [ get-trace [ "drop " write last . ] [ drop ] if ] [
-        drop  ! FIXME update strain-state
+        drop (drop-vstrains)
     ] [ pop* ] tri ; inline
 
 : (push-slip) ( slip slipstack -- )
@@ -69,14 +86,14 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
         "pop slip " write dup .
     ] when ; inline
 
-: (backtrack) ( slipstack hitstack strain -- slipstack' hitstack' )
+: (backtrack) ( vstrains slipstack hitstack strain -- vstrains slipstack' hitstack' )
     1 should-trace? [
         "* backtrack hits: " write over .
         ". slipstack snap: " write pick .
     ] when
     ! FIXME report exhaustion not a credit runout
     pick length 1 > [ drop ] [ throw ] if
-    dup (drop-hit) ; inline
+    pick over (drop-hit) ; inline
 
 : (sidestep) ( slipstack -- slipstack' value/f )
     1 should-trace? [
@@ -89,26 +106,30 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
         ] [ f ] if*
     ] if ; inline
 
-: (try-fallback) ( slipstack hitstack strain -- slipstack' hitstack' strain value/f )
+: (try-fallback) ( vstrains slipstack hitstack strain -- vstrains slipstack' hitstack' strain value/f )
     [ (sidestep) ] 2dip rot
     [ [ (backtrack) ] keep f ] unless* ; inline
 
 : (fallback)
-    ( slipstack strains hitstack value strain -- slipstack strains hitstack' value' )
-    swap [ swap ] 3dip
-    [ drop (try-fallback) dup not ] loop
-    [ swap ] 3dip nip ; inline
+    ( vstrains slipstack hitstack value strain -- vstrains slipstack hitstack' value' )
+    swap [ drop (try-fallback) dup not ] loop nip ; inline
 
-: (after-step) ( slipstack strains hitstack value slip -- slipstack' strains hitstack' value' )
-    [ pick ] 2dip rot (push-slip)
-    [ (check-strains) dup ] [ (fallback) ] while drop
-    [ swap (push-hit) ] 2keep ; inline
+: (after-step)
+    ( vstrains strains slipstack hitstack value slip -- vstrains strains slipstack' hitstack' value' )
+    [ over ] 2dip rot (push-slip) [
+        [ swap ] 2dip (check-strains) [ swap ] 3dip dup
+    ] [
+        [ swapd ] 3dip (fallback) [ swap ] 3dip
+    ] while drop
+    [ pick ] 2dip [ swap (push-hit) ] 2keep ; inline
 
 ! FIXME benchmark the performance costs of using packed and unpacked state
-: (initialize) ( state goal step -- slipstack strains hitstack start goal step )
-    [
-        { [ slipstack>> ] [ strains>> ] [ hitstack>> ] [ current-value>> ] } cleave
-    ] 2dip ; inline
+: (initialize) ( state goal step -- vstrains strains slipstack hitstack start goal step )
+    [ { [ stateful-strains>> ]
+        [ strains>> ]
+        [ slipstack>> ]
+        [ hitstack>> ]
+        [ current-value>> ] } cleave ] 2dip ; inline
 
 : (wrap) ( goal: ( hitstack value -- hitstack ? )
            step: ( hitstack value -- hitstack value' slip: ( -- value'' slip' ) )
@@ -118,14 +139,14 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
     [ (test-goal) ] [ (after-step) ]
     [ curry ] [ compose ] bi-curry* bi* ; inline
 
-: (run) ( slipstack strains hitstack start
+: (run) ( vstrains strains slipstack hitstack start
           goal: ( ..value -- ..value ? )
           step: ( ..hitstack value -- ..hitstack' value' )
           -- hitstack' ? )
     [ until drop t ] [
         "Warning: " write error.
         3drop f
-    ] recover [ 2drop ] 2dip ; inline
+    ] recover [ 3drop ] 2dip ; inline
 
 : (>lifo) ( seq -- lifo )
     dup sequence? [
@@ -137,12 +158,23 @@ TUPLE: verge-state strains slipstack hitstack current-value ;
 
 : (make-hitstack) ( start -- hitstack ) (>lifo) ; inline
 : (make-slipstack) ( slip -- slipstack ) (1lifo) ; inline
+
+: (make-stateful-strains) ( strains -- vstrains )
+    [
+        dup [ push-quotation>> ] [ drop-quotation>> ] bi
+        2dup and [ 2nip nip ] [
+            over or [
+                [ "drop" ] [ "push" ] if "missing " " quotation" surround (bad-strain)
+            ] [ 2drop ] if f
+        ] if*
+    ] filter ; inline
 PRIVATE>
 
 : <verge-state> ( start slip: ( -- value slip' ) strains -- state )
     swapd swap (make-hitstack)
     [ unclip-last (check-strains-initial) [ invalid-input ] when* 2drop ] keep
     [ swap (make-slipstack) ] dip
+    [ dup (make-stateful-strains) ] 2dip
     dup last \ verge-state boa ;
 
 : (verge) ( state

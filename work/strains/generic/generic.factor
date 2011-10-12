@@ -43,17 +43,27 @@ M: all-different check
 M: all-different error.
     drop "The \"all different\" goal not reached" print ;
 
-STRAIN: all-different-delta { state sequence } ;
+STRAIN: all-different-delta { deltastack sequence } ;
+
+: (delta-push) ( hitstack value deltastack -- )
+    dup [
+        pick empty? [ 3drop ] [ [ swap last - ] dip push ] if
+    ] dip "(delta-push): " write .
+    ;
 
 : <all-different-delta> ( -- strain )
-    [ "push" . ] [ "pop" . ] \ all-different-delta new-vstrain ;
+    [ deltastack>> (delta-push) ] [ drop "delta drop" print ]
+    \ all-different-delta new-stateful-strain
+    V{ } clone >>deltastack ;
 
 : set-all-different-delta ( chain guard/f -- )
     dup [ <all-different-delta> swap >>max-failures ] when
     all-different-delta set-strain ;
 
+! state new-value strain -- state new-value strain/f
 M: all-different-delta check
-    pick pick swap member? [ call-next-method ] [ drop f ] if ; inline
+    pick last pick swap -
+    over deltastack>> member? [ call-next-method ] [ drop f ] if ; inline
 
 M: all-different-delta error.
     drop "The \"all different (delta)\" goal not reached" print ;

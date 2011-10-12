@@ -115,7 +115,7 @@ $nl
 "A sequence space is " { $emphasis "non-branching" } ", if for any node and any transition type, a transition from that node and of that type does not exist or is unique." ;
 
 ARTICLE: "verge-space" "verge space"
-{ $emphasis "Verge space" } " is a non-branching sequence space without jump transitions and containing all backtracking transitions.  Furthermore it is required, that every node of a verge space must be reachable from its initial node, which is necessarily a non-empty sequence.  The graph induced by the set of backtracking transitions of such a space is always a tree."
+{ $emphasis "Verge space" } " is a non-branching sequence space without jump transitions, which contains all backtracking transitions.  Furthermore, it is required, that every node of a verge space must be reachable from its initial node, which is necessarily a non-empty sequence.  The graph induced by the set of backtracking transitions of such a space is always a tree."
 $nl
 "The nodes of a verge space are partitioned into " { $emphasis "feasible" } " and " { $emphasis "unfeasible" } " subsets.  The partition is controlled by a set of " { $emphasis "strains" } " (cf the "
 { $link "strains" } " vocabulary), and it should fulfill two conditions:"

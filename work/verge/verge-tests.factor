@@ -55,30 +55,53 @@ SYMBOL: strain-chain
 [ V{ 13 40 21 65 197 } f ]
 [ 7 5 set-max-depth 2 12 set-min-value 13 [ f ] [ slip-once+1 ] hotpo reset-strains ] unit-test
 
-: (vary-set-strains) ( ctor -- )
-    [ strain-chain 18 ] dip execute ; inline
+: (single-set-strains) ( guard ctor -- )
+    [ strain-chain ] 2dip execute( chain guard/f -- ) ; inline
 
-: (vary-slip-makers) ( slip# -- first-slip-maker next-slip-maker )
+: (create-slip-makers) ( slip# -- first-slip-maker next-slip-maker )
     [ f ] swap [ slip-ntimes+1 ] curry ; inline
 
-: vary ( start slip# ctor -- hitlist ? )
-    (vary-set-strains) (vary-slip-makers) 
-    strain-chain get clone
+: (iota-verge) ( start slip# goal step -- hitlist ? )
+    [ (create-slip-makers) strain-chain get clone ] 2dip verge ; inline
+
+: 7single ( start slip# guard ctor -- hitlist ? )
+    (single-set-strains)
     [ drop dup length [ 7 = ] [ 2 = ] bi or ]
     [ ]
-    verge ; inline
+    (iota-verge) ; inline
+
+: 12single ( start slip# guard ctor -- hitlist ? )
+    (single-set-strains)
+    [ drop dup length 12 = ]
+    [ drop 0 ]
+    (iota-verge) ; inline
+
+: 12multi ( start slip# guards ctors -- hitlist ? )
+    [ (single-set-strains) ] 2each
+    [ drop dup length 12 = ]
+    [ drop 0 ]
+    (iota-verge) ; inline
 
 [ V{ 13 14 15 16 17 18 19 } t ]
-[ { 13 14 15 } 2 \ set-all-different vary reset-strains ] unit-test
+[ { 13 14 15 } 2 7 \ set-all-different 7single reset-strains ] unit-test
 
 [ V{ 13 14 } t ]
-[ 7 3 set-max-depth { 13 14 } 2 \ set-all-different vary reset-strains ] unit-test
+[ 7 3 set-max-depth { 13 14 } 2 7 \ set-all-different 7single reset-strains ] unit-test
 
 [ V{ 13 14 15 } f ]
-[ 7 3 set-max-depth { 13 14 15 } 2 \ set-all-different vary reset-strains ] unit-test
+[ 7 3 set-max-depth { 13 14 15 } 2 7 \ set-all-different 7single reset-strains ] unit-test
 
 [ V{ 13 14 16 19 23 28 34 } t ]
-[ { 13 14 16 } 6 \ set-all-different-delta vary reset-strains ] unit-test
+[ { 13 14 16 } 6 18 \ set-all-different-delta 7single reset-strains ] unit-test
 
 [ { 13 14 15 } set-all-different-delta ]
-[ { 13 14 15 } 6 \ set-all-different-delta [ vary ] [ drop nip ] recover reset-strains ] unit-test
+[ { 13 14 15 } 6 18 \ set-all-different-delta [ 7single ] [ drop 2nip ] recover reset-strains ] unit-test
+
+[ V{ 0 1 3 0 3 1 0 4 0 5 0 6 } t ]
+[ { 0 1 3 } 6 19 \ set-all-different-delta 12single reset-strains ] unit-test
+
+[ V{ 0 1 3 0 3 1 0 4 0 5 0 6 } t ]
+[ { 0 1 3 } 6 { 19 } { set-all-different-delta } 12multi reset-strains ] unit-test
+
+[ V{ 0 1 3 2 5 9 4 10 7 12 8 6 } t ]
+[ { 0 1 3 } 12 { 91 20 } { set-all-different set-all-different-delta } 12multi reset-strains ] unit-test

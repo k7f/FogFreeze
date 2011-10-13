@@ -48,11 +48,13 @@ STRAIN: all-different-delta { deltastack sequence } ;
 : (delta-push) ( hitstack value deltastack -- )
     dup [
         pick empty? [ 3drop ] [ [ swap last - ] dip push ] if
-    ] dip "(delta-push): " write .
-    ;
+    ] dip "(delta-push): " write . ; inline
+
+: (delta-drop) ( deltastack -- )
+    dup [ pop* ] unless-empty "(delta-drop): " write . ; inline
 
 : <all-different-delta> ( -- strain )
-    [ deltastack>> (delta-push) ] [ drop "delta drop" print ]
+    [ deltastack>> (delta-push) ] [ deltastack>> (delta-drop) ]
     \ all-different-delta new-stateful-strain
     V{ } clone >>deltastack ;
 

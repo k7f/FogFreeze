@@ -41,8 +41,8 @@ TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
 : (test-goal) ( hitstack value goal: ( hitstack value -- hitstack ? ) -- hitstack value ? )
     keep swap ; inline
 
-: (check-strains) ( strains hitstack value -- strains hitstack value strain/f )
-    pick [ check ] map-find drop
+: (check-strains) ( strains hitstack value -- strain/f )
+    rot [ check ] map-find drop [ 2drop ] dip
     dup [ 1 should-trace? [ "!!! failure: " write dup . ] when ] when ; inline
 
 : (push-vstrains) ( hitstack value vstrains -- )
@@ -56,8 +56,8 @@ TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
     [ dup drop-quotation>> [ call( strain -- ) ] [ drop ] if* ] each ; inline
 
 ! FIXME LPP invariant does not hold here
-: (check-strains-initial) ( strains hitstack value -- strains hitstack value strain/f )
-    (check-strains) ; inline
+: (check-strains-initial) ( strains hitstack value -- strain/f )
+    over empty? [ 3drop f ] [ (check-strains) ] if ; inline
 
 : (push-hit) ( vstrains value hitstack -- )
     [
@@ -117,7 +117,9 @@ TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
 : (after-step)
     ( vstrains strains slipstack hitstack value slip -- vstrains strains slipstack' hitstack' value' )
     [ over ] 2dip rot (push-slip) [
-        [ swap ] 2dip (check-strains) [ swap ] 3dip dup
+        [ swap ] 2dip
+        3dup (check-strains)
+        [ swap ] 3dip dup
     ] [
         [ swapd ] 3dip (fallback) [ swap ] 3dip
     ] while drop
@@ -168,14 +170,37 @@ TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
             ] [ 2drop ] if f
         ] if*
     ] filter ; inline
+
+: ((fill-stateful-strains)) ( ndx vstrains hitstack -- )
+    rot 1 + head-slice unclip-last-slice
+    rot (push-vstrains) ; inline
+
+: (fill-stateful-strains) ( hitstack vstrains -- )
+    over [ length iota ] 2dip
+    [ ((fill-stateful-strains)) ] 2curry each ; inline
+
+: (do-initial-checks) ( ndx vstrains strains hitstack -- )
+    [ rot ] dip swap 1 + head-slice unclip-last-slice [
+        (check-strains-initial) [ invalid-input ] when*
+    ] 2keep rot (push-vstrains) ; inline
+
+: (build-stacks) ( slip strains start -- slipstack vstrains hitstack )
+    [ (make-slipstack) ] [ (make-stateful-strains) ] [ (make-hitstack) ] tri* ; inline
+
+: (insert-iota) ( vstrains hitstack -- iota vstrains hitstack )
+    [ length iota ] keep swapd ; inline
+
+: (do-all-initial-checks) ( iota vstrains strains hitstack -- )
+    [ (do-initial-checks) ] 3curry each ; inline
+
+: (build-verge-state) ( slipstack vstrains strains hitstack -- state )
+    [ swap rot ] dip dup last \ verge-state boa ;
 PRIVATE>
 
 : <verge-state> ( start slip: ( -- value slip' ) strains -- state )
-    swapd swap (make-hitstack)
-    [ unclip-last (check-strains-initial) [ invalid-input ] when* 2drop ] keep
-    [ swap (make-slipstack) ] dip
-    [ dup (make-stateful-strains) ] 2dip
-    dup last \ verge-state boa ;
+    dup [ pick (build-stacks) (insert-iota) ] dip
+    swap [ (do-all-initial-checks) ] 3keep
+    (build-verge-state) nip ;
 
 : (verge) ( state
             goal: ( hitstack value -- hitstack ? )

@@ -60,10 +60,11 @@ STRAIN: all-different-delta { deltastack sequence } ;
     dup [ <all-different-delta> swap >>max-failures ] when
     all-different-delta set-strain ;
 
-! state new-value strain -- state new-value strain/f
 M: all-different-delta check
     pick last pick swap -
-    over deltastack>> member? [ call-next-method ] [ drop f ] if ; inline
+    dup 0 = [ drop call-next-method ] [
+        over deltastack>> member? [ call-next-method ] [ drop f ] if
+    ] if ; inline
 
 M: all-different-delta error.
     drop "The \"all different (delta)\" goal not reached" print ;

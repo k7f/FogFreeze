@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays kernel math namespaces sequences strains
-       strains.generic strains.simple tools.test verge ;
+USING: accessors arrays continuations kernel math namespaces sequences
+       strains strains.generic strains.simple tools.test verge verge.private ;
 IN: verge.tests
 
 SYMBOL: strain-chain
@@ -56,7 +56,7 @@ SYMBOL: strain-chain
 [ 7 5 set-max-depth 2 12 set-min-value 13 [ f ] [ slip-once+1 ] hotpo reset-strains ] unit-test
 
 : (vary-set-strains) ( ctor -- )
-    [ strain-chain 7 ] dip execute ; inline
+    [ strain-chain 18 ] dip execute ; inline
 
 : (vary-slip-makers) ( slip# -- first-slip-maker next-slip-maker )
     [ f ] swap [ slip-ntimes+1 ] curry ; inline
@@ -64,7 +64,7 @@ SYMBOL: strain-chain
 : vary ( start slip# ctor -- hitlist ? )
     (vary-set-strains) (vary-slip-makers) 
     strain-chain get clone
-    [ drop dup length dup 7 = swap 2 = or ]
+    [ drop dup length [ 7 = ] [ 2 = ] bi or ]
     [ ]
     verge ; inline
 
@@ -77,8 +77,8 @@ SYMBOL: strain-chain
 [ V{ 13 14 15 } f ]
 [ 7 3 set-max-depth { 13 14 15 } 2 \ set-all-different vary reset-strains ] unit-test
 
-[ V{ 13 14 15 16 17 18 19 } t ]
-[ { 13 14 16 } 7 \ set-all-different-delta vary reset-strains ] unit-test
+[ V{ 13 14 16 19 23 28 34 } t ]
+[ { 13 14 16 } 6 \ set-all-different-delta vary reset-strains ] unit-test
 
-! [ T{ (invalid-input-strain) ... } ]
-! [ { 13 14 15 } 7 \ set-all-different-delta [ vary ] [ ] recover reset-strains ] unit-test
+[ { 13 14 15 } set-all-different-delta ]
+[ { 13 14 15 } 6 \ set-all-different-delta [ vary ] [ drop nip ] recover reset-strains ] unit-test

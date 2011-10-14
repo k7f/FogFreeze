@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors debugger io kernel math prettyprint sequences strains ;
-IN: strains.simple
+USING: accessors debugger ff.strains io kernel math prettyprint sequences ;
+IN: ff.strains.simple
 
 STRAIN: overflow { value real } { limit real } ;
 

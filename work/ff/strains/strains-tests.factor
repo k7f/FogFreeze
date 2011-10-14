@@ -1,9 +1,9 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors classes kernel math namespaces prettyprint sequences strains
-       strains.generic strains.simple tools.test ;
-IN: strains.tests
+USING: accessors classes ff.strains ff.strains.generic ff.strains.simple kernel
+       math namespaces prettyprint sequences tools.test ;
+IN: ff.strains.tests
 
 SYMBOL: strain-chain
 

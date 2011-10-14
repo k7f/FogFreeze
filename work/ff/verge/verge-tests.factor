@@ -1,9 +1,10 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays continuations kernel math namespaces sequences
-       strains strains.generic strains.simple tools.test verge verge.private ;
-IN: verge.tests
+USING: accessors arrays continuations ff ff.strains ff.strains.generic
+       ff.strains.simple ff.verge ff.verge.private kernel math namespaces
+       sequences tools.test ;
+IN: ff.verge.tests
 
 SYMBOL: strain-chain
 

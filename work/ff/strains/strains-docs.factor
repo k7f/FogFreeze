@@ -1,8 +1,9 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: classes help.markup help.syntax kernel quotations sequences verge words.symbol ;
-IN: strains
+USING: classes help.markup help.syntax kernel quotations sequences ff.verge
+       words.symbol ;
+IN: ff.strains
 
 HELP: strain
 { $class-description "The base class of all strains." } ;

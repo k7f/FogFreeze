@@ -2,17 +2,9 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors classes classes.parser classes.tuple classes.tuple.parser
-       combinators debugger effects io kernel lexer make math namespaces
-       parser prettyprint quotations sequences stack-checker strings ;
-IN: strains
-
-MIXIN: maybe-fixnum
-INSTANCE: f maybe-fixnum
-INSTANCE: fixnum maybe-fixnum
-
-MIXIN: maybe-quotation
-INSTANCE: f maybe-quotation
-INSTANCE: quotation maybe-quotation
+       combinators debugger effects ff io kernel lexer make math namespaces
+       parser prettyprint quotations sequences strings ;
+IN: ff.strains
 
 GENERIC: strain= ( strain1 strain2 -- ? )
 GENERIC: check ( state new-value strain -- state new-value strain/f )
@@ -27,21 +19,9 @@ TUPLE: strain
     new 0 >>failure# f >>max-failures f >>push-quotation f >>drop-quotation ;
 
 <PRIVATE
-TUPLE: (invalid-stack-effect) { expected effect read-only } { given effect read-only } ;
-
-: (invalid-stack-effect) ( expected given -- * ) \ (invalid-stack-effect) boa throw ;
-
-M: (invalid-stack-effect) error.
-    "Invalid stack effect: " write dup given>> pprint " instead of " write expected>> . ;
-
-: (validate-effect) ( quot effect -- quot )
-    over [
-        infer 2dup effect= [ 2drop ] [ (invalid-stack-effect) ] if
-    ] [ drop ] if* ;
-
 : (validate-strain-updates) ( push-quot drop-quot -- push-quot drop-quot )
-     [ (( hitstack value strain -- )) (validate-effect) ]
-     [ (( strain -- )) (validate-effect) ] bi* ;
+     [ (( hitstack value strain -- )) validate-effect ]
+     [ (( strain -- )) validate-effect ] bi* ;
 PRIVATE>
 
 : new-stateful-strain ( push-quot drop-quot class -- strain )

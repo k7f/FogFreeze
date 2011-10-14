@@ -1,6 +1,8 @@
-* strain state
-   synced to the hitstack, needs to be updated incrementally whenever
-   possible
+* stateful strains
+   document them
+* first-verge, next-verge
+   these should return verge-state (but plain verge should still return
+   just the hitstack)
 * slip-back
    to allow slip-flipping needed for search control
 * flipstack
@@ -9,8 +11,5 @@
 * credits
    clean up side/backtracking credit, implement forward credit, document
    both
-* first-verge, next-verge
-   these should return verge-state, but keep plain verge returning
-   just the hitstack
 * verge hierarchies
    defining slip as inner verge

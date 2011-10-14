@@ -1,19 +1,9 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors combinators continuations debugger io kernel
-       math namespaces prettyprint sequences strains strings
-       vectors ;
-IN: verge
-
-<PRIVATE
-SYMBOL: trace?
-PRIVATE>
-
-: set-trace ( level/? -- ) trace? set ;
-: get-trace ( -- level/? ) trace? get ;
-: should-trace? ( min-level -- ? )
-    trace? get dup fixnum? [ <= ] [ 2drop f ] if ;
+USING: accessors combinators continuations debugger ff ff.strains io
+       kernel math namespaces prettyprint sequences strings vectors ;
+IN: ff.verge
 
 <PRIVATE
 TUPLE: (invalid-input-string) { message string read-only } ;

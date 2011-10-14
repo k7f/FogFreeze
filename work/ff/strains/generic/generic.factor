@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors debugger io kernel math prettyprint sequences sets strains ;
-IN: strains.generic
+USING: accessors debugger ff.strains io kernel math prettyprint sequences sets ;
+IN: ff.strains.generic
 
 STRAIN: overdepth { count fixnum } { limit fixnum } ;
 

@@ -20,6 +20,7 @@ M: (bad-strain) error.
     "Bad strain (" over message>> "): " [ write ] tri@ error>> . ;
 PRIVATE>
 
+! FIXME generic
 : invalid-input ( string/strain -- * )
     dup string?
     [ \ (invalid-input-string) boa ]
@@ -115,31 +116,6 @@ TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
     ] while drop
     [ pick ] 2dip [ swap (push-hit) ] 2keep ; inline
 
-! FIXME benchmark the performance costs of using packed and unpacked state
-: (initialize) ( state goal step -- vstrains strains slipstack hitstack start goal step )
-    [ { [ stateful-strains>> ]
-        [ strains>> ]
-        [ slipstack>> ]
-        [ hitstack>> ]
-        [ current-value>> ] } cleave ] 2dip ; inline
-
-: (wrap) ( goal: ( hitstack value -- hitstack ? )
-           step: ( hitstack value -- hitstack value' slip: ( -- value'' slip' ) )
-           --
-           goal': ( hitstack value -- hitstack value ? )
-           step': ( hitstack value -- hitstack' value' ) )
-    [ (test-goal) ] [ (after-step) ]
-    [ curry ] [ compose ] bi-curry* bi* ; inline
-
-: (run) ( vstrains strains slipstack hitstack start
-          goal: ( ..value -- ..value ? )
-          step: ( ..hitstack value -- ..hitstack' value' )
-          -- hitstack' ? )
-    [ until drop t ] [
-        "Warning: " write error.
-        3drop f
-    ] recover [ 3drop ] 2dip ; inline
-
 : (>lifo) ( seq -- lifo )
     dup sequence? [
         [ "empty sequence" invalid-input ] [ >vector ] if-empty
@@ -187,22 +163,104 @@ TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
     [ swap rot ] dip dup last \ verge-state boa ;
 PRIVATE>
 
-: <verge-state> ( start slip: ( -- value slip' ) strains -- state )
+: <verge-state> ( start-sequence first-slip: ( -- value slip' ) strains -- state )
     dup [ pick (build-stacks) (insert-iota) ] dip
     swap [ (do-all-initial-checks) ] 3keep
     (build-verge-state) nip ;
 
-: (verge) ( state
-            goal: ( hitstack value -- hitstack ? )
-            step: ( hitstack value -- hitstack value' slip: ( -- value'' slip' ) )
-            -- hitlist ? )
-    (initialize) (wrap) (run) ; inline
+<PRIVATE
+! FIXME benchmark the performance costs of using packed and unpacked state
+: (verge-state-unpack) ( state -- vstrains strains slipstack hitstack value )
+    { [ stateful-strains>> ]
+      [ strains>> ]
+      [ slipstack>> ]
+      [ hitstack>> ]
+      [ current-value>> ] } cleave ; inline
 
-: verge ( start
-          first-slip-maker: ( value -- value slip: ( -- value' slip ) )
-          next-slip-maker: ( value -- value slip: ( -- value' slip ) )
+: (run) ( vstrains strains slipstack hitstack value
+          goal: ( ..value -- ..value ? )
+          step: ( ..hitstack value -- ..hitstack' value' )
+          -- hitstack' ? )
+    [ until drop t ] [
+        "Warning: " write error.
+        3drop f
+    ] recover [ 3drop ] 2dip ; inline
+
+: (wrap) ( goal: ( hitstack value -- hitstack ? )
+           step: ( hitstack value -- hitstack value' slip: ( -- value'' slip' ) )
+           --
+           goal': ( hitstack value -- hitstack value ? )
+           step': ( hitstack value -- hitstack' value' ) )
+    [ (test-goal) ] [ (after-step) ]
+    [ curry ] [ compose ] bi-curry* bi* ; inline
+
+: (make-first-slip) ( start-sequence
+                      first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                      --
+                      start-sequence first-slip: ( -- value' slip ) )
+    [
+        dup [ "empty sequence" invalid-input ] [ last ] if-empty
+    ] dip call( value -- value slip ) nip ;
+
+: (single-step) ( hitstack value
+                  goal: ( ..value -- ..value ? )
+                  step: ( ..hitstack value -- ..hitstack' value' )
+                  --
+                  hitstack' value'
+                  goal: ( ..value -- ..value ? )
+                  step: ( ..hitstack value -- ..hitstack' value' ) )
+    [ nip call( hitstack value -- hitstack' value' ) ] 2keep ; inline
+                 
+: (initialize) ( next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                 goal: ( hitstack value -- hitstack ? )
+                 step: ( hitstack value -- hitstack value' )
+                 state
+                 --
+                 vstrains strains slipstack hitstack value
+                 goal': ( ..value -- ..value ? )
+                 step': ( ..hitstack value -- ..hitstack' value' ) )
+    [ rot compose (wrap) ] dip -rot
+    [ (verge-state-unpack) ] 2dip ; inline
+
+: (preprocess) ( start-sequence
+                 first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                 next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                 strains
+                 goal: ( hitstack value -- hitstack ? )
+                 step: ( hitstack value -- hitstack value' )
+                 --
+                 next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                 goal: ( hitstack value -- hitstack ? )
+                 step: ( hitstack value -- hitstack value' )
+                 state )
+    [ [ (make-first-slip) ] 2dip swap ] 2dip
+    [ <verge-state> ] 3dip [ rot ] dip swap ; inline
+PRIVATE>
+
+: next-verge ( next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+               goal: ( hitstack value -- hitstack ? )
+               step: ( hitstack value -- hitstack value' )
+               state
+               --
+               hitlist ? )
+    (initialize) (single-step) (run) ; inline
+
+: first-verge ( start-sequence
+                first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                strains
+                goal: ( hitstack value -- hitstack ? )
+                step: ( hitstack value -- hitstack value' )
+                --
+                state hitlist ? )
+    (preprocess) [ (initialize) (run) ] keep -rot ; inline
+
+: verge ( start-sequence
+          first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+          next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
           strains
           goal: ( hitstack value -- hitstack ? )
           step: ( hitstack value -- hitstack value' )
-          -- hitlist ? )
-    [ swap [ [ call ] dip <verge-state> ] dip ] 2dip rot compose (verge) ; inline
+          --
+          hitlist ? )
+    first-verge [ nip ] dip ; inline

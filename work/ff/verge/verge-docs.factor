@@ -6,27 +6,17 @@ IN: ff.verge
 
 HELP: <verge-state>
 { $values
-  { "start" "a nonempty " { $link sequence } }
-  { "slip" quotation }
+  { "start-sequence" "a nonempty " { $link sequence } }
+  { "first-slip" quotation }
   { "strains" sequence }
   { "state" "a " { $link verge-state } }
 }
 { $description "Constructor of the " { $link verge-state } " class." }
 { $notes "Whenever it is important to guarantee, that the list of strains remains constant during a single verge, call " { $link clone } " before passing the strains (individual strains would still be allowed to change their state, however, as a result of side-effects)." } ;
 
-HELP: (verge)
-{ $values
-  { "state" "a " { $link verge-state } }
-  { "goal" quotation }
-  { "step" quotation }
-  { "hitlist" sequence }
-  { "?" boolean }
-}
-{ $description "The result sequence is never empty, and it always contains a prefix equal to the value passed as " { $snippet "start" } " to " { $link <verge-state> } ".  If the result boolean is true, then the result sequence fulfills the goal." } ;
-
 HELP: verge
 { $values
-  { "start" "a nonempty " { $link sequence } }
+  { "start-sequence" "a nonempty " { $link sequence } }
   { "first-slip-maker" quotation }
   { "next-slip-maker" quotation }
   { "strains" sequence }

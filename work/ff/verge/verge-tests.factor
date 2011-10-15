@@ -2,8 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors arrays continuations ff ff.strains ff.strains.generic
-       ff.strains.simple ff.verge ff.verge.private kernel math namespaces
-       sequences tools.test ;
+       ff.strains.simple ff.verge ff.verge.private io kernel locals math
+       namespaces prettyprint sequences tools.test ;
 IN: ff.verge.tests
 
 SYMBOL: strain-chain
@@ -36,7 +36,7 @@ SYMBOL: strain-chain
     [ dup odd? [ 3 * 1 + ] [ 2 /i ] if ]
     verge ; inline
 
-2 set-trace
+f set-trace
 
 [ V{ 13 40 20 10 5 16 8 4 2 1 } t ]
 [ reset-strains 13 [ f ] dup hotpo ] unit-test
@@ -62,26 +62,46 @@ SYMBOL: strain-chain
 : (create-slip-makers) ( slip# -- first-slip-maker next-slip-maker )
     [ f ] swap [ slip-ntimes+1 ] curry ; inline
 
-: (iota-verge) ( start slip# goal step -- hitlist ? )
+: (irange-verge) ( start slip# goal step -- hitlist ? )
     [ (create-slip-makers) strain-chain get clone ] 2dip verge ; inline
+
+: (irange-first-verge) ( start slip# goal step -- state hitlist ? )
+    [ (create-slip-makers) strain-chain get clone ] 2dip first-verge ; inline
+
+: (irange-next-verge) ( slip# goal step state -- hitlist ? )
+    [ [ slip-ntimes+1 ] curry ] 3dip next-verge ; inline
 
 : 7single ( start slip# guard ctor -- hitlist ? )
     (single-set-strains)
     [ drop dup length [ 7 = ] [ 2 = ] bi or ]
     [ ]
-    (iota-verge) ; inline
+    (irange-verge) ; inline
 
 : 12single ( start slip# guard ctor -- hitlist ? )
     (single-set-strains)
     [ drop dup length 12 = ]
     [ drop 0 ]
-    (iota-verge) ; inline
+    (irange-verge) ; inline
 
 : 12multi ( start slip# guards ctors -- hitlist ? )
     [ (single-set-strains) ] 2each
     [ drop dup length 12 = ]
     [ drop 0 ]
-    (iota-verge) ; inline
+    (irange-verge) ; inline
+
+:: 12multi-next ( start slip# guards ctors -- hitlist ? )
+    guards ctors [ (single-set-strains) ] 2each
+    start slip#
+    [ drop dup length 12 = ]
+    [ drop 0 ]
+    (irange-first-verge) [
+        drop [
+            slip#
+            [ drop dup length 12 = ]
+            [ drop 0 ]
+        ] dip
+        (irange-next-verge)
+    ] [ nip f ] if ; inline
 
 [ V{ 13 14 15 16 17 18 19 } t ]
 [ { 13 14 15 } 2 7 \ set-all-different 7single reset-strains ] unit-test
@@ -106,3 +126,6 @@ SYMBOL: strain-chain
 
 [ V{ 0 1 3 2 5 9 4 10 7 12 8 6 } t ]
 [ { 0 1 3 } 12 { 91 20 } { set-all-different set-all-different-delta } 12multi reset-strains ] unit-test
+
+[ V{ 0 1 3 2 5 9 4 12 10 6 11 8 } t ]
+[ { 0 1 3 } 12 { 301 66 } { set-all-different set-all-different-delta } 12multi-next reset-strains ] unit-test

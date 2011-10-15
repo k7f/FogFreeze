@@ -1,7 +1,7 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors debugger ff.strains io kernel math prettyprint sequences sets ;
+USING: accessors debugger ff ff.strains io kernel math prettyprint sequences sets ;
 IN: ff.strains.generic
 
 STRAIN: overdepth { count fixnum } { limit fixnum } ;
@@ -48,10 +48,10 @@ STRAIN: all-different-delta { deltastack sequence } ;
 : (delta-push) ( hitstack value deltastack -- )
     dup [
         pick empty? [ 3drop ] [ [ swap last - ] dip push ] if
-    ] dip "(delta-push): " write . ; inline
+    ] dip get-trace [ "(delta-push): " write . ] [ drop ] if ; inline
 
 : (delta-drop) ( deltastack -- )
-    dup [ pop* ] unless-empty "(delta-drop): " write . ; inline
+    dup [ pop* ] unless-empty get-trace [ "(delta-drop): " write . ] [ drop ] if ; inline
 
 : <all-different-delta> ( -- strain )
     [ deltastack>> (delta-push) ] [ deltastack>> (delta-drop) ]

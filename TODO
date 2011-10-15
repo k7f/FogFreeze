@@ -1,8 +1,9 @@
-* stateful strains
-   document them
-* first-verge, next-verge
-   these should return verge-state (but plain verge should still return
-   just the hitstack)
+
+* documentation
+   stateful strains
+   first-verge, next-verge
+* with-verge
+   use with-variable?
 * slip-back
    to allow slip-flipping needed for search control
 * flipstack

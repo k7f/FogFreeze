@@ -28,6 +28,15 @@ PRIVATE>
         infer 2dup effect= [ 2drop ] [ (invalid-stack-effect) ] if
     ] [ drop ] if* ;
 
+<PRIVATE
+TUPLE: (invalid-input-string) { message string read-only } ;
+M: (invalid-input-string) error. "Invalid input: " write message>> . ;
+PRIVATE>
+
+GENERIC: invalid-input ( obj -- * )
+
+M: string invalid-input \ (invalid-input-string) boa throw ;
+
 MIXIN: maybe-fixnum
 INSTANCE: f maybe-fixnum
 INSTANCE: fixnum maybe-fixnum

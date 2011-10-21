@@ -5,27 +5,6 @@ USING: accessors combinators continuations debugger ff ff.strains io
        kernel math namespaces prettyprint sequences strings vectors ;
 IN: ff.verge
 
-<PRIVATE
-TUPLE: (invalid-input-string) { message string read-only } ;
-M: (invalid-input-string) error. "Invalid input: " write message>> . ;
-
-TUPLE: (invalid-input-strain) { error strain read-only } ;
-M: (invalid-input-strain) error. "Invalid input: " write error>> error. ;
-
-TUPLE: (bad-strain) { error strain read-only } { message string read-only } ;
-
-: (bad-strain) ( strain string -- * ) \ (bad-strain) boa throw ;
-
-M: (bad-strain) error.
-    "Bad strain (" over message>> "): " [ write ] tri@ error>> . ;
-PRIVATE>
-
-! FIXME generic
-: invalid-input ( string/strain -- * )
-    dup string?
-    [ \ (invalid-input-string) boa ]
-    [ \ (invalid-input-strain) boa ] if throw ;
-
 TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
 
 <PRIVATE
@@ -132,7 +111,7 @@ TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
         dup [ push-quotation>> ] [ drop-quotation>> ] bi
         2dup and [ 2nip nip ] [
             over or [
-                [ "drop" ] [ "push" ] if "missing " " quotation" surround (bad-strain)
+                [ "drop" ] [ "push" ] if "missing " " quotation" surround bad-strain
             ] [ 2drop ] if f
         ] if*
     ] filter ; inline

@@ -59,6 +59,22 @@ M: in-vein error.
     "all in vein..." print ;
 
 <PRIVATE
+TUPLE: (invalid-input-strain) { error strain read-only } ;
+M: (invalid-input-strain) error. "Invalid input: " write error>> error. ;
+PRIVATE>
+
+M: strain invalid-input \ (invalid-input-strain) boa throw ;
+
+<PRIVATE
+TUPLE: (bad-strain) { error strain read-only } { message string read-only } ;
+
+M: (bad-strain) error.
+    "Bad strain (" over message>> "): " [ write ] tri@ error>> . ;
+PRIVATE>
+
+: bad-strain ( strain string -- * ) \ (bad-strain) boa throw ;
+
+<PRIVATE
 : (same-strain?) ( strain1 strain2 -- ? )
     2dup eq? [ 2drop t ] [
         over tuple? [ strain= ] [ 2drop f ] if

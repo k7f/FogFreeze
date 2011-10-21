@@ -4,6 +4,8 @@
    first-verge, next-verge
 * with-verge
    use with-variable?
+* trols
+   abstract them out...
 * slip-back
    to allow slip-flipping needed for search control
 * flipstack

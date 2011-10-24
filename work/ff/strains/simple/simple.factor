@@ -18,7 +18,7 @@ M: overflow strain=
 
 M: overflow check
     2dup limit>> [
-        > [ over >>value call-next-method ] [ drop f ] if
+        > [ over >>value strain-check-failure ] [ drop f ] if
     ] [ 2drop f ] if* ; inline
 
 M: overflow error.
@@ -39,7 +39,7 @@ M: underflow strain=
 
 M: underflow check
     2dup limit>> [
-        < [ over >>value call-next-method ] [ drop f ] if
+        < [ over >>value strain-check-failure ] [ drop f ] if
     ] [ 2drop f ] if* ; inline
 
 M: underflow error.

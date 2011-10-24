@@ -1,6 +1,7 @@
 
 * documentation
    stateful strains
+   ALL-DIFFERENT2:
    first-verge, next-verge
 * with-verge
    use with-variable?

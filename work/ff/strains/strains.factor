@@ -12,8 +12,8 @@ GENERIC: check ( state new-value strain -- state new-value strain/f )
 TUPLE: strain
     { failure# fixnum }
     { max-failures maybe-fixnum }
-    { push-quotation maybe-quotation }
-    { drop-quotation maybe-quotation } ;
+    { push-quotation maybe-callable }
+    { drop-quotation maybe-callable } ;
 
 : new-strain ( class -- strain )
     new 0 >>failure# f >>max-failures f >>push-quotation f >>drop-quotation ;
@@ -31,13 +31,16 @@ PRIVATE>
 
 M: strain strain= tuple= ; inline
 
-M: strain check
+: strain-check-failure ( state new-value strain -- state new-value strain/f )
     dup failure#>> 1 +
     over max-failures>> [
         over < [ drop throw ] when
     ] when* >>failure# ; inline
 
-: parse-strain-definition ( -- class superclass slots )
+M: strain check strain-check-failure ;
+
+<PRIVATE
+: (parse-strain-definition) ( -- class superclass slots )
     CREATE-CLASS scan {
         { ";" [ strain f ] }
         { "<" [ scan-word [ parse-tuple-slots ] { } make ] }
@@ -47,8 +50,9 @@ M: strain check
             make
         ]
     } case dup check-duplicate-slots 3dup check-slot-shadowing ;
+PRIVATE>
 
-SYNTAX: STRAIN: parse-strain-definition define-tuple-class ;
+SYNTAX: STRAIN: (parse-strain-definition) define-tuple-class ;
 
 TUPLE: in-vein < strain message ;
 : <in-vein> ( message/f -- strain )
@@ -59,20 +63,16 @@ M: in-vein error.
     "all in vein..." print ;
 
 <PRIVATE
-TUPLE: (invalid-input-strain) { error strain read-only } ;
+ERROR: (invalid-input-strain) { error strain read-only } ;
 M: (invalid-input-strain) error. "Invalid input: " write error>> error. ;
 PRIVATE>
 
-M: strain invalid-input \ (invalid-input-strain) boa throw ;
+M: strain invalid-input (invalid-input-strain) ;
 
-<PRIVATE
-TUPLE: (bad-strain) { error strain read-only } { message string read-only } ;
+ERROR: bad-strain { error strain read-only } { message string read-only } ;
 
-M: (bad-strain) error.
+M: bad-strain error.
     "Bad strain (" over message>> "): " [ write ] tri@ error>> . ;
-PRIVATE>
-
-: bad-strain ( strain string -- * ) \ (bad-strain) boa throw ;
 
 <PRIVATE
 : (same-strain?) ( strain1 strain2 -- ? )

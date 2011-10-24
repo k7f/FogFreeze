@@ -132,6 +132,8 @@ SYMBOL: strain-chain
         ] loop nip f
     ] [ nip f ] if ;
 
+ALL-DIFFERENT2: all-different-delta - ;
+
 : first-hit-tests ( -- )
 
     [ V{ 13 14 15 16 17 18 19 } t ] [
@@ -176,11 +178,18 @@ SYMBOL: strain-chain
 
     ; inline
 
+ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
+
 : next-hit-tests ( -- )
 
     [ V{ 0 1 3 2 8 5 9 7 10 4 11 6 } t ] [
         { 0 1 3 } 11 { 3506 835 }
         { set-all-different set-all-different-delta } 12multi-next flush-strains
+    ] unit-test
+
+    [ V{ 0 1 3 2 9 5 10 4 7 11 8 6 } t ] [
+        { 0 1 3 } 11 { 3093 852 }
+        { set-all-different set-all-different-delta12rem } 12multi-next flush-strains
     ] unit-test
 
     ; inline

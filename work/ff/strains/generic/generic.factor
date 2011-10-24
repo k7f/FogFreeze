@@ -1,7 +1,10 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors debugger ff ff.strains io kernel math prettyprint sequences sets ;
+USING: accessors arrays classes.parser classes.tuple classes.tuple.parser
+       combinators compiler.units debugger ff ff.strains fry generic.parser
+       io kernel lexer macros make math parser prettyprint quotations sequences
+       sets words ;
 IN: ff.strains.generic
 
 STRAIN: overdepth { count fixnum } { limit fixnum } ;
@@ -20,7 +23,7 @@ M: overdepth check
     pick over limit>> [
         swap length < [
             pick length >>count
-            call-next-method
+            strain-check-failure
         ] [ drop f ] if
     ] [ 2drop f ] if* ; inline
 
@@ -38,35 +41,66 @@ STRAIN: all-different ;
     all-different set-strain ;
 
 M: all-different check
-    pick pick swap member? [ call-next-method ] [ drop f ] if ; inline
+    pick pick swap member? [ strain-check-failure ] [ drop f ] if ; inline
 
 M: all-different error.
     drop "The \"all different\" goal not reached" print ;
 
-STRAIN: all-different-delta { deltastack sequence } ;
+STRAIN: all-different2 { bistack sequence } ;
 
-: (delta-push) ( hitstack value deltastack -- )
-    dup [
-        pick empty? [ 3drop ] [ [ swap last - ] dip push ] if
-    ] dip get-trace [ "(delta-push): " write . ] [ drop ] if ; inline
+<PRIVATE
+: (create-binop-push) ( class -- quot: ( hitstack value strain -- ) )
+    "binop" word-prop '[
+        bistack>> dup [
+            pick empty? [ 3drop ] [ [ swap last @ ] dip push ] if
+        ] dip get-trace [ "(binop-push): " write . ] [ drop ] if
+    ] ;
 
-: (delta-drop) ( deltastack -- )
-    dup [ pop* ] unless-empty get-trace [ "(delta-drop): " write . ] [ drop ] if ; inline
+: (create-binop-drop) ( class -- quot: ( strain -- ) )
+    drop [
+        bistack>> dup [ pop* ] unless-empty
+        get-trace [ "(binop-drop): " write . ] [ drop ] if
+    ] ;
+PRIVATE>
 
-: <all-different-delta> ( -- strain )
-    [ deltastack>> (delta-push) ] [ deltastack>> (delta-drop) ]
-    \ all-different-delta new-stateful-strain
-    V{ } clone >>deltastack ;
+: new-all-different2 ( class -- strain )
+    [ (create-binop-push) ] [ (create-binop-drop) ] [ new-stateful-strain ] tri
+    V{ } clone >>bistack ;
 
-: set-all-different-delta ( chain guard/f -- )
-    dup [ <all-different-delta> swap >>max-failures ] when
-    all-different-delta set-strain ;
+: set-all-different2 ( chain guard/f class -- )
+    over [ [ new-all-different2 swap >>max-failures ] keep ] when
+    set-strain ;
 
-M: all-different-delta check
-    pick last pick swap -
-    dup 0 = [ drop call-next-method ] [
-        over deltastack>> member? [ call-next-method ] [ drop f ] if
-    ] if ; inline
+MACRO: all-different2-check ( class -- )
+    "binop" word-prop '[
+        pick last pick swap @
+        dup 0 = [ drop strain-check-failure ] [
+            over bistack>> member? [ strain-check-failure ] [ drop f ] if
+        ] if
+    ] ;
 
-M: all-different-delta error.
-    drop "The \"all different (delta)\" goal not reached" print ;
+M: all-different2 error.
+    drop "The \"all different (binop)\" goal not reached" print ;
+
+<PRIVATE
+: (define-chain-setter) ( class -- )
+    [ name>> "set-" prepend create-in dup reset-generic ] keep
+    [ set-all-different2 ] curry
+    (( chain guard/f -- ))
+    define-declared ;
+
+: (define-check-method) ( class -- )
+    [ \ check create-method-in dup reset-generic ] keep
+    [ all-different2-check ] curry
+    define ;
+
+: (parse-all-different2-definition) ( -- class )
+    CREATE-CLASS [
+        parse-definition "binop" set-word-prop
+    ] keep ; inline
+PRIVATE>
+
+SYNTAX: ALL-DIFFERENT2:
+    (parse-all-different2-definition) [
+        all-different2 f define-tuple-class
+    ] [ (define-chain-setter) ] [ (define-check-method) ] tri ;

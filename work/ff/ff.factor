@@ -15,9 +15,7 @@ PRIVATE>
     trace? get dup fixnum? [ <= ] [ 2drop f ] if ;
 
 <PRIVATE
-TUPLE: (invalid-stack-effect) { expected effect read-only } { given effect read-only } ;
-
-: (invalid-stack-effect) ( expected given -- * ) \ (invalid-stack-effect) boa throw ;
+ERROR: (invalid-stack-effect) { expected effect read-only } { given effect read-only } ;
 
 M: (invalid-stack-effect) error.
     "Invalid stack effect: " write dup given>> pprint " instead of " write expected>> . ;
@@ -28,19 +26,19 @@ PRIVATE>
         infer 2dup effect= [ 2drop ] [ (invalid-stack-effect) ] if
     ] [ drop ] if* ;
 
+GENERIC: invalid-input ( obj -- * )
+
 <PRIVATE
-TUPLE: (invalid-input-string) { message string read-only } ;
+ERROR: (invalid-input-string) { message string read-only } ;
 M: (invalid-input-string) error. "Invalid input: " write message>> . ;
 PRIVATE>
 
-GENERIC: invalid-input ( obj -- * )
-
-M: string invalid-input \ (invalid-input-string) boa throw ;
+M: string invalid-input (invalid-input-string) ;
 
 MIXIN: maybe-fixnum
 INSTANCE: f maybe-fixnum
 INSTANCE: fixnum maybe-fixnum
 
-MIXIN: maybe-quotation
-INSTANCE: f maybe-quotation
-INSTANCE: quotation maybe-quotation
+MIXIN: maybe-callable
+INSTANCE: f maybe-callable
+INSTANCE: callable maybe-callable

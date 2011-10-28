@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors arrays classes.parser classes.tuple classes.tuple.parser
-       combinators compiler.units debugger ff ff.strains fry generic.parser
+       classes combinators compiler.units debugger ff ff.strains fry generic.parser
        io kernel lexer macros make math parser prettyprint quotations sequences
        sets words ;
 IN: ff.strains.generic
@@ -12,9 +12,10 @@ STRAIN: overdepth { count fixnum } { limit fixnum } ;
 : <overdepth> ( limit -- strain )
     1 - \ overdepth new-strain 0 >>max-failures swap >>limit ;
 
-: set-overdepth ( chain guard limit/f -- )
-    dup [ <overdepth> swap >>max-failures ] [ nip ] if
-    overdepth set-strain ;
+: set-overdepth ( chain guard/f limit -- )
+    <overdepth> swap >>max-failures overdepth set-strain ;
+
+: clear-overdepth ( chain -- ) f overdepth set-strain ;
 
 M: overdepth strain=
     [ limit>> ] bi@ = ; inline
@@ -37,8 +38,9 @@ STRAIN: all-different ;
     \ all-different new-strain ;
 
 : set-all-different ( chain guard/f -- )
-    dup [ <all-different> swap >>max-failures ] when
-    all-different set-strain ;
+    <all-different> swap >>max-failures all-different set-strain ;
+
+: clear-all-different ( chain -- ) f all-different set-strain ;
 
 M: all-different check
     pick pick swap member? [ strain-check-failure ] [ drop f ] if ; inline
@@ -68,12 +70,13 @@ PRIVATE>
     V{ } clone >>bistack ;
 
 : set-all-different2 ( chain guard/f class -- )
-    over [ [ new-all-different2 swap >>max-failures ] keep ] when
-    set-strain ;
+    [ new-all-different2 swap >>max-failures ] keep set-strain ;
+
+: clear-all-different2 ( chain class -- ) f swap set-strain ;
 
 MACRO: all-different2-check ( class -- )
     "binop" word-prop '[
-        pick last pick swap @
+         pick last pick swap @
         dup 0 = [ drop strain-check-failure ] [
             over bistack>> member? [ strain-check-failure ] [ drop f ] if
         ] if
@@ -83,11 +86,20 @@ M: all-different2 error.
     drop "The \"all different (binop)\" goal not reached" print ;
 
 <PRIVATE
-: (define-chain-setter) ( class -- )
+: (define-chain-in) ( class -- )
     [ name>> "set-" prepend create-in dup reset-generic ] keep
     [ set-all-different2 ] curry
     (( chain guard/f -- ))
     define-declared ;
+
+: (define-chain-out) ( class -- )
+    [ name>> "clear-" prepend create-in dup reset-generic ] keep
+    [ clear-all-different2 ] curry
+    (( chain -- ))
+    define-declared ;
+
+: (define-chain-setters) ( class -- )
+    [ (define-chain-in) ] [ (define-chain-out) ] bi ;
 
 : (define-check-method) ( class -- )
     [ \ check create-method-in dup reset-generic ] keep
@@ -103,4 +115,4 @@ PRIVATE>
 SYNTAX: ALL-DIFFERENT2:
     (parse-all-different2-definition) [
         all-different2 f define-tuple-class
-    ] [ (define-chain-setter) ] [ (define-check-method) ] tri ;
+    ] [ (define-chain-setters) ] [ (define-check-method) ] tri ;

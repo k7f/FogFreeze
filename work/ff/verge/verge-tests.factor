@@ -167,6 +167,11 @@ ALL-DIFFERENT2: all-different-delta - ;
     ] unit-test
 
     [ V{ 0 1 3 0 3 1 0 4 0 5 0 6 } t ] [
+        { 0 1 3 } 6 { f }
+        { set-all-different-delta } 12multi-first flush-strains
+    ] unit-test
+
+    [ V{ 0 1 3 0 3 1 0 4 0 5 0 6 } t ] [
         { 0 1 3 } 6 { 19 }
         { set-all-different-delta } 12multi-first flush-strains
     ] unit-test
@@ -198,7 +203,7 @@ ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
 
     [ V{ 0 1 3 2 5 9 4 12 10 6 11 8 } t ] [
         { 0 1 3 } 11 { f f }
-        { set-all-different set-all-different-delta } 12multi-all flush-strains
+        { set-all-different set-all-different-delta12rem } 12multi-all flush-strains
     ] unit-test
 
     ; inline

@@ -1,7 +1,7 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors classes classes.parser classes.tuple classes.tuple.parser
+USING: accessors arrays classes classes.parser classes.tuple classes.tuple.parser
        combinators debugger effects ff io kernel lexer make math namespaces
        parser prettyprint quotations sequences strings ;
 IN: ff.strains
@@ -105,3 +105,6 @@ PRIVATE>
 
 : reset-chain ( chain -- )
     f swap set ;
+
+: fail-counts ( chain -- report )
+    get [ [ class ] keep failure#>> 2array ] map ;

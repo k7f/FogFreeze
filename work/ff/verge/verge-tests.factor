@@ -11,8 +11,9 @@ f set-trace
 SYMBOL: strain-chain
 
 : reset-strains ( -- ) strain-chain reset-chain ;
-: flush-strains ( -- ) strain-chain get . reset-strains ;
-
+: reset-strains. ( -- ) strain-chain get . reset-strains ;
+: flush-strains ( -- report ) strain-chain fail-counts reset-strains. ;
+    
 : set-max-depth ( guard depth -- ) [ strain-chain ] 2dip set-overdepth ;
 : set-max-value ( guard value -- ) [ strain-chain ] 2dip set-overflow ;
 : set-min-value ( guard value -- ) [ strain-chain ] 2dip set-underflow ;
@@ -42,26 +43,26 @@ SYMBOL: strain-chain
 : hotpo-tests ( -- )
 
     [ V{ 13 40 20 10 5 16 8 4 2 1 } t ] [
-        flush-strains 13 [ f ] dup hotpo
+        reset-strains 13 [ f ] dup hotpo
     ] unit-test
 
-    [ V{ 13 40 20 10 5 } f ] [
+    [ V{ 13 40 20 10 5 } f { { overdepth 0 } } ] [
         0 5 set-max-depth 13 [ f ] dup hotpo flush-strains
     ] unit-test
 
-    [ V{ 13 } f ] [
+    [ V{ 13 } f { { overdepth 0 } { overflow 0 } } ] [
         0 5 set-max-depth 0 15 set-max-value 13 [ f ] dup hotpo flush-strains
     ] unit-test
 
-    [ V{ 13 40 20 11 34 17 52 26 13 40 20 11 34 17 52 26 13 40 20 } f ] [
+    [ V{ 13 40 20 11 34 17 52 26 13 40 20 11 34 17 52 26 13 40 20 } f { { underflow 2 } } ] [
         2 11 set-min-value 13 [ f ] [ slip-once+1 ] hotpo flush-strains
     ] unit-test
 
-    [ V{ 13 40 21 64 32 16 } f ] [
+    [ V{ 13 40 21 64 32 16 } f { { underflow 2 } } ] [
         2 12 set-min-value 13 [ f ] [ slip-once+1 ] hotpo flush-strains
     ] unit-test
 
-    [ V{ 13 40 21 65 197 } f ] [
+    [ V{ 13 40 21 65 197 } f { { overdepth 7 } { underflow 2 } } ] [
         7 5 set-max-depth 2 12 set-min-value 13 [ f ] [ slip-once+1 ] hotpo flush-strains
     ] unit-test
 
@@ -100,7 +101,57 @@ SYMBOL: strain-chain
     [ drop 0 ]
     (irange-verge) ;
 
-:: 12multi-next ( start slip# guards ctors -- hitlist ? )
+ALL-DIFFERENT2: all-different-delta - ;
+
+: first-hit-tests ( -- )
+
+    [ V{ 13 14 15 16 17 18 19 } t { { all-different 4 } } ] [
+        { 13 14 15 } 2 4
+        \ set-all-different 7single flush-strains
+    ] unit-test
+
+    [ V{ 13 14 } t { { overdepth 0 } { all-different 0 } } ] [
+        7 3 set-max-depth { 13 14 } 2 7
+        \ set-all-different 7single flush-strains
+    ] unit-test
+
+    [ V{ 13 14 15 } f { { overdepth 3 } { all-different 0 } } ] [
+        7 3 set-max-depth { 13 14 15 } 2 3
+        \ set-all-different 7single flush-strains
+    ] unit-test
+
+    [ V{ 13 14 16 19 23 28 34 } t { { all-different-delta 18 } } ] [
+        { 13 14 16 } 6 18
+        \ set-all-different-delta 7single flush-strains
+    ] unit-test
+
+    [ { 13 14 15 } set-all-different-delta { { all-different-delta 1 } } ] [
+        { 13 14 15 } 6 1
+        \ set-all-different-delta [ 7single ] [ drop 2nip ] recover flush-strains
+    ] unit-test
+
+    [ V{ 0 1 3 0 3 1 0 4 0 5 0 6 } t { { all-different-delta 19 } } ] [
+        { 0 1 3 } 6 19
+        \ set-all-different-delta 12single flush-strains
+    ] unit-test
+
+    [ V{ 0 1 3 0 3 1 0 4 0 5 0 6 } t { { all-different-delta 19 } } ] [
+        { 0 1 3 } 6 { f }
+        { set-all-different-delta } 12multi-first flush-strains
+    ] unit-test
+
+    [ V{ 0 1 3 2 7 10 8 4 11 5 9 6 } t
+      {
+          { all-different 2624 }
+          { all-different-delta 639 }
+      } ] [
+        { 0 1 3 } 11 { 2624 639 }
+        { set-all-different set-all-different-delta } 12multi-first flush-strains
+    ] unit-test
+
+    ; inline
+
+:: 12multi-second ( start slip# guards ctors -- hitlist ? )
     guards ctors [ (single-set-strains) ] 2each
     start slip#
     [ drop dup length 12 = ]
@@ -114,7 +165,70 @@ SYMBOL: strain-chain
         (irange-next-verge)
     ] [ nip f ] if ;
 
-:: 12multi-all ( start slip# guards ctors -- hitlists ? )
+ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
+
+: second-hit-tests ( -- )
+
+    [ V{ 0 1 3 2 8 5 9 7 10 4 11 6 } t
+      {
+          { all-different 3506 }
+          { all-different-delta 835 }
+      } ] [
+        { 0 1 3 } 11 { 3506 835 }
+        { set-all-different set-all-different-delta } 12multi-second flush-strains
+    ] unit-test
+
+    [ V{ 0 1 3 2 9 5 10 4 7 11 8 6 } t
+      {
+          { all-different 3093 }
+          { all-different-delta12rem 852 }
+      } ] [
+        { 0 1 3 } 11 { 3093 852 }
+        { set-all-different set-all-different-delta12rem } 12multi-second flush-strains
+    ] unit-test
+
+    [ V{ 0 1 3 7 5 2 10 4 9 8 11 6 } t
+      {
+          { all-different 204 }
+          { all-different-delta12rem 42 }
+      } ] [
+        { 0 1 3 7 5 2 } 11 { f f }
+        { set-all-different set-all-different-delta12rem } 12multi-second flush-strains
+    ] unit-test
+
+    ; inline
+
+:: 12multi-last ( start slip# guards ctors -- hitlist ? )
+    guards ctors [ (single-set-strains) ] 2each
+    start slip#
+    [ drop dup length 12 = ]
+    [ drop 0 ]
+    (irange-first-verge) [
+        [
+            clone over [
+                slip#
+                [ drop dup length 12 = ]
+                [ drop 0 ]
+            ] dip
+            (irange-next-verge)
+            [ [ nip ] [ drop ] if ] keep
+        ] loop nip t
+    ] [ nip f ] if ;
+
+: last-hit-tests ( -- )
+
+    [ V{ 0 1 3 11 9 8 5 10 4 7 2 6 } t
+      {
+          { all-different 46015 }
+          { all-different-delta12rem 11439 }
+      } ] [
+        { 0 1 3 } 11 { f f }
+        { set-all-different set-all-different-delta12rem } 12multi-last flush-strains
+    ] unit-test
+
+    ; inline
+
+:: 12multi-nth ( start slip# guards ctors n -- hitlist ? )
     guards ctors [ (single-set-strains) ] 2each
     start slip#
     [ drop dup length 12 = ]
@@ -122,93 +236,64 @@ SYMBOL: strain-chain
     0 :> count!
     (irange-first-verge) [
         [
-            count 1 + dup count! pprint ". " write . flush ! FIXME accumulate
+            count 1 + dup n < [
+                count! clone over [
+                    slip#
+                    [ drop dup length 12 = ]
+                    [ drop 0 ]
+                ] dip
+                (irange-next-verge)
+                [ [ nip ] [ drop ] if ] keep
+            ] [ drop f ] if
+        ] loop nip t
+    ] [ nip f ] if ;
+
+: nth-hit-tests ( -- )
+
+    [ V{ 0 1 3 9 8 4 7 5 10 2 11 6 } t
+      {
+          { all-different 31437 }
+          { all-different-delta12rem 7774 }
+      } ] [
+        { 0 1 3 } 11 { f f }
+        { set-all-different set-all-different-delta12rem } 27 12multi-nth flush-strains
+    ] unit-test
+
+    ; inline
+
+:: 12multi-all ( start slip# guards ctors -- hitlists )
+    guards ctors [ (single-set-strains) ] 2each
+    start slip#
+    [ drop dup length 12 = ]
+    [ drop 0 ]
+    V{ } clone :> hitlists!
+    (irange-first-verge) [
+        [
+            clone hitlists swap suffix! hitlists!
             dup [
                 slip#
                 [ drop dup length 12 = ]
                 [ drop 0 ]
             ] dip
             (irange-next-verge)
-        ] loop nip f
-    ] [ nip f ] if ;
-
-ALL-DIFFERENT2: all-different-delta - ;
-
-: first-hit-tests ( -- )
-
-    [ V{ 13 14 15 16 17 18 19 } t ] [
-        { 13 14 15 } 2 4
-        \ set-all-different 7single flush-strains
-    ] unit-test
-
-    [ V{ 13 14 } t ] [
-        7 3 set-max-depth { 13 14 } 2 7
-        \ set-all-different 7single flush-strains
-    ] unit-test
-
-    [ V{ 13 14 15 } f ] [
-        7 3 set-max-depth { 13 14 15 } 2 3
-        \ set-all-different 7single flush-strains
-    ] unit-test
-
-    [ V{ 13 14 16 19 23 28 34 } t ] [
-        { 13 14 16 } 6 18
-        \ set-all-different-delta 7single flush-strains
-    ] unit-test
-
-    [ { 13 14 15 } set-all-different-delta ] [
-        { 13 14 15 } 6 1
-        \ set-all-different-delta [ 7single ] [ drop 2nip ] recover flush-strains
-    ] unit-test
-
-    [ V{ 0 1 3 0 3 1 0 4 0 5 0 6 } t ] [
-        { 0 1 3 } 6 19
-        \ set-all-different-delta 12single flush-strains
-    ] unit-test
-
-    [ V{ 0 1 3 0 3 1 0 4 0 5 0 6 } t ] [
-        { 0 1 3 } 6 { f }
-        { set-all-different-delta } 12multi-first flush-strains
-    ] unit-test
-
-    [ V{ 0 1 3 0 3 1 0 4 0 5 0 6 } t ] [
-        { 0 1 3 } 6 { 19 }
-        { set-all-different-delta } 12multi-first flush-strains
-    ] unit-test
-
-    [ V{ 0 1 3 2 7 10 8 4 11 5 9 6 } t ] [
-        { 0 1 3 } 11 { 2624 639 }
-        { set-all-different set-all-different-delta } 12multi-first flush-strains
-    ] unit-test
-
-    ; inline
-
-ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
-
-: next-hit-tests ( -- )
-
-    [ V{ 0 1 3 2 8 5 9 7 10 4 11 6 } t ] [
-        { 0 1 3 } 11 { 3506 835 }
-        { set-all-different set-all-different-delta } 12multi-next flush-strains
-    ] unit-test
-
-    [ V{ 0 1 3 2 9 5 10 4 7 11 8 6 } t ] [
-        { 0 1 3 } 11 { 3093 852 }
-        { set-all-different set-all-different-delta12rem } 12multi-next flush-strains
-    ] unit-test
-
-    ; inline
+        ] loop 2drop
+    ] [ 2drop ] if
+    hitlists ;
 
 : all-hits-tests ( -- )
 
-    [ V{ 0 1 3 2 5 9 4 12 10 6 11 8 } t ] [
-        { 0 1 3 } 11 { f f }
-        { set-all-different set-all-different-delta12rem } 12multi-all flush-strains
+    [ V{ 11 10 8 9 4 1 3 7 0 6 2 5 } 382 { 442939 107656 } ] [
+        { 11 10 } 11 { f f }
+        { set-all-different set-all-different-delta12rem } 12multi-all
+        [ last ] [ length ] [ . ] tri
+        flush-strains [ second ] map
     ] unit-test
 
     ; inline
 
 ! hotpo-tests
 ! first-hit-tests
-next-hit-tests
-! all-hits-tests
+! second-hit-tests
+! last-hit-tests
+! nth-hit-tests
+all-hits-tests

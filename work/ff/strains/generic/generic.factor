@@ -46,7 +46,7 @@ M: all-different check
     pick pick swap member? [ strain-check-failure ] [ drop f ] if ; inline
 
 M: all-different error.
-    drop "The \"all different\" goal not reached" print ;
+    drop "The \"all different\" condition not fulfilled" print ;
 
 STRAIN: all-different2 { bistack sequence } ;
 
@@ -83,7 +83,7 @@ MACRO: all-different2-check ( class -- )
     ] ;
 
 M: all-different2 error.
-    drop "The \"all different (binop)\" goal not reached" print ;
+    "The \"all different (" write class name>> write ")\" condition not fulfilled" print ;
 
 <PRIVATE
 : (define-chain-in) ( class -- )

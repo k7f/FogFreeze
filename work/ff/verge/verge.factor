@@ -5,7 +5,7 @@ USING: accessors combinators continuations debugger ff ff.strains io
        kernel math namespaces prettyprint sequences strings vectors ;
 IN: ff.verge
 
-TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
+TUPLE: verge-state all-strains stateful-strains slipstack hitstack current-value ;
 
 <PRIVATE
 : (test-goal) ( hitstack value goal: ( hitstack value -- hitstack ? ) -- hitstack value ? )
@@ -85,7 +85,7 @@ TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
     swap [ drop (try-fallback) dup not ] loop nip ; inline
 
 : (after-step)
-    ( vstrains strains slipstack hitstack value slip -- vstrains strains slipstack' hitstack' value' )
+    ( vstrains all-strains slipstack hitstack value slip -- vstrains all-strains slipstack' hitstack' value' )
     [ over ] 2dip rot (push-slip) [
         [ swap ] 2dip
         3dup (check-strains)
@@ -106,7 +106,7 @@ TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
 : (make-hitstack) ( start -- hitstack ) (>lifo) ; inline
 : (make-slipstack) ( slip -- slipstack ) (1lifo) ; inline
 
-: (make-stateful-strains) ( strains -- vstrains )
+: (make-stateful-strains) ( all-strains -- vstrains )
     [
         dup [ push-quotation>> ] [ drop-quotation>> ] bi
         2dup and [ 2nip nip ] [
@@ -124,21 +124,21 @@ TUPLE: verge-state strains stateful-strains slipstack hitstack current-value ;
     over [ length iota ] 2dip
     [ ((fill-stateful-strains)) ] 2curry each ; inline
 
-: (do-initial-checks) ( ndx vstrains strains hitstack -- )
+: (do-initial-checks) ( ndx vstrains all-strains hitstack -- )
     [ rot ] dip swap 1 + head-slice unclip-last-slice [
         (check-strains-initial) [ invalid-input ] when*
     ] 2keep rot (push-vstrains) ; inline
 
-: (build-stacks) ( slip strains start -- slipstack vstrains hitstack )
+: (build-stacks) ( slip all-strains start -- slipstack vstrains hitstack )
     [ (make-slipstack) ] [ (make-stateful-strains) ] [ (make-hitstack) ] tri* ; inline
 
 : (insert-iota) ( vstrains hitstack -- iota vstrains hitstack )
     [ length iota ] keep swapd ; inline
 
-: (do-all-initial-checks) ( iota vstrains strains hitstack -- )
+: (do-all-initial-checks) ( iota vstrains all-strains hitstack -- )
     [ (do-initial-checks) ] 3curry each ; inline
 
-: (build-verge-state) ( slipstack vstrains strains hitstack -- state )
+: (build-verge-state) ( slipstack vstrains all-strains hitstack -- state )
     [ swap rot ] dip dup last \ verge-state boa ;
 PRIVATE>
 
@@ -149,14 +149,14 @@ PRIVATE>
 
 <PRIVATE
 ! FIXME benchmark the performance costs of using packed and unpacked state
-: (verge-state-unpack) ( state -- vstrains strains slipstack hitstack value )
+: (verge-state-unpack) ( state -- vstrains all-strains slipstack hitstack value )
     { [ stateful-strains>> ]
-      [ strains>> ]
+      [ all-strains>> ]
       [ slipstack>> ]
       [ hitstack>> ]
       [ current-value>> ] } cleave ; inline
 
-: (run) ( vstrains strains slipstack hitstack value
+: (run) ( vstrains all-strains slipstack hitstack value
           goal: ( ..value -- ..value ? )
           step: ( ..hitstack value -- ..hitstack' value' )
           -- hitstack' ? )
@@ -195,7 +195,7 @@ PRIVATE>
                  step: ( hitstack value -- hitstack value' )
                  state
                  --
-                 vstrains strains slipstack hitstack value
+                 vstrains all-strains slipstack hitstack value
                  goal': ( ..value -- ..value ? )
                  step': ( ..hitstack value -- ..hitstack' value' ) )
     [ rot compose (wrap) ] dip -rot
@@ -215,6 +215,35 @@ PRIVATE>
     [ [ (make-first-slip) ] 2dip swap ] 2dip
     [ <verge-state> ] 3dip [ rot ] dip swap ; inline
 PRIVATE>
+
+SYMBOL: verging
+
+: (initialize-with) ( next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                      goal: ( hitstack value -- hitstack ? )
+                      step: ( hitstack value -- hitstack value' )
+                      --
+                      vstrains all-strains slipstack hitstack value
+                      goal': ( ..value -- ..value ? )
+                      step': ( ..hitstack value -- ..hitstack' value' ) )
+    verging get (initialize) ; inline
+
+: (verge-with) ( start-sequence
+                 first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                 next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                 strains
+                 --
+                 next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                 state )
+    [ (make-first-slip) ] 2dip swap
+    [ <verge-state> ] dip swap ; inline
+
+: with-verge ( start-sequence
+               first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+               next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+               strains
+               quot
+               -- )
+    [ (verge-with) verging ] dip with-variable ; inline
 
 : next-verge ( next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
                goal: ( hitstack value -- hitstack ? )

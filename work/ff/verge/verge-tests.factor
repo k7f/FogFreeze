@@ -13,15 +13,10 @@ SYMBOL: strain-chain
 : reset-strains ( -- ) strain-chain reset-chain ;
 : reset-strains. ( -- ) strain-chain get . reset-strains ;
 : flush-strains ( -- report ) strain-chain fail-counts reset-strains. ;
-    
+
 : set-max-depth ( guard depth -- ) [ strain-chain ] 2dip set-overdepth ;
 : set-max-value ( guard value -- ) [ strain-chain ] 2dip set-overflow ;
 : set-min-value ( guard value -- ) [ strain-chain ] 2dip set-underflow ;
-
-SYMBOL: verging
-
-: with-verge ( state quot -- )
-    verging swap with-variable ; inline
 
 : slip-once+1 ( value -- value slip )
     dup [
@@ -87,9 +82,6 @@ SYMBOL: verging
 
 : (irange-next-verge) ( slip# goal step state -- hitlist ? )
     [ [ slip-ntimes+1 ] curry ] 3dip next-verge ; inline
-
-: ((irange-next-verge)) ( slip# goal step -- hitlist ? )
-    verging get (irange-next-verge) ; inline
 
 : 7single ( start slip# guard ctor -- hitlist ? )
     (single-set-strains)
@@ -159,19 +151,23 @@ ALL-DIFFERENT2: all-different-delta - ;
 
     ; inline
 
-:: 12multi-second ( start slip# guards ctors -- hitlist ? )
-    guards ctors [ (single-set-strains) ] 2each
-    start slip#
-    [ drop dup length 12 = ]
-    [ drop 0 ]
-    (irange-first-verge) [
-        drop [
-            slip# 
+:: 12multi-second ( start slip# guards ctors -- hitlist ? report )
+    strain-chain reset-chain
+    guards ctors [ [ strain-chain ] 2dip execute( chain guard/f -- ) ] 2each
+    start
+    [ f ] slip# [ slip-ntimes+1 ] curry
+    strain-chain get clone [
+        [ drop dup length 12 = ]
+        [ drop 0 ]
+        (initialize-with) (run) [
+            drop
+            slip# [ slip-ntimes+1 ] curry
             [ drop dup length 12 = ]
             [ drop 0 ]
-            ((irange-next-verge))
-        ] with-verge
-    ] [ nip f ] if ;
+            (initialize-with) (single-step) (run)
+        ] [ f ] if
+        flush-strains
+    ] with-verge ;
 
 ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
 
@@ -183,7 +179,7 @@ ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
           { all-different-delta 835 }
       } ] [
         { 0 1 3 } 11 { 3506 835 }
-        { set-all-different set-all-different-delta } 12multi-second flush-strains
+        { set-all-different set-all-different-delta } 12multi-second
     ] unit-test
 
     [ V{ 0 1 3 2 9 5 10 4 7 11 8 6 } t
@@ -192,7 +188,7 @@ ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
           { all-different-delta12rem 852 }
       } ] [
         { 0 1 3 } 11 { 3093 852 }
-        { set-all-different set-all-different-delta12rem } 12multi-second flush-strains
+        { set-all-different set-all-different-delta12rem } 12multi-second
     ] unit-test
 
     [ V{ 0 1 3 7 5 2 10 4 9 8 11 6 } t
@@ -201,7 +197,7 @@ ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
           { all-different-delta12rem 42 }
       } ] [
         { 0 1 3 7 5 2 } 11 { f f }
-        { set-all-different set-all-different-delta12rem } 12multi-second flush-strains
+        { set-all-different set-all-different-delta12rem } 12multi-second
     ] unit-test
 
     ; inline

@@ -20,8 +20,8 @@ TUPLE: strain
 
 <PRIVATE
 : (validate-strain-updates) ( push-quot drop-quot -- push-quot drop-quot )
-     [ (( hitstack value strain -- )) validate-effect ]
-     [ (( strain -- )) validate-effect ] bi* ;
+     [ ( hitstack value strain -- ) validate-effect ]
+     [ ( strain -- ) validate-effect ] bi* ;
 PRIVATE>
 
 : new-stateful-strain ( push-quot drop-quot class -- strain )
@@ -42,7 +42,7 @@ M: strain check strain-check-failure ;
 
 <PRIVATE
 : (parse-strain-definition) ( -- class superclass slots )
-    CREATE-CLASS scan {
+    scan-new-class scan-token {
         { ";" [ strain f ] }
         { "<" [ scan-word [ parse-tuple-slots ] { } make ] }
         [
@@ -107,4 +107,4 @@ PRIVATE>
     f swap set ;
 
 : fail-counts ( chain -- report )
-    get [ [ class ] keep failure#>> 2array ] map ;
+    get [ [ class-of ] keep failure#>> 2array ] map ;

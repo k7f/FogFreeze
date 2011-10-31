@@ -83,19 +83,19 @@ MACRO: all-different2-check ( class -- )
     ] ;
 
 M: all-different2 error.
-    "The \"all different (" write class name>> write ")\" condition not fulfilled" print ;
+    "The \"all different (" write class-of name>> write ")\" condition not fulfilled" print ;
 
 <PRIVATE
 : (define-chain-in) ( class -- )
     [ name>> "set-" prepend create-in dup reset-generic ] keep
     [ set-all-different2 ] curry
-    (( chain guard/f -- ))
+    ( chain guard/f -- )
     define-declared ;
 
 : (define-chain-out) ( class -- )
     [ name>> "clear-" prepend create-in dup reset-generic ] keep
     [ clear-all-different2 ] curry
-    (( chain -- ))
+    ( chain -- )
     define-declared ;
 
 : (define-chain-setters) ( class -- )
@@ -107,7 +107,7 @@ M: all-different2 error.
     define ;
 
 : (parse-all-different2-definition) ( -- class )
-    CREATE-CLASS [
+    scan-new-class [
         parse-definition "binop" set-word-prop
     ] keep ; inline
 PRIVATE>

@@ -18,6 +18,11 @@ SYMBOL: strain-chain
 : set-max-value ( guard value -- ) [ strain-chain ] 2dip set-overflow ;
 : set-min-value ( guard value -- ) [ strain-chain ] 2dip set-underflow ;
 
+SYMBOL: verging
+
+: with-verge ( state quot -- )
+    verging swap with-variable ; inline
+
 : slip-once+1 ( value -- value slip )
     dup [
         1 + f
@@ -82,6 +87,9 @@ SYMBOL: strain-chain
 
 : (irange-next-verge) ( slip# goal step state -- hitlist ? )
     [ [ slip-ntimes+1 ] curry ] 3dip next-verge ; inline
+
+: ((irange-next-verge)) ( slip# goal step -- hitlist ? )
+    verging get (irange-next-verge) ; inline
 
 : 7single ( start slip# guard ctor -- hitlist ? )
     (single-set-strains)
@@ -158,11 +166,11 @@ ALL-DIFFERENT2: all-different-delta - ;
     [ drop 0 ]
     (irange-first-verge) [
         drop [
-            slip#
+            slip# 
             [ drop dup length 12 = ]
             [ drop 0 ]
-        ] dip
-        (irange-next-verge)
+            ((irange-next-verge))
+        ] with-verge
     ] [ nip f ] if ;
 
 ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
@@ -293,7 +301,7 @@ ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
 
 ! hotpo-tests
 ! first-hit-tests
-! second-hit-tests
+second-hit-tests
 ! last-hit-tests
 ! nth-hit-tests
-all-hits-tests
+! all-hits-tests

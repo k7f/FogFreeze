@@ -7,37 +7,41 @@ IN: ff.strains.tests
 
 SYMBOL: strain-chain
 
-: reset-strains ( -- ) strain-chain reset-chain ;
+: reset-strains ( -- ) strain-chain [ get reset-chain ] [ set ] bi ;
 
-: set-max-depth ( guard count -- ) [ strain-chain ] 2dip set-overdepth ;
-: set-max-value ( guard value -- ) [ strain-chain ] 2dip set-overflow ;
+: put-max-depth ( guard count -- ) [ strain-chain get ] 2dip set-overdepth strain-chain set ;
+: put-max-value ( guard value -- ) [ strain-chain get ] 2dip set-overflow strain-chain set ;
+: put-all-different ( guard -- ) [ strain-chain get ] dip set-all-different strain-chain set ;
 
 [ T{ in-vein f 0 666 f f "test" } ] [
     "test" <in-vein>
 ] unit-test
 
 [ { T{ overdepth f 0 0 f f 0 4 } } ] [
-    reset-strains 0 5 set-max-depth strain-chain get
+    reset-strains 0 5 put-max-depth strain-chain get
 ] unit-test
 
 [ { T{ overflow f 0 0 f f 0 15 } } ] [
-    reset-strains 0 15 set-max-value strain-chain get
+    reset-strains 0 15 put-max-value strain-chain get
 ] unit-test
 
 [ { T{ overdepth f 0 0 f f 0 4 } T{ overflow f 0 0 f f 0 15 } } ] [
-    reset-strains 0 5 set-max-depth 0 15 set-max-value strain-chain get
+    reset-strains 0 5 put-max-depth 0 15 put-max-value strain-chain get
 ] unit-test
 
 [ { T{ all-different f 0 0 f f } } ] [
-    reset-strains strain-chain 0 set-all-different strain-chain get
+    reset-strains 0 put-all-different strain-chain get
 ] unit-test
 
 ALL-DIFFERENT2: all-different-delta - ;
 
+: put-all-different-delta ( guard -- )
+    [ strain-chain get ] dip set-all-different-delta strain-chain set ;
+
 [ { all-different-delta } ] [
-    reset-strains strain-chain 0 set-all-different-delta
+    reset-strains 0 put-all-different-delta
     strain-chain get dup first [ push-quotation>> ] [ drop-quotation>> ] bi . .
-    [ class ] map
+    [ class-of ] map
 ] unit-test
 
 [ f ] [
@@ -46,10 +50,13 @@ ALL-DIFFERENT2: all-different-delta - ;
 
 ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
 
+: put-all-different-delta12rem ( guard -- )
+    [ strain-chain get ] dip set-all-different-delta12rem strain-chain set ;
+
 [ { all-different-delta12rem } ] [
-    reset-strains strain-chain 0 set-all-different-delta12rem
+    reset-strains 0 put-all-different-delta12rem
     strain-chain get dup first [ push-quotation>> ] [ drop-quotation>> ] bi . .
-    [ class ] map
+    [ class-of ] map
 ] unit-test
 
 STRAIN: test-strain ;

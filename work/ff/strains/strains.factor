@@ -81,30 +81,48 @@ M: bad-strain error.
         over tuple? [ strain= ] [ 2drop f ] if
     ] if ; inline
 
-: (lookup-strain) ( chain strain/f class -- chain strain/f ndx/f found/f )
-    [ instance? ] curry [ over get ] dip find ; inline
+: (lookup-strain) ( chain class -- ndx/f found/f )
+    [ instance? ] curry find ; inline
 
-: (change-strain) ( chain strain ndx -- )
-    rot get set-nth ; inline
+: (change-strain) ( chain strain ndx -- chain' )
+    rot [ set-nth ] keep clone ; inline
 
-: (remove-strain) ( chain ndx -- )
-    swap [ get remove-nth ] keep set ; inline
+: (change-strain!) ( chain strain ndx -- chain )
+    rot [ set-nth ] keep ; inline
 
-: (insert-strain) ( chain strain -- )
-    swap [ get swap suffix ] keep set ; inline
+: (remove-strain) ( chain ndx -- chain' )
+    swap remove-nth ; inline
+
+: (remove-strain!) ( chain ndx -- chain )
+    swap remove-nth! ; inline
+
+: (insert-strain) ( chain strain -- chain' )
+    suffix ; inline
+
+: (insert-strain!) ( chain strain -- chain )
+    suffix! ; inline
 PRIVATE>
 
-: set-strain ( chain strain/f class -- )
-    (lookup-strain) [
-        pick (same-strain?) [ 3drop ] [
+: set-strain ( chain strain/f class -- chain' )
+    [ over ] dip (lookup-strain) [
+        pick (same-strain?) [ 2drop clone ] [
             swap [ swap (change-strain) ] [ (remove-strain) ] if*
         ] if
     ] [
-        drop [ (insert-strain) ] [ drop ] if*
+        drop [ (insert-strain) ] [ clone ] if*
     ] if* ;
 
-: reset-chain ( chain -- )
-    f swap set ;
+: set-strain! ( chain strain/f class -- chain )
+    [ over ] dip (lookup-strain) [
+        pick (same-strain?) [ 2drop ] [
+            swap [ swap (change-strain!) ] [ (remove-strain!) ] if*
+        ] if
+    ] [
+        drop [ (insert-strain!) ] when*
+    ] if* ;
 
-: fail-counts ( chain -- report )
-    get [ [ class-of ] keep failure#>> 2array ] map ;
+: reset-chain ( chain -- chain' ) drop f ;
+: reset-chain! ( chain -- chain ) [ delete-all ] keep ;
+
+: collect-failures ( chain -- report )
+    [ [ class-of ] keep failure#>> 2array ] map ;

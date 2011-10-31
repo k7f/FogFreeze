@@ -227,23 +227,23 @@ SYMBOL: verging
                       step': ( ..hitstack value -- ..hitstack' value' ) )
     verging get (initialize) ; inline
 
-: (verge-with) ( start-sequence
-                 first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
-                 next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
-                 strains
-                 --
-                 next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
-                 state )
+: (preprocess-with) ( start-sequence
+                      first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                      next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                      strains
+                      --
+                      next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                      state )
     [ (make-first-slip) ] 2dip swap
     [ <verge-state> ] dip swap ; inline
 
-: with-verge ( start-sequence
-               first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
-               next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
-               strains
-               quot
-               -- )
-    [ (verge-with) verging ] dip with-variable ; inline
+: with-verging ( start-sequence
+                 first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                 next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
+                 strains
+                 quot
+                 -- )
+    [ (preprocess-with) verging ] dip with-variable ; inline
 
 : next-verge ( next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
                goal: ( hitstack value -- hitstack ? )

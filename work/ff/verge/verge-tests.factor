@@ -10,13 +10,14 @@ f set-trace
 
 SYMBOL: strain-chain
 
-: reset-strains ( -- ) strain-chain reset-chain ;
+: reset-strains ( -- ) strain-chain [ get reset-chain ] [ set ] bi ;
 : reset-strains. ( -- ) strain-chain get . reset-strains ;
-: flush-strains ( -- report ) strain-chain fail-counts reset-strains. ;
+: flush-strains ( -- report ) strain-chain get collect-failures reset-strains. ;
 
-: set-max-depth ( guard depth -- ) [ strain-chain ] 2dip set-overdepth ;
-: set-max-value ( guard value -- ) [ strain-chain ] 2dip set-overflow ;
-: set-min-value ( guard value -- ) [ strain-chain ] 2dip set-underflow ;
+: put-max-depth ( guard count -- ) [ strain-chain get ] 2dip set-overdepth strain-chain set ;
+: put-max-value ( guard value -- ) [ strain-chain get ] 2dip set-overflow strain-chain set ;
+: put-min-value ( guard value -- ) [ strain-chain get ] 2dip set-underflow strain-chain set ;
+: put-all-different ( guard -- ) [ strain-chain get ] dip set-all-different strain-chain set ;
 
 : slip-once+1 ( value -- value slip )
     dup [
@@ -47,29 +48,29 @@ SYMBOL: strain-chain
     ] unit-test
 
     [ V{ 13 40 20 10 5 } f { { overdepth 0 } } ] [
-        0 5 set-max-depth 13 [ f ] dup hotpo flush-strains
+        0 5 put-max-depth 13 [ f ] dup hotpo flush-strains
     ] unit-test
 
     [ V{ 13 } f { { overdepth 0 } { overflow 0 } } ] [
-        0 5 set-max-depth 0 15 set-max-value 13 [ f ] dup hotpo flush-strains
+        0 5 put-max-depth 0 15 put-max-value 13 [ f ] dup hotpo flush-strains
     ] unit-test
 
     [ V{ 13 40 20 11 34 17 52 26 13 40 20 11 34 17 52 26 13 40 20 } f { { underflow 2 } } ] [
-        2 11 set-min-value 13 [ f ] [ slip-once+1 ] hotpo flush-strains
+        2 11 put-min-value 13 [ f ] [ slip-once+1 ] hotpo flush-strains
     ] unit-test
 
     [ V{ 13 40 21 64 32 16 } f { { underflow 2 } } ] [
-        2 12 set-min-value 13 [ f ] [ slip-once+1 ] hotpo flush-strains
+        2 12 put-min-value 13 [ f ] [ slip-once+1 ] hotpo flush-strains
     ] unit-test
 
     [ V{ 13 40 21 65 197 } f { { overdepth 7 } { underflow 2 } } ] [
-        7 5 set-max-depth 2 12 set-min-value 13 [ f ] [ slip-once+1 ] hotpo flush-strains
+        7 5 put-max-depth 2 12 put-min-value 13 [ f ] [ slip-once+1 ] hotpo flush-strains
     ] unit-test
 
     ; inline
 
 : (single-set-strains) ( guard ctor -- )
-    [ strain-chain ] 2dip execute( chain guard/f -- ) ;
+    [ strain-chain get ] 2dip execute( chain guard/f -- chain' ) strain-chain set ;
 
 : (create-slip-makers) ( slip# -- first-slip-maker next-slip-maker )
     [ f ] swap [ slip-ntimes+1 ] curry ; inline
@@ -111,12 +112,12 @@ ALL-DIFFERENT2: all-different-delta - ;
     ] unit-test
 
     [ V{ 13 14 } t { { overdepth 0 } { all-different 0 } } ] [
-        7 3 set-max-depth { 13 14 } 2 7
+        7 3 put-max-depth { 13 14 } 2 7
         \ set-all-different 7single flush-strains
     ] unit-test
 
     [ V{ 13 14 15 } f { { overdepth 3 } { all-different 0 } } ] [
-        7 3 set-max-depth { 13 14 15 } 2 3
+        7 3 put-max-depth { 13 14 15 } 2 3
         \ set-all-different 7single flush-strains
     ] unit-test
 
@@ -152,8 +153,10 @@ ALL-DIFFERENT2: all-different-delta - ;
     ; inline
 
 :: 12multi-second ( start slip# guards ctors -- hitlist ? report )
-    strain-chain reset-chain
-    guards ctors [ [ strain-chain ] 2dip execute( chain guard/f -- ) ] 2each
+    strain-chain [ get reset-chain ] [ set ] bi
+    guards ctors [
+        [ strain-chain get ] 2dip execute( chain guard/f -- chain' ) strain-chain set
+    ] 2each
     start
     [ f ] slip# [ slip-ntimes+1 ] curry
     strain-chain get clone [
@@ -167,7 +170,7 @@ ALL-DIFFERENT2: all-different-delta - ;
             (initialize-with) (single-step) (run)
         ] [ f ] if
         flush-strains
-    ] with-verge ;
+    ] with-verging ;
 
 ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
 

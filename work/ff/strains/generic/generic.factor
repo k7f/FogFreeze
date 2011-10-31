@@ -12,10 +12,10 @@ STRAIN: overdepth { count fixnum } { limit fixnum } ;
 : <overdepth> ( limit -- strain )
     1 - \ overdepth new-strain 0 >>max-failures swap >>limit ;
 
-: set-overdepth ( chain guard/f limit -- )
+: set-overdepth ( chain guard/f limit -- chain' )
     <overdepth> swap >>max-failures overdepth set-strain ;
 
-: clear-overdepth ( chain -- ) f overdepth set-strain ;
+: clear-overdepth ( chain -- chain' ) f overdepth set-strain ;
 
 M: overdepth strain=
     [ limit>> ] bi@ = ; inline
@@ -37,10 +37,10 @@ STRAIN: all-different ;
 : <all-different> ( -- strain )
     \ all-different new-strain ;
 
-: set-all-different ( chain guard/f -- )
+: set-all-different ( chain guard/f -- chain' )
     <all-different> swap >>max-failures all-different set-strain ;
 
-: clear-all-different ( chain -- ) f all-different set-strain ;
+: clear-all-different ( chain -- chain' ) f all-different set-strain ;
 
 M: all-different check
     pick pick swap member? [ strain-check-failure ] [ drop f ] if ; inline
@@ -69,10 +69,10 @@ PRIVATE>
     [ (create-binop-push) ] [ (create-binop-drop) ] [ new-stateful-strain ] tri
     V{ } clone >>bistack ;
 
-: set-all-different2 ( chain guard/f class -- )
+: set-all-different2 ( chain guard/f class -- chain' )
     [ new-all-different2 swap >>max-failures ] keep set-strain ;
 
-: clear-all-different2 ( chain class -- ) f swap set-strain ;
+: clear-all-different2 ( chain class -- chain' ) f swap set-strain ;
 
 MACRO: all-different2-check ( class -- )
     "binop" word-prop '[
@@ -89,13 +89,13 @@ M: all-different2 error.
 : (define-chain-in) ( class -- )
     [ name>> "set-" prepend create-in dup reset-generic ] keep
     [ set-all-different2 ] curry
-    ( chain guard/f -- )
+    ( chain guard/f -- chain' )
     define-declared ;
 
 : (define-chain-out) ( class -- )
     [ name>> "clear-" prepend create-in dup reset-generic ] keep
     [ clear-all-different2 ] curry
-    ( chain -- )
+    ( chain -- chain' )
     define-declared ;
 
 : (define-chain-setters) ( class -- )

@@ -31,15 +31,15 @@ HELP: strain=
 }
 { $contract "Outputs " { $link t } " if two strains are equivalent, otherwise outputs " { $link f } "." } ;
 
-HELP: set-strain
+HELP: chain-in
 { $values
   { "chain" { $link symbol } " id of a variable holding a strain set" }
   { "strain/f" { $maybe strain } }
   { "class" class }
 }
-{ $description "Inserts, modifies or removes an object of a particular " { $snippet "class" } " from the " { $snippet "chain" } ".  The " { $snippet "class" } " is expected to be a subclass of " { $link strain } "." } ;
+{ $description "FIXME Inserts, modifies or removes an object of a particular " { $snippet "class" } " from the " { $snippet "chain" } ".  The " { $snippet "class" } " is expected to be a subclass of " { $link strain } "." } ;
 
-HELP: reset-chain
+HELP: chain-reset
 { $values
   { "chain" { $link symbol } " id of a variable holding a strain set" }
 }

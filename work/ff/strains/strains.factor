@@ -101,9 +101,8 @@ M: bad-strain error.
 
 : (insert-strain!) ( chain strain -- chain )
     suffix! ; inline
-PRIVATE>
 
-: set-strain ( chain strain/f class -- chain' )
+: (set-strain) ( chain strain/f class -- chain' )
     [ over ] dip (lookup-strain) [
         pick (same-strain?) [ 2drop clone ] [
             swap [ swap (change-strain) ] [ (remove-strain) ] if*
@@ -112,7 +111,7 @@ PRIVATE>
         drop [ (insert-strain) ] [ clone ] if*
     ] if* ;
 
-: set-strain! ( chain strain/f class -- chain )
+: (set-strain!) ( chain strain/f class -- chain )
     [ over ] dip (lookup-strain) [
         pick (same-strain?) [ 2drop ] [
             swap [ swap (change-strain!) ] [ (remove-strain!) ] if*
@@ -120,17 +119,38 @@ PRIVATE>
     ] [
         drop [ (insert-strain!) ] when*
     ] if* ;
+PRIVATE>
 
-: reset-chain ( chain -- chain' ) drop f ;
-: reset-chain! ( chain -- chain ) [ delete-all ] keep ;
+! ________________
+! strain chain API
 
-: collect-failures ( chain -- report )
+: build-chain ( guards ctors -- chain )
+    [ f ] 2dip [ execute( chain guard/f -- chain' ) ] 2each ;
+
+: chain-grow ( guards ctors chain -- chain' )
+    -rot [ execute( chain guard/f -- chain' ) ] 2each ;
+
+: chain-in ( strain chain -- chain' )
+    swap [ dup class-of (set-strain) ] [ f "chain-in error" bad-strain ] if* ;
+
+: chain-out ( class chain -- chain' )
+    swap f swap (set-strain) ;
+
+: chain-reset ( chain -- chain' ) drop f ;
+: chain-reset! ( chain -- chain ) [ delete-all ] keep ;
+
+: chain-failures ( chain -- report )
     [ [ class-of ] keep failure#>> 2array ] map ;
 
-: build-strains ( guards chainers -- chain )
-    [ f ] 2dip [ execute( chain guard/f -- chain' ) ] 2each ;
+! ________________
+! with-strains API
+
+ALIAS: build-strains build-chain
 
 SYMBOL: all-strains
 
 : with-strains ( strains quot -- )
     [ all-strains ] dip with-variable ; inline
+
+: strains-failures ( -- report ) all-strains get chain-failures ;
+: strains. ( -- ) all-strains get . ;

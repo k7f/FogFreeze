@@ -9,13 +9,8 @@ IN: ff.strains.generic
 
 STRAIN: overdepth { count fixnum } { limit fixnum } ;
 
-: <overdepth> ( limit -- strain )
-    1 - \ overdepth new-strain 0 >>max-failures swap >>limit ;
-
-: set-overdepth ( chain guard/f limit -- chain' )
-    <overdepth> swap >>max-failures overdepth set-strain ;
-
-: clear-overdepth ( chain -- chain' ) f overdepth set-strain ;
+: <overdepth> ( guard/f limit -- strain )
+    1 - \ overdepth new-strain swap >>limit swap >>max-failures ;
 
 M: overdepth strain=
     [ limit>> ] bi@ = ; inline
@@ -34,13 +29,13 @@ M: overdepth error.
 
 STRAIN: all-different ;
 
-: <all-different> ( -- strain )
-    \ all-different new-strain ;
+! chevron constructor (of class-specific signature)
+: <all-different> ( guard/f -- strain )
+    \ all-different new-strain swap >>max-failures ;
 
-: set-all-different ( chain guard/f -- chain' )
-    <all-different> swap >>max-failures all-different set-strain ;
-
-: clear-all-different ( chain -- chain' ) f all-different set-strain ;
+! chaining constructor (of generic signature)
+: +all-different+ ( chain guard/f -- chain' )
+    <all-different> swap chain-in ;
 
 M: all-different check
     pick pick swap member? [ strain-check-failure ] [ drop f ] if ; inline
@@ -65,14 +60,9 @@ STRAIN: all-different2 { bistack sequence } ;
     ] ;
 PRIVATE>
 
-: new-all-different2 ( class -- strain )
+: new-all-different2 ( guard/f class -- strain )
     [ (create-binop-push) ] [ (create-binop-drop) ] [ new-stateful-strain ] tri
-    V{ } clone >>bistack ;
-
-: set-all-different2 ( chain guard/f class -- chain' )
-    [ new-all-different2 swap >>max-failures ] keep set-strain ;
-
-: clear-all-different2 ( chain class -- chain' ) f swap set-strain ;
+    V{ } clone >>bistack swap >>max-failures ;
 
 MACRO: all-different2-check ( class -- )
     "binop" word-prop '[
@@ -86,20 +76,20 @@ M: all-different2 error.
     "The \"all different (" write class-of name>> write ")\" condition not fulfilled" print ;
 
 <PRIVATE
-: (define-chain-in) ( class -- )
-    [ name>> "set-" prepend create-in dup reset-generic ] keep
-    [ set-all-different2 ] curry
+: (define-chevron) ( class -- )
+    [ name>> "<" ">" surround create-in dup reset-generic ] keep
+    [ new-all-different2 ] curry
+    ( guard/f -- strain )
+    define-declared ;
+
+: (define-chainer) ( class -- )
+    [ name>> "+" dup surround create-in dup reset-generic ] keep
+    [ new-all-different2 swap chain-in ] curry
     ( chain guard/f -- chain' )
     define-declared ;
 
-: (define-chain-out) ( class -- )
-    [ name>> "clear-" prepend create-in dup reset-generic ] keep
-    [ clear-all-different2 ] curry
-    ( chain -- chain' )
-    define-declared ;
-
-: (define-chain-setters) ( class -- )
-    [ (define-chain-in) ] [ (define-chain-out) ] bi ;
+: (define-constructors) ( class -- )
+    [ (define-chevron) ] [ (define-chainer) ] bi ;
 
 : (define-check-method) ( class -- )
     [ \ check create-method-in dup reset-generic ] keep
@@ -115,4 +105,4 @@ PRIVATE>
 SYNTAX: ALL-DIFFERENT2:
     (parse-all-different2-definition) [
         all-different2 f define-tuple-class
-    ] [ (define-chain-setters) ] [ (define-check-method) ] tri ;
+    ] [ (define-constructors) ] [ (define-check-method) ] tri ;

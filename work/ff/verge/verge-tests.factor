@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors arrays continuations ff ff.strains ff.strains.generic
-       ff.strains.simple ff.verge ff.verge.private io kernel locals math
+       ff.strains.simple ff.verge ff.verge.private fry io kernel locals math
        namespaces prettyprint sequences tools.test ;
 IN: ff.verge.tests
 
@@ -96,7 +96,7 @@ SYMBOL: strain-chain
     [ drop 0 ]
     (irange-verge) ;
 
-: 12multi-first ( start slip# guards ctors -- hitlist ? )
+: 12multi-first ( start slip# guards chainers -- hitlist ? )
     [ (single-set-strains) ] 2each
     [ drop dup length 12 = ]
     [ drop 0 ]
@@ -152,24 +152,24 @@ ALL-DIFFERENT2: all-different-delta - ;
 
     ; inline
 
-:: 12multi-second ( start slip# guards ctors -- hitlist ? report )
-    strain-chain [ get reset-chain ] [ set ] bi
-    guards ctors [
-        [ strain-chain get ] 2dip execute( chain guard/f -- chain' ) strain-chain set
-    ] 2each
-    start
-    [ f ] slip# [ slip-ntimes+1 ] curry
-    strain-chain get clone [
-        [ drop dup length 12 = ]
-        [ drop 0 ]
+: build-strains ( guards chainers -- chain )
+    [ f ] 2dip [ execute( chain guard/f -- chain' ) ] 2each ;
+
+: create-trols ( slip# depth -- slip-maker goal step )
+    swap [ slip-ntimes+1 ] curry
+    swap '[ drop dup length _ = ]
+    [ drop 0 ] ; inline
+
+: multi-second ( start slip# depth guards chainers -- hitlist ? report )
+    build-strains [
+        rot [ f ]
+    ] dip [
+        2dup create-trols
         (initialize-with) (run) [
-            drop
-            slip# [ slip-ntimes+1 ] curry
-            [ drop dup length 12 = ]
-            [ drop 0 ]
+            drop create-trols
             (initialize-with) (single-step) (run)
-        ] [ f ] if
-        flush-strains
+        ] [ 2nip f ] if
+        all-strains [ collect-failures ] [ . ] bi
     ] with-verging ;
 
 ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
@@ -181,8 +181,8 @@ ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
           { all-different 3506 }
           { all-different-delta 835 }
       } ] [
-        { 0 1 3 } 11 { 3506 835 }
-        { set-all-different set-all-different-delta } 12multi-second
+        { 0 1 3 } 11 12 { 3506 835 }
+        { set-all-different set-all-different-delta } multi-second
     ] unit-test
 
     [ V{ 0 1 3 2 9 5 10 4 7 11 8 6 } t
@@ -190,8 +190,8 @@ ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
           { all-different 3093 }
           { all-different-delta12rem 852 }
       } ] [
-        { 0 1 3 } 11 { 3093 852 }
-        { set-all-different set-all-different-delta12rem } 12multi-second
+        { 0 1 3 } 11 12 { 3093 852 }
+        { set-all-different set-all-different-delta12rem } multi-second
     ] unit-test
 
     [ V{ 0 1 3 7 5 2 10 4 9 8 11 6 } t
@@ -199,14 +199,14 @@ ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
           { all-different 204 }
           { all-different-delta12rem 42 }
       } ] [
-        { 0 1 3 7 5 2 } 11 { f f }
-        { set-all-different set-all-different-delta12rem } 12multi-second
+        { 0 1 3 7 5 2 } 11 12 { f f }
+        { set-all-different set-all-different-delta12rem } multi-second
     ] unit-test
 
     ; inline
 
-:: 12multi-last ( start slip# guards ctors -- hitlist ? )
-    guards ctors [ (single-set-strains) ] 2each
+:: 12multi-last ( start slip# guards chainers -- hitlist ? )
+    guards chainers [ (single-set-strains) ] 2each
     start slip#
     [ drop dup length 12 = ]
     [ drop 0 ]
@@ -235,8 +235,8 @@ ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
 
     ; inline
 
-:: 12multi-nth ( start slip# guards ctors n -- hitlist ? )
-    guards ctors [ (single-set-strains) ] 2each
+:: 12multi-nth ( start slip# guards chainers n -- hitlist ? )
+    guards chainers [ (single-set-strains) ] 2each
     start slip#
     [ drop dup length 12 = ]
     [ drop 0 ]
@@ -268,8 +268,8 @@ ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
 
     ; inline
 
-:: 12multi-all ( start slip# guards ctors -- hitlists )
-    guards ctors [ (single-set-strains) ] 2each
+:: 12multi-all ( start slip# guards chainers -- hitlists )
+    guards chainers [ (single-set-strains) ] 2each
     start slip#
     [ drop dup length 12 = ]
     [ drop 0 ]

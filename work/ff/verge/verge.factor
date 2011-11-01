@@ -229,17 +229,15 @@ SYMBOL: verging
 
 : (preprocess-with) ( start-sequence
                       first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
-                      next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
                       strains
                       --
-                      next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
                       state )
-    [ (make-first-slip) ] 2dip swap
-    [ <verge-state> ] dip swap ; inline
+    [ (make-first-slip) ] dip <verge-state> ; inline
+
+: all-strains ( -- strains ) verging get all-strains>> ;
 
 : with-verging ( start-sequence
                  first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
-                 next-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
                  strains
                  quot
                  -- )

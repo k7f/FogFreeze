@@ -152,9 +152,6 @@ ALL-DIFFERENT2: all-different-delta - ;
 
     ; inline
 
-: build-strains ( guards chainers -- chain )
-    [ f ] 2dip [ execute( chain guard/f -- chain' ) ] 2each ;
-
 : create-trols ( slip# depth -- slip-maker goal step )
     swap [ slip-ntimes+1 ] curry
     swap '[ drop dup length _ = ]
@@ -162,15 +159,15 @@ ALL-DIFFERENT2: all-different-delta - ;
 
 : multi-second ( start slip# depth guards chainers -- hitlist ? report )
     build-strains [
-        rot [ f ]
-    ] dip [
-        2dup create-trols
-        (initialize-with) (run) [
-            drop create-trols
-            (initialize-with) (single-step) (run)
-        ] [ 2nip f ] if
-        all-strains [ collect-failures ] [ . ] bi
-    ] with-verging ;
+        rot [ f ] [
+            2dup create-trols
+            (initialize-with) (run) [
+                drop create-trols
+                (initialize-with) (single-step) (run)
+            ] [ 2nip f ] if
+            all-strains get [ collect-failures ] [ . ] bi
+        ] with-verging
+    ] with-strains ;
 
 ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
 

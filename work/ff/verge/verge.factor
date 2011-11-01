@@ -151,7 +151,7 @@ PRIVATE>
 ! FIXME benchmark the performance costs of using packed and unpacked state
 : (verge-state-unpack) ( state -- vstrains all-strains slipstack hitstack value )
     { [ stateful-strains>> ]
-      [ all-strains>> ]
+      [ drop all-strains get ]
       [ slipstack>> ]
       [ hitstack>> ]
       [ current-value>> ] } cleave ; inline
@@ -229,16 +229,12 @@ SYMBOL: verging
 
 : (preprocess-with) ( start-sequence
                       first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
-                      strains
                       --
                       state )
-    [ (make-first-slip) ] dip <verge-state> ; inline
-
-: all-strains ( -- strains ) verging get all-strains>> ;
+    (make-first-slip) all-strains get <verge-state> ; inline
 
 : with-verging ( start-sequence
                  first-slip-maker: ( ..value -- ..value slip: ( -- value' slip ) )
-                 strains
                  quot
                  -- )
     [ (preprocess-with) verging ] dip with-variable ; inline

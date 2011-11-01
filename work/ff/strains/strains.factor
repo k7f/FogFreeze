@@ -126,3 +126,11 @@ PRIVATE>
 
 : collect-failures ( chain -- report )
     [ [ class-of ] keep failure#>> 2array ] map ;
+
+: build-strains ( guards chainers -- chain )
+    [ f ] 2dip [ execute( chain guard/f -- chain' ) ] 2each ;
+
+SYMBOL: all-strains
+
+: with-strains ( strains quot -- )
+    [ all-strains ] dip with-variable ; inline

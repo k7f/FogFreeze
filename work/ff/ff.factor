@@ -1,18 +1,43 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors debugger effects io kernel math namespaces prettyprint quotations
-       stack-checker strings ;
+USING: accessors combinators.short-circuit debugger effects io kernel math
+       namespaces prettyprint quotations stack-checker strings ;
 IN: ff
 
 <PRIVATE
 SYMBOL: trace?
+
+ERROR: (tracing-mismatch) { given read-only } ;
+
+M: (tracing-mismatch) error.
+    "Bad tracing request " write given>> [
+        fixnum? [ "(not a hack): " ] [ "(not a number): " ] if write
+    ] [ . ] bi ;
+
+: (set-trace) ( level/? -- ) trace? set ; inline
+: (get-trace) ( -- level/? ) trace? get ; inline
+
+: (traceable-level?) ( min-level -- ? )
+    (get-trace) [ dup fixnum? [ <= ] [ 2drop f ] if ] [ drop f ] if* ; inline
 PRIVATE>
 
-: set-trace ( level/? -- ) trace? set ;
-: get-trace ( -- level/? ) trace? get ;
-: should-trace? ( min-level -- ? )
-    trace? get dup fixnum? [ <= ] [ 2drop f ] if ;
+: set-tracing-off ( -- ) f (set-trace) ;
+
+: set-tracing-level ( level -- )
+    dup fixnum? [ (set-trace) ] [ (tracing-mismatch) ] if ;
+
+: set-tracing-hack ( hack -- )
+    dup { [ fixnum? ] [ not ] } 1|| [ (tracing-mismatch) ] [ (set-trace) ] if ;
+
+: should-trace? ( min-level/hack -- ? )
+    (get-trace) [
+        over fixnum? [ dup fixnum? [ <= ] [ 2drop f ] if ] [ = ] if
+    ] [ drop f ] if* ; inline
+
+: tracing? ( -- ? ) 1 (traceable-level?) ; inline
+: high-tracing? ( -- ? ) 2 (traceable-level?) ; inline
+: full-tracing? ( -- ? ) 3 (traceable-level?) ; inline
 
 <PRIVATE
 ERROR: (invalid-stack-effect) { expected effect read-only } { given effect read-only } ;

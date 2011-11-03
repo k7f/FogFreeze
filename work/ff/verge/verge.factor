@@ -13,7 +13,7 @@ TUPLE: verge-state all-strains stateful-strains slipstack hitstack current-value
 
 : (check-strains) ( strains hitstack value -- strain/f )
     rot [ check ] map-find drop [ 2drop ] dip
-    dup [ 1 should-trace? [ "!!! failure: " write dup . ] when ] when ; inline
+    dup [ tracing? [ "!!! failure: " write dup . ] when ] when ; inline
 
 : (push-vstrains) ( hitstack value vstrains -- )
     [
@@ -31,33 +31,33 @@ TUPLE: verge-state all-strains stateful-strains slipstack hitstack current-value
 
 : (push-hit) ( vstrains value hitstack -- )
     [
-        get-trace [
-            "hit " write 2 should-trace? [ swap pprint " -> " write . ] [ drop . ] if
+        tracing? [
+            "hit " write high-tracing? [ swap pprint " -> " write . ] [ drop . ] if
         ] [ 2drop ] if
     ] [
         swap rot (push-vstrains)
     ] [ push ] 2tri ; inline
 
 : (drop-hit) ( vstrains hitstack -- )
-    [ get-trace [ "drop " write last . ] [ drop ] if ] [
+    [ tracing? [ "drop " write last . ] [ drop ] if ] [
         drop (drop-vstrains)
     ] [ pop* ] tri ; inline
 
 : (push-slip) ( slip slipstack -- )
     [
-        1 should-trace? [
-            "push slip " write 3 should-trace? [ swap pprint " -> " write . ] [ drop . ] if
+        tracing? [
+            "push slip " write full-tracing? [ swap pprint " -> " write . ] [ drop . ] if
         ] [ 2drop ] if
     ] [ push ] 2bi ; inline
 
 : (pop-slip) ( slipstack -- slip )
     pop
-    1 should-trace? [
+    tracing? [
         "pop slip " write dup .
     ] when ; inline
 
 : (backtrack) ( vstrains slipstack hitstack strain -- vstrains slipstack' hitstack' )
-    1 should-trace? [
+    tracing? [
         "* backtrack hits: " write over .
         ". slipstack snap: " write pick .
     ] when
@@ -66,7 +66,7 @@ TUPLE: verge-state all-strains stateful-strains slipstack hitstack current-value
     pick over (drop-hit) ; inline
 
 : (sidestep) ( slipstack -- slipstack' value/f )
-    1 should-trace? [
+    tracing? [
         "@ sidestep slips: " write dup .
     ] when
     dup empty? [ f ] [

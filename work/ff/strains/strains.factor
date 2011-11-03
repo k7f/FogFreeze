@@ -33,7 +33,9 @@ M: strain strain= tuple= ; inline
 
 : strain-check-failure ( state new-value strain -- state new-value strain/f )
     dup failure#>> 1 +
-!    "failure " write dup pprint ". " write over class name>> .
+    full-tracing? [
+        "failure " write dup pprint ". " write over class-of name>> .
+    ] when
     over max-failures>> [
         over < [ drop throw ] when
     ] when* >>failure# ; inline

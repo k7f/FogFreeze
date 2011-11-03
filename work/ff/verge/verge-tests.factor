@@ -6,7 +6,7 @@ USING: accessors arrays continuations ff ff.strains ff.strains.generic
        namespaces prettyprint sequences tools.test ;
 IN: ff.verge.tests
 
-f set-trace
+set-tracing-off
 
 : report ( -- report ) strains-failures strains. ;
 

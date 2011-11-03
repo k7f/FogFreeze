@@ -50,13 +50,13 @@ STRAIN: all-different2 { bistack sequence } ;
     "binop" word-prop '[
         bistack>> dup [
             pick empty? [ 3drop ] [ [ swap last @ ] dip push ] if
-        ] dip get-trace [ "(binop-push): " write . ] [ drop ] if
+        ] dip tracing? [ "(binop-push): " write . ] [ drop ] if
     ] ;
 
 : (create-binop-drop) ( class -- quot: ( strain -- ) )
     drop [
         bistack>> dup [ pop* ] unless-empty
-        get-trace [ "(binop-drop): " write . ] [ drop ] if
+        tracing? [ "(binop-drop): " write . ] [ drop ] if
     ] ;
 PRIVATE>
 

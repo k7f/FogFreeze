@@ -80,3 +80,13 @@ STRAIN: test-strain ;
         all-strains get
     ] with-strains [ class-of ] map
 ] unit-test
+
+[ V{ 5 6 7 11 } ] [
+    { 1 2 3 } 14 0 <all-different-delta> dup bistack>> V{ 5 6 7 } append!
+    [ dup push-quotation>> call( hitstack value strain -- ) ] dip
+] unit-test
+
+[ V{ 5 6 } ] [
+    0 <all-different-delta> dup bistack>> V{ 5 6 7 } append!
+    [ dup drop-quotation>> call( strain -- ) ] dip
+] unit-test

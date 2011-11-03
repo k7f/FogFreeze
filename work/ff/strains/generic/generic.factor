@@ -7,6 +7,8 @@ USING: accessors arrays classes.parser classes.tuple classes.tuple.parser
        sets words ;
 IN: ff.strains.generic
 
+TRACING: f
+
 STRAIN: overdepth { count fixnum } { limit fixnum } ;
 
 : <overdepth> ( guard/f limit -- strain )
@@ -48,15 +50,18 @@ STRAIN: all-different2 { bistack sequence } ;
 <PRIVATE
 : (create-binop-push) ( class -- quot: ( hitstack value strain -- ) )
     "binop" word-prop '[
-        bistack>> dup [
-            pick empty? [ 3drop ] [ [ swap last @ ] dip push ] if
-        ] dip tracing? [ "(binop-push): " write . ] [ drop ] if
+        bistack>>
+<TRACING [ TRACING>
+        pick empty? [ 3drop ] [ [ swap last @ ] dip push ] if
+<TRACING ] keep tracing? [ "(binop-push): " write . ] [ drop ] if TRACING>
     ] ;
 
 : (create-binop-drop) ( class -- quot: ( strain -- ) )
     drop [
-        bistack>> dup [ pop* ] unless-empty
-        tracing? [ "(binop-drop): " write . ] [ drop ] if
+        bistack>>
+<TRACING dup TRACING>
+        [ pop* ] unless-empty
+<TRACING tracing? [ "(binop-drop): " write . ] [ drop ] if TRACING>
     ] ;
 PRIVATE>
 

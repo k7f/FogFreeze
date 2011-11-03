@@ -1,9 +1,20 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors combinators.short-circuit debugger effects io kernel math
-       namespaces prettyprint quotations stack-checker strings ;
+USING: accessors combinators.short-circuit debugger effects io kernel parser
+       math multiline namespaces prettyprint quotations stack-checker strings ;
 IN: ff
+
+<PRIVATE
+SYMBOL: tracing-enabled?
+PRIVATE>
+
+SYNTAX: TRACING: scan-object tracing-enabled? set ;
+
+SYNTAX: <TRACING
+    tracing-enabled? get [ "TRACING>" parse-multiline-string drop ] unless ;
+
+SYNTAX: TRACING> ;
 
 <PRIVATE
 SYMBOL: trace?

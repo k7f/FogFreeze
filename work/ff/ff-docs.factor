@@ -4,6 +4,23 @@
 USING: classes help.markup help.syntax kernel math quotations sequences ;
 IN: ff
 
+HELP: TRACING:
+{ $syntax "TRACING: flag" }
+{ $values { "flag" boolean } }
+{ $description "Enables or disables compilation of tracing blocks." } ;
+
+HELP: <TRACING
+{ $syntax "<TRACING ... TRACING>" }
+{ $description "Marks the beginning of a tracing block." }
+{ $notes "If tracing code is written inside tracing blocks, it will generate no overhead after deployment." } ;
+
+HELP: TRACING>
+{ $syntax "<TRACING ... TRACING>" }
+{ $description "Marks the end of a tracing block." }
+{ $notes "If tracing code is written inside tracing blocks, it will generate no overhead after deployment." } ;
+
+{ POSTPONE: TRACING: POSTPONE: <TRACING POSTPONE: TRACING> } related-words
+
 HELP: set-tracing-off
 { $description "Turn tracing off." } ;
 

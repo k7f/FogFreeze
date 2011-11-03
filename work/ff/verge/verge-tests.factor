@@ -298,9 +298,9 @@ ALL-DIFFERENT2: all-different-delta12rem - 12 rem ;
 
     ; inline
 
-! hotpo-tests
+hotpo-tests
 ! first-hit-tests
 ! second-hit-tests
 ! last-hit-tests
 ! nth-hit-tests
-all-hits-tests
+! all-hits-tests

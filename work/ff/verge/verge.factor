@@ -5,6 +5,8 @@ USING: accessors combinators continuations debugger ff ff.strains io
        kernel math namespaces prettyprint sequences strings vectors ;
 IN: ff.verge
 
+TRACING: f
+
 TUPLE: verge-state all-strains stateful-strains slipstack hitstack current-value ;
 
 <PRIVATE
@@ -13,7 +15,10 @@ TUPLE: verge-state all-strains stateful-strains slipstack hitstack current-value
 
 : (check-strains) ( strains hitstack value -- strain/f )
     rot [ check ] map-find drop [ 2drop ] dip
-    dup [ tracing? [ "!!! failure: " write dup . ] when ] when ; inline
+<TRACING
+    dup [ tracing? [ "!!! failure: " write dup . ] when ] when
+TRACING>
+    ; inline
 
 : (push-vstrains) ( hitstack value vstrains -- )
     [
@@ -30,45 +35,51 @@ TUPLE: verge-state all-strains stateful-strains slipstack hitstack current-value
     over empty? [ 3drop f ] [ (check-strains) ] if ; inline
 
 : (push-hit) ( vstrains value hitstack -- )
-    [
-        tracing? [
-            "hit " write high-tracing? [ swap pprint " -> " write . ] [ drop . ] if
-        ] [ 2drop ] if
-    ] [
-        swap rot (push-vstrains)
-    ] [ push ] 2tri ; inline
+<TRACING
+    tracing? [
+        "hit " write high-tracing? [ over pprint " -> " write dup . ] [ over . ] if
+    ] when
+TRACING>
+    [ swap rot (push-vstrains) ] [ push ] 2bi ; inline
 
 : (drop-hit) ( vstrains hitstack -- )
-    [ tracing? [ "drop " write last . ] [ drop ] if ] [
-        drop (drop-vstrains)
-    ] [ pop* ] tri ; inline
+<TRACING
+    tracing? [ "drop " write dup last . ] when
+TRACING>
+    [ drop (drop-vstrains) ] [ pop* ] bi ; inline
 
 : (push-slip) ( slip slipstack -- )
-    [
-        tracing? [
-            "push slip " write full-tracing? [ swap pprint " -> " write . ] [ drop . ] if
-        ] [ 2drop ] if
-    ] [ push ] 2bi ; inline
+<TRACING
+    tracing? [
+        "push slip " write full-tracing? [ over pprint " -> " write dup . ] [ over . ] if
+    ] when
+TRACING>
+    push ; inline
 
 : (pop-slip) ( slipstack -- slip )
     pop
-    tracing? [
-        "pop slip " write dup .
-    ] when ; inline
+<TRACING
+    tracing? [ "pop slip " write dup . ] when
+TRACING>
+    ; inline
 
 : (backtrack) ( vstrains slipstack hitstack strain -- vstrains slipstack' hitstack' )
+<TRACING
     tracing? [
         "* backtrack hits: " write over .
         ". slipstack snap: " write pick .
     ] when
+TRACING>
     ! FIXME report exhaustion not a credit runout
     pick length 1 > [ drop ] [ throw ] if
     pick over (drop-hit) ; inline
 
 : (sidestep) ( slipstack -- slipstack' value/f )
+<TRACING
     tracing? [
         "@ sidestep slips: " write dup .
     ] when
+TRACING>
     dup empty? [ f ] [
         dup (pop-slip) [
             call( -- value slip'/f )

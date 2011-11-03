@@ -4,6 +4,16 @@
 USING: arrays ff ff.private sequences tools.test ;
 IN: ff.tests
 
+TRACING: f
+
+<TRACING
+[ "should never be" ] [ "executed" ] unit-test
+TRACING>
+
+TRACING: t
+
+<TRACING
+
 [ "a hack" set-tracing-level ] [ (tracing-mismatch)? ] must-fail-with
 [ 0 set-tracing-hack ] [ (tracing-mismatch)? ] must-fail-with
 [ f set-tracing-hack ] [ (tracing-mismatch)? ] must-fail-with
@@ -37,3 +47,5 @@ IN: ff.tests
     { t t t } } ] [
     5 iota [ set-tracing-level tracing? high-tracing? full-tracing? 3array ] map
 ] unit-test
+
+TRACING>

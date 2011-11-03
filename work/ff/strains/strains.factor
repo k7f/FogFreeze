@@ -6,6 +6,8 @@ USING: accessors arrays classes classes.parser classes.tuple classes.tuple.parse
        parser prettyprint quotations sequences strings ;
 IN: ff.strains
 
+TRACING: f
+
 GENERIC: strain= ( strain1 strain2 -- ? )
 GENERIC: check ( state new-value strain -- state new-value strain/f )
 
@@ -33,9 +35,11 @@ M: strain strain= tuple= ; inline
 
 : strain-check-failure ( state new-value strain -- state new-value strain/f )
     dup failure#>> 1 +
+<TRACING
     full-tracing? [
         "failure " write dup pprint ". " write over class-of name>> .
     ] when
+TRACING>
     over max-failures>> [
         over < [ drop throw ] when
     ] when* >>failure# ; inline

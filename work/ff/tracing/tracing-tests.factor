@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays ff ff.private sequences tools.test ;
-IN: ff.tests
+USING: arrays ff.tracing ff.tracing.private sequences tools.test ;
+IN: ff.tracing.tests
 
 TRACING: f
 

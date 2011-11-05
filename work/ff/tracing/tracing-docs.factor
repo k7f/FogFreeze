@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: classes help.markup help.syntax kernel math quotations sequences ;
-IN: ff
+IN: ff.tracing
 
 HELP: TRACING:
 { $syntax "TRACING: flag" }
@@ -12,12 +12,12 @@ HELP: TRACING:
 HELP: <TRACING
 { $syntax "<TRACING ... TRACING>" }
 { $description "Marks the beginning of a tracing block." }
-{ $notes "If tracing code is written inside tracing blocks, it will generate no overhead after deployment." } ;
+{ $notes "If tracing code is written within tracing blocks, it will generate no overhead after deployment." } ;
 
 HELP: TRACING>
 { $syntax "<TRACING ... TRACING>" }
 { $description "Marks the end of a tracing block." }
-{ $notes "If tracing code is written inside tracing blocks, it will generate no overhead after deployment." } ;
+{ $notes "If tracing code is written within tracing blocks, it will generate no overhead after deployment." } ;
 
 { POSTPONE: TRACING: POSTPONE: <TRACING POSTPONE: TRACING> } related-words
 
@@ -64,3 +64,9 @@ HELP: full-tracing?
   { "?" boolean }
 }
 { $description "Return true if regular tracing is on and tracing level is set to 3 or more." } ;
+
+ARTICLE: "tracing" "Tracing framework"
+"The " { $vocab-link "ff.tracing" } " vocabulary is a simple framework for ad hoc, synchronous, development-time tracing -- as opposed to full-blown, systematic, asynchronous, after-deployment " { $vocab-link "logging" } "."
+{ $see-also "logging" } ;
+
+ABOUT: "tracing"

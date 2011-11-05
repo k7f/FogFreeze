@@ -1,9 +1,9 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays continuations ff ff.strains ff.strains.generic
-       ff.strains.simple ff.verge ff.verge.private fry io kernel locals math
-       namespaces prettyprint sequences tools.test ;
+USING: accessors arrays continuations ff.strains ff.strains.generic
+       ff.strains.simple ff.tracing ff.verge ff.verge.private fry io
+       kernel locals math namespaces prettyprint sequences tools.test ;
 IN: ff.verge.tests
 
 set-tracing-off

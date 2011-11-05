@@ -1,8 +1,9 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors combinators continuations debugger ff ff.strains io
-       kernel math namespaces prettyprint sequences strings vectors ;
+USING: accessors combinators continuations debugger ff.errors ff.strains
+       ff.tracing io kernel math namespaces prettyprint sequences strings
+       vectors ;
 IN: ff.verge
 
 TRACING: f

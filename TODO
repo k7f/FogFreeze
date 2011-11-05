@@ -3,8 +3,12 @@
    stateful strains
    ALL-DIFFERENT2:
    first-verge, next-verge
+   with-strains
 * with-verge
-   use with-variable?
+   clean up and document
+* tracing
+   figure out how to clear all TRACING: flags automatically during
+   deployment
 * trols
    abstract them out...
 * slip-back

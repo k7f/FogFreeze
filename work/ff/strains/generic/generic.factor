@@ -2,9 +2,9 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors arrays classes.parser classes.tuple classes.tuple.parser
-       classes combinators compiler.units debugger ff ff.strains fry generic.parser
-       io kernel lexer macros make math parser prettyprint quotations sequences
-       sets words ;
+       classes combinators compiler.units debugger ff.strains ff.tracing fry
+       generic.parser io kernel lexer macros make math parser prettyprint
+       quotations sequences sets words ;
 IN: ff.strains.generic
 
 TRACING: f

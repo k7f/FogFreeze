@@ -76,10 +76,10 @@ PRIVATE>
 
 M: strain invalid-input (invalid-input-strain) ;
 
-ERROR: bad-strain { error strain read-only } { message string read-only } ;
+ERROR: bad-strain { given object read-only } { message string read-only } ;
 
 M: bad-strain error.
-    "Bad strain (" over message>> "): " [ write ] tri@ error>> . ;
+    "Bad strain (" over message>> "): " [ write ] tri@ given>> . ;
 
 <PRIVATE
 : (same-strain?) ( strain1 strain2 -- ? )
@@ -137,10 +137,20 @@ PRIVATE>
     -rot [ execute( chain guard/f -- chain' ) ] 2each ;
 
 : chain-in ( strain chain -- chain' )
-    swap [ dup class-of (set-strain) ] [ f "chain-in error" bad-strain ] if* ;
+    over strain? [
+        swap dup class-of (set-strain)
+    ] [ drop "chain-in error" bad-strain ] if ;
+
+: chain-in! ( strain chain -- chain )
+    over strain? [
+        swap dup class-of (set-strain!)
+    ] [ drop "chain-in error" bad-strain ] if ;
 
 : chain-out ( class chain -- chain' )
     swap f swap (set-strain) ;
+
+: chain-out! ( class chain -- chain )
+    swap f swap (set-strain!) ;
 
 : chain-reset ( chain -- chain' ) drop f ;
 : chain-reset! ( chain -- chain ) [ delete-all ] keep ;

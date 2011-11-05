@@ -33,23 +33,56 @@ HELP: strain=
 
 HELP: chain-in
 { $values
-  { "chain" { $link symbol } " id of a variable holding a strain set" }
-  { "strain/f" { $maybe strain } }
-  { "class" class }
+  { "strain" "a " { $link strain } }
+  { "chain" "a " { $link sequence } " of " { $link strain } "s" }
+  { "chain'" "a " { $link sequence } " of " { $link strain } "s" }
 }
-{ $description "FIXME Inserts, modifies or removes an object of a particular " { $snippet "class" } " from the " { $snippet "chain" } ".  The " { $snippet "class" } " is expected to be a subclass of " { $link strain } "." } ;
+{ $description "Returns a copy of " { $snippet "chain" } ".  The copy is modified, if necessary, so that it will contain the " { $snippet "strain" } "." }
+{ $notes "If the original " { $snippet "chain" } " contains an element having the same canonical class as the input " { $snippet "strain" } ", but a different value, that element will be replaced with the new one in the result." }
+{ $errors "Throws an error if first input is not a " { $link strain } "." } ;
 
-HELP: chain-reset
+HELP: chain-in!
 { $values
-  { "chain" { $link symbol } " id of a variable holding a strain set" }
+  { "strain" "a " { $link strain } }
+  { "chain" "a " { $link sequence } " of " { $link strain } "s" }
+  { "chain" "a " { $link sequence } " of " { $link strain } "s" }
 }
-{ $description "Clears the chain." } ;
+{ $description "Modifies " { $snippet "chain" } ", if necessary,  so that it will contain the " { $snippet "strain" } ".  If the " { $snippet "chain" } " contains an element having the same canonical class as the input " { $snippet "strain" } ", but a different value, that element will be replaced with the new one." }
+{ $errors "Throws an error if first input is not a " { $link strain } ", or the " { $snippet "chain" } " is not resizable." } ;
+
+HELP: chain-out
+{ $values
+  { "class" class }
+  { "chain" "a " { $link sequence } " of " { $link strain } "s" }
+  { "chain'" "a " { $link sequence } " of " { $link strain } "s" }
+}
+{ $description "Returns a copy of " { $snippet "chain" } " with those elements, which are instances of the " { $snippet "class" } ", removed from the result." }
+{ $notes "This word, when passed a class which is not canonical, should be able to remove multiple elements from " { $snippet "chain" } ", but this feature is not yet supported." } ;
+
+HELP: chain-out!
+{ $values
+  { "class" class }
+  { "chain" "a " { $link sequence } " of " { $link strain } "s" }
+  { "chain" "a " { $link sequence } " of " { $link strain } "s" }
+}
+{ $description "Modifies " { $snippet "chain" } ", if necessary, so that it will contain no elements of the " { $snippet "class" } "." }
+{ $notes "This word, when passed a class which is not canonical, should be able to remove multiple elements from " { $snippet "chain" } ", but this feature is not yet supported." }
+{ $errors "Throws an error if the " { $snippet "chain" } " is not resizable." } ;
+
+{ chain-in chain-in! chain-out chain-out! } related-words
+
+HELP: chain-reset!
+{ $values
+  { "chain" "a " { $link sequence } " of " { $link strain } "s" }
+  { "chain" "a " { $link sequence } " of " { $link strain } "s" }
+}
+{ $description "Clears the chain, destructively." } ;
 
 ARTICLE: "strains" "strains"
 "The vocabulary " { $vocab-link "strains" } " defines the " { $link strain } " superclass and helps to maintain strain chains."
 $nl
-"Classes derived from " { $link strain } " are tuples on which feasibility checks (i.e. the checks performed during " { $link "verging" } ") are defined."
+"Classes derived from " { $link strain } " are tuples on which feasibility checks, i.e. the checks performed during " { $link "verging" } ", are defined."
 $nl
-{ $emphasis "Strain chain" } " is a set of strains.  It may be any sequence of tuples (array, vector, etc.), provided the classes of any two tuples in the sequence are different subclasses of the " { $link strain } " class." ;
+{ $emphasis "Strain chain" } " is a set of strains.  It may be any sequence of tuples (array, vector, etc.), provided the canonical classes of any two tuples in the sequence are " { $emphasis "different" } " subclasses of the " { $link strain } " class." ;
 
 ABOUT: "strains"

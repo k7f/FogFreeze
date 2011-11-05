@@ -1,7 +1,7 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: classes help.markup help.syntax kernel math quotations sequences ;
+USING: classes help.markup help.syntax kernel logging math quotations sequences ;
 IN: ff.tracing
 
 HELP: TRACING:
@@ -66,7 +66,7 @@ HELP: full-tracing?
 { $description "Return true if regular tracing is on and tracing level is set to 3 or more." } ;
 
 ARTICLE: "tracing" "Tracing framework"
-"The " { $vocab-link "ff.tracing" } " vocabulary is a simple framework for ad hoc, synchronous, development-time tracing -- as opposed to full-blown, systematic, asynchronous, after-deployment " { $vocab-link "logging" } "."
+"The " { $vocab-link "ff.tracing" } " vocabulary is a simple framework for ad hoc, synchronous, development-time tracing \u{em-dash} as opposed to full-blown, systematic, asynchronous, after-deployment " { $vocab-link "logging" } "."
 { $see-also "logging" } ;
 
 ABOUT: "tracing"

@@ -1,6 +1,12 @@
-Music ID Number: Mutopia-2004/12/02-239
+Gigue in G by W.A. Mozart
 
-This music is part of the Mutopia project: http://www.MutopiaProject.org
+MIDI file was taken from the Mutopia Project:
+http://www.MutopiaProject.org
+
+Music ID Number: Mutopia-2004/12/02-239
+Copyright: Public Domain
+
+The relevant quote from the LilyPond source:
 
 It has been typeset and placed in the public domain by Maurizio
 Tomasi.  Unrestricted modification and redistribution is permitted and

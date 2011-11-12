@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays fomus io.pathnames kernel math math.ranges math.vectors
-       namespaces sequences ;
+USING: arrays fomus kernel math math.ranges math.vectors namespaces
+       sequences ;
 IN: fomus.demo
 
 <PRIVATE
@@ -34,10 +34,7 @@ IN: fomus.demo
           { 1 60 5. }
           { 2 38 4.5 } } [ first3 (a-figure) ] each
 
-        current-directory get "/fomus-demo." append
-        [ "fms" append fomus-do-save ]
-        [ "xml" append fomus-run-file ]
-        [ "ly" append fomus-run-file ] tri
+        "fomus-demo" fomus-play
     ] with-fomus ;
 PRIVATE>
 

@@ -1,7 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: debugger fomus.ffi fry io kernel math math.parser namespaces sequences ;
+USING: combinators debugger fomus.ffi fry io io.backend kernel math math.parser
+       namespaces sequences timidity ;
 IN: fomus
 
 <PRIVATE
@@ -220,3 +221,11 @@ M: number fomus-add-tenor
 ! M: sequence fomus-add-tenor
 
 : fomus-add-chord ( staff chord -- ) f fomus-add-tenor ; inline
+
+: fomus-play ( path -- )
+    normalize-path {
+        [ ".fms" append fomus-do-save ]
+        [ ".xml" append fomus-run-file ]
+        [ ".ly" append fomus-run-file ]
+        [ ".mid" append play ]
+    } cleave ;

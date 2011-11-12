@@ -34,7 +34,7 @@ IN: fomus.demo
           { 1 60 5. }
           { 2 38 4.5 } } [ first3 (a-figure) ] each
 
-        "fomus-demo" fomus-play
+        "fomus-demo" fomus-render&play
     ] with-fomus ;
 PRIVATE>
 

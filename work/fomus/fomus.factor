@@ -1,8 +1,9 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: combinators debugger fomus.ffi fry io io.backend kernel math math.parser
-       namespaces sequences timidity ;
+USING: accessors combinators debugger fomus.ffi fry io io.backend
+       io.pathnames kernel math math.parser namespaces sequences strings
+       timidity ;
 IN: fomus
 
 <PRIVATE
@@ -14,6 +15,9 @@ M: (fomus-not-initialized) error. drop "Execute fomus-start, please!" print ;
 
 ERROR: (no-fomus-instance) ;
 M: (no-fomus-instance) error. drop "Use with-fomus, please!" print ;
+
+ERROR: (bad-extension) { given string read-only } ;
+M: (bad-extension) error. "Bad file extension given: " write given>> print ;
 PRIVATE>
 
 ! ______________________
@@ -222,10 +226,32 @@ M: number fomus-add-tenor
 
 : fomus-add-chord ( staff chord -- ) f fomus-add-tenor ; inline
 
-: fomus-play ( path -- )
+! ___________________
+! rendering interface
+
+<PRIVATE
+: (fomus-render) ( path -- smf-path )
     normalize-path {
         [ ".fms" append fomus-do-save ]
         [ ".xml" append fomus-run-file ]
         [ ".ly" append fomus-run-file ]
-        [ ".mid" append play ]
+        [ ".mid" append dup fomus-run-file ]
     } cleave ;
+PRIVATE>
+
+: fomus-render ( path -- )
+    dup file-extension [ normalize-path fomus-run-file ] [ (fomus-render) drop ] if ;
+
+: fomus-play ( path -- )
+    dup file-extension [
+        dup "mid" = [ drop normalize-path ] [ (bad-extension) ] if
+    ] [ normalize-path ".mid" append ] if*
+    [ fomus-run-file ] [ play ] bi ;
+
+: fomus-render&play ( path -- )
+    dup file-extension [
+        [ normalize-path [ fomus-run-file ] keep ] dip
+        dup "mid" = [ drop play ] [
+            length 1 + head* ".mid" append [ fomus-run-file ] [ play ] bi
+        ] if
+    ] [ (fomus-render) play ] if* ;

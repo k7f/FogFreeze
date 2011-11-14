@@ -7,15 +7,22 @@ IN: fomus.demo
 
 <PRIVATE
 : (a-chord) ( staff base-pitch -- )
-    1. fomus-set-dyn .5 fomus-set-dur { 0 4 7 } n+v fomus-add-chord ;
+    4. fomus-set-dyn { 4 11 12 15 } n+v .25 fomus-add-chord ;
+
+: (an-arpeggio) ( staff base-pitch -- )
+    4. fomus-set-dyn { 0 4 8 } n+v .3 fomus-add-tenor ;
 
 : (a-scale) ( staff base-pitch -- )
-    2. fomus-set-dyn [ 12 + ] [ 3 + ] bi [a,b] .25 fomus-add-tenor ;
+    1. fomus-set-dyn [ 12 + ] [ 3 + ] bi
+    pick 2 = [ swap ] when
+    [a,b] { .5 .25 .25 } fomus-add-tenor ;
 
 : (a-figure) ( staff base-pitch start -- )
-    [ dup fomus-set-voice ] 2dip
-    [ fomus-set-time (a-chord) ]
-    [ 1. + fomus-set-time (a-scale) ] 3bi ;
+    [ dup fomus-set-voice ] 2dip [
+        fomus-set-time over 1 = [ (an-arpeggio) ] [
+            2dup (a-chord) .5 fomus-inc-time (a-chord)
+        ] if
+    ] [ 1. + fomus-set-time (a-scale) ] 3bi ;
 
 : (demo) ( -- )
     fomus-start <fomus> [
@@ -31,8 +38,8 @@ IN: fomus.demo
         "pf" fomus-set-part
         { { 1 58 1 }
           { 2 36 .5 }
-          { 1 60 5. }
-          { 2 38 4.5 } } [ first3 (a-figure) ] each
+          { 1 60 6. }
+          { 2 38 5.5 } } [ first3 (a-figure) ] each
 
         "fomus-demo" fomus-render&play
     ] with-fomus ;

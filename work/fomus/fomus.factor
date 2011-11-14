@@ -2,8 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors combinators debugger fomus.ffi fry io io.backend
-       io.pathnames kernel math math.parser namespaces sequences strings
-       timidity ;
+       io.pathnames kernel math math.parser namespaces sequences
+       sequences.repeating strings timidity prettyprint ;
 IN: fomus
 
 <PRIVATE
@@ -221,10 +221,15 @@ M: number fomus-add-tenor
     dup fomus-set-dur
     '[ fomus-set-pitch fomus-set-staff fomus-add-note _ fomus-inc-time ] with each ;
 
-! FIXME
-! M: sequence fomus-add-tenor
+M: sequence fomus-add-tenor
+    2dup shorter? [ [ length repeated ] keep ] [ over length repeated ] if
+    rot [
+        fomus-set-staff [ fomus-set-dur fomus-set-pitch ] keep
+        fomus-add-note fomus-inc-time
+    ] curry 2each ;
 
-: fomus-add-chord ( staff chord -- ) f fomus-add-tenor ; inline
+: fomus-add-chord ( staff chord duration -- )
+    [ fomus-set-dur f fomus-add-tenor ] keep fomus-inc-time ; inline
 
 ! ___________________
 ! rendering interface

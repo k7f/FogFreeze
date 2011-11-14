@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors combinators debugger fomus.ffi fry io io.backend
-       io.pathnames kernel math math.parser namespaces sequences
+USING: accessors arrays classes combinators debugger ff.errors fomus.ffi fry
+       io io.backend io.pathnames kernel math math.parser namespaces sequences
        sequences.repeating strings timidity prettyprint ;
 IN: fomus
 
@@ -18,6 +18,8 @@ M: (no-fomus-instance) error. drop "Use with-fomus, please!" print ;
 
 ERROR: (bad-extension) { given string read-only } ;
 M: (bad-extension) error. "Bad file extension given: " write given>> print ;
+
+: (simple-number?) ( obj -- ? ) dup fixnum? [ drop t ] [ float? ] if ;
 PRIVATE>
 
 ! ______________________
@@ -52,6 +54,12 @@ PRIVATE>
 : fomus-push-integers ( seq -- )
     [ [ dup +fomus_par_list+ +fomus_act_start+ (fomus_act)
         swap [ dup +fomus_par_list+ +fomus_act_add+ ] dip (fomus_ival)
+        +fomus_par_list+ +fomus_act_end+ (fomus_act)
+    ] curry each ] fomus-call ;
+
+: fomus-push-floats ( seq -- )
+    [ [ dup +fomus_par_list+ +fomus_act_start+ (fomus_act)
+        swap [ dup +fomus_par_list+ +fomus_act_add+ ] dip (fomus_fval)
         +fomus_par_list+ +fomus_act_end+ (fomus_act)
     ] curry each ] fomus-call ;
 
@@ -203,8 +211,29 @@ PRIVATE>
 
 : fomus-set-global-staves ( staves -- ) fomus-push-integers "staff" fomus-set-list-setting ;
 
+: fomus-set-global-dyns ( yes/no -- ) "dyns" swap fomus-set-string-setting ;
+
+! range: [ bottom..top ) as of 0.1.18-alpha
+: fomus-set-global-dyn-range ( range -- )
+    fomus-push-floats "dyn-range" fomus-set-list-setting ;
+
+: fomus-set-global-dynsym-range ( range -- )
+    fomus-push-strings "dynsym-range" fomus-set-list-setting ;
+
 ! ___________________________________________
 ! secondary wrapping interface: typesafe part TODO
+
+: mus-set-global-dyns ( flag -- )
+    dup string? [ "yes" "no" ? ] unless fomus-set-global-dyns ;
+
+! range: [ bottom..top ) as of 0.1.18-alpha
+: mus-set-global-dyn-range ( bottom top -- )
+    [ dup (simple-number?) [ class-of invalid-input ] unless ] bi@
+    2array fomus-set-global-dyn-range ;
+
+: mus-set-global-dynsym-range ( bottom top -- )
+    [ dup string? [ class-of invalid-input ] unless ] bi@
+    2array fomus-set-global-dynsym-range ;
 
 ! __________________
 ! compound interface

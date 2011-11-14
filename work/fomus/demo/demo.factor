@@ -1,34 +1,43 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays fomus kernel math math.ranges math.vectors namespaces
-       sequences ;
+USING: arrays fomus fry kernel locals math math.ranges math.vectors macros
+       namespaces sequences ;
 IN: fomus.demo
 
 <PRIVATE
-: (a-chord) ( staff base-pitch -- )
-    4. fomus-set-dyn { 4 11 12 15 } n+v .25 fomus-add-chord ;
+MACRO: (chord) ( pitches -- )
+    '[ 120 fomus-set-dyn [ _ n+v ] dip fomus-add-chord ] ;
 
-: (an-arpeggio) ( staff base-pitch -- )
-    4. fomus-set-dyn { 0 4 8 } n+v .3 fomus-add-tenor ;
+: (4-chord) ( staff base-pitch duration -- ) { 4 10 11 15 } (chord) ;
+: (2-chord) ( staff base-pitch duration -- ) { 4 15 } (chord) ;
 
-: (a-scale) ( staff base-pitch -- )
-    1. fomus-set-dyn [ 12 + ] [ 3 + ] bi
-    pick 2 = [ swap ] when
-    [a,b] { .5 .25 .25 } fomus-add-tenor ;
+: (an-arpeggio) ( staff base-pitch duration -- )
+    90 fomus-set-dyn [ { 0 4 8 } n+v ] dip fomus-add-tenor ;
 
-: (a-figure) ( staff base-pitch start -- )
-    [ dup fomus-set-voice ] 2dip [
-        fomus-set-time over 1 = [ (an-arpeggio) ] [
-            2dup (a-chord) .5 fomus-inc-time (a-chord)
-        ] if
-    ] [ 1. + fomus-set-time (a-scale) ] 3bi ;
+:: (a-scale) ( staff base-pitch -- )
+    40 fomus-set-dyn
+    base-pitch [ 12 + ] [ 3 + ] bi staff 2 = [ swap ] when
+    [ staff ] 2dip [a,b] { 1/2 1/4 1/4 } fomus-add-tenor ;
+
+:: (a-figure) ( staff base-pitch start -- )
+    staff fomus-set-voice
+    start fomus-set-time
+    staff base-pitch over 1 = [ 1/3 (an-arpeggio) ] [
+        [ 1 + 1/2 (4-chord) ] [ 1/4 fomus-inc-time 1/4 (2-chord) ] 2bi
+    ] if
+    start 1 + fomus-set-time
+    staff base-pitch (a-scale) ;
 
 : (demo) ( -- )
     fomus-start <fomus> [
         ! settings section
         ! module `parts'
         { "piano" } fomus-set-global-layout-def
+        ! module `dyns'
+        t mus-set-global-dyns
+        1 128 mus-set-global-dyn-range
+        "ppp" "fff" mus-set-global-dynsym-range
 
         ! parts section
         "pf" fomus-set-part-id "piano" fomus-set-part-inst
@@ -37,9 +46,9 @@ IN: fomus.demo
         ! events section
         "pf" fomus-set-part
         { { 1 58 1 }
-          { 2 36 .5 }
-          { 1 60 6. }
-          { 2 38 5.5 } } [ first3 (a-figure) ] each
+          { 2 36 1/2 }
+          { 1 60 6 }
+          { 2 38 5+1/2 } } [ first3 (a-figure) ] each
 
         "fomus-demo" fomus-render&play
     ] with-fomus ;

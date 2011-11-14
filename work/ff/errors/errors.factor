@@ -1,7 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors debugger effects io kernel prettyprint stack-checker strings ;
+USING: accessors classes debugger effects io kernel prettyprint stack-checker
+       strings ;
 IN: ff.errors
 
 <PRIVATE
@@ -24,3 +25,11 @@ M: (invalid-input-string) error. "Invalid input: " write message>> . ;
 PRIVATE>
 
 M: string invalid-input (invalid-input-string) ;
+
+<PRIVATE
+ERROR: (invalid-input-class) { given class read-only initial: class } ;
+M: (invalid-input-class)
+    error. "Bad type of input argument given: " write given>> name>> print ;
+PRIVATE>
+
+M: class invalid-input (invalid-input-class) ;

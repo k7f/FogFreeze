@@ -1,9 +1,9 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors combinators destructors io io.encodings.utf8 io.launcher
-       io.pipes io.ports io.streams.duplex kernel math.parser namespaces
-       prettyprint sequences ui.commands ui.gestures ui.tools.listener ;
+USING: accessors combinators destructors ff.commands io io.encodings.utf8
+       io.launcher io.pipes io.ports io.streams.duplex kernel math.parser
+       namespaces prettyprint sequences ui.gestures ;
 IN: timidity
 
 <PRIVATE
@@ -80,12 +80,6 @@ PRIVATE>
 
 : stop ( -- ) stop* drop ;
 
-: toggle-playback ( -- )
-    stop* [ replay ] unless ;
+: toggle-playback ( -- ) stop* [ replay ] unless ;
 
-\ toggle-playback H{ { +nullary+ t } { +listener+ t } } define-command
-
-listener-gadget "ff" f
-{
-    { T{ key-down f { C+ } " " } toggle-playback }
-} define-command-map
+\ toggle-playback T{ key-down f { C+ } " " } add-listener-command

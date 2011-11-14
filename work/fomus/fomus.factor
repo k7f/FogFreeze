@@ -2,8 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors arrays classes combinators debugger ff.errors fomus.ffi fry
-       io io.backend io.pathnames kernel math math.parser namespaces sequences
-       sequences.repeating strings timidity prettyprint ;
+       io io.backend io.pathnames kernel macros math math.parser namespaces
+       sequences sequences.repeating strings timidity prettyprint ;
 IN: fomus
 
 <PRIVATE
@@ -51,23 +51,21 @@ PRIVATE>
 ! _______________________________________
 ! primary wrapping interface: unsafe part
 
-: fomus-push-integers ( seq -- )
-    [ [ dup +fomus_par_list+ +fomus_act_start+ (fomus_act)
-        swap [ dup +fomus_par_list+ +fomus_act_add+ ] dip (fomus_ival)
-        +fomus_par_list+ +fomus_act_end+ (fomus_act)
-    ] curry each ] fomus-call ;
+: (fomus_rval/) ( fomus param action ratio -- )
+    [ numerator ] [ denominator ] bi (fomus_rval) ;
 
-: fomus-push-floats ( seq -- )
-    [ [ dup +fomus_par_list+ +fomus_act_start+ (fomus_act)
-        swap [ dup +fomus_par_list+ +fomus_act_add+ ] dip (fomus_fval)
-        +fomus_par_list+ +fomus_act_end+ (fomus_act)
-    ] curry each ] fomus-call ;
+MACRO: fomus-push-list ( pusher-word -- )
+    '[ [
+        [ dup +fomus_par_list+ +fomus_act_start+ (fomus_act)
+          swap [ dup +fomus_par_list+ +fomus_act_add+ ] dip _ execute
+          +fomus_par_list+ +fomus_act_end+ (fomus_act)
+        ] curry each
+    ] fomus-call ] ;
 
-: fomus-push-strings ( seq -- )
-    [ [ dup +fomus_par_list+ +fomus_act_start+ (fomus_act)
-        swap [ dup +fomus_par_list+ +fomus_act_add+ ] dip (fomus_sval)
-        +fomus_par_list+ +fomus_act_end+ (fomus_act)
-    ] curry each ] fomus-call ;
+: fomus-push-integers ( seq -- ) \ (fomus_ival) fomus-push-list ;
+: fomus-push-ratios ( seq -- ) \ (fomus_rval/) fomus-push-list ;
+: fomus-push-floats ( seq -- ) \ (fomus_fval) fomus-push-list ;
+: fomus-push-strings ( seq -- ) \ (fomus_sval) fomus-push-list ;
 
 : fomus-set-integer-setting ( key value -- )
     '[
@@ -79,6 +77,12 @@ PRIVATE>
     '[
         dup +fomus_par_setting+ +fomus_act_set+ _ (fomus_sval)
         +fomus_par_settingval+ +fomus_act_set+ _ _ (fomus_rval)
+    ] fomus-call ;
+
+: fomus-set-rational-setting/ ( key ratio -- )
+    '[
+        dup +fomus_par_setting+ +fomus_act_set+ _ (fomus_sval)
+        +fomus_par_settingval+ +fomus_act_set+ _ (fomus_rval/)
     ] fomus-call ;
 
 : fomus-set-mixed-setting ( key offset num den -- )
@@ -168,6 +172,9 @@ PRIVATE>
 
 : fomus-set-dur ( duration -- )
     [ swap [ +fomus_par_duration+ +fomus_act_set+ ] dip (fomus_fval) ] fomus-call ;
+
+: fomus-set-dur/ ( ratio -- )
+    [ swap [ +fomus_par_duration+ +fomus_act_set+ ] dip (fomus_rval/) ] fomus-call ;
 
 : fomus-set-pitch ( pitch -- )
     [ swap [ +fomus_par_pitch+ +fomus_act_set+ ] dip (fomus_ival) ] fomus-call ;

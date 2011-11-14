@@ -3,7 +3,7 @@
 
 USING: accessors combinators destructors io io.encodings.utf8 io.launcher
        io.pipes io.ports io.streams.duplex kernel math.parser namespaces
-       prettyprint sequences ;
+       prettyprint sequences ui.commands ui.gestures ui.tools.listener ;
 IN: timidity
 
 <PRIVATE
@@ -47,6 +47,16 @@ PRIVATE>
 
 : with-tempo ( percentage quot -- ) [ (tempo-adjust) ] dip with-variable ; inline
 
+: player-readln ( -- str/f )
+    (player-io-stream) get-global [
+        dup in>> stream>> disposed>> [ drop f ] [ stream-readln ] if
+    ] [ f ] if* ;
+
+: player-lines ( -- seq )
+    (player-io-stream) get-global [
+        dup in>> stream>> disposed>> [ drop f ] [ stream-lines ] if
+    ] [ f ] if* ;
+
 : play! ( path -- )
     dup (current-path) set-global (path>command) utf8 [
         [ readln dup ] [ . ] while drop
@@ -61,17 +71,21 @@ PRIVATE>
 : replay ( -- )
     (current-path) get-global [ play ] when* ;
 
-: stop ( -- )
+: stop* ( -- ? )
     (current-player) get-global [
-        kill-process f (current-player) set  ! keep (player-io-stream) for reading
-    ] when* ;
+        kill-process
+        ! keep (player-io-stream) for reading
+        f (current-player) set-global t
+    ] [ f ] if* ; inline
 
-: player-readln ( -- str/f )
-    (player-io-stream) get-global [
-        dup in>> stream>> disposed>> [ drop f ] [ stream-readln ] if
-    ] [ f ] if* ;
+: stop ( -- ) stop* drop ;
 
-: player-lines ( -- seq )
-    (player-io-stream) get-global [
-        dup in>> stream>> disposed>> [ drop f ] [ stream-lines ] if
-    ] [ f ] if* ;
+: toggle-playback ( -- )
+    stop* [ replay ] unless ;
+
+\ toggle-playback H{ { +nullary+ t } { +listener+ t } } define-command
+
+listener-gadget "ff" f
+{
+    { T{ key-down f { C+ } " " } toggle-playback }
+} define-command-map

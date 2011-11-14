@@ -48,6 +48,9 @@ PRIVATE>
 : fomus-add-note ( -- )
     [ +fomus_par_noteevent+ +fomus_act_add+ (fomus_act) ] fomus-call ;
 
+: fomus-add-mark ( -- )
+    [ +fomus_par_mark+ +fomus_act_add+ (fomus_act) ] fomus-call ;
+
 ! _______________________________________
 ! primary wrapping interface: unsafe part
 
@@ -179,6 +182,9 @@ MACRO: fomus-push-list ( pusher-word -- )
 : fomus-set-pitch ( pitch -- )
     [ swap [ +fomus_par_pitch+ +fomus_act_set+ ] dip (fomus_ival) ] fomus-call ;
 
+: fomus-set-mark-id ( mark -- )
+    [ swap [ +fomus_par_markid+ +fomus_act_set+ ] dip (fomus_sval) ] fomus-call ;
+
 : fomus-get-integer ( key -- value )
     [ swap (fomus_get_ival) ] fomus-call ;
 
@@ -241,6 +247,11 @@ MACRO: fomus-push-list ( pusher-word -- )
 : mus-set-global-dynsym-range ( bottom top -- )
     [ dup string? [ class-of invalid-input ] unless ] bi@
     2array fomus-set-global-dynsym-range ;
+
+: mus-<.. ( -- ) "<.." fomus-set-mark-id fomus-add-mark ;
+: mus-..< ( -- ) "..<" fomus-set-mark-id fomus-add-mark ;
+: mus->.. ( -- ) ">.." fomus-set-mark-id fomus-add-mark ;
+: mus-..> ( -- ) "..>" fomus-set-mark-id fomus-add-mark ;
 
 ! __________________
 ! compound interface

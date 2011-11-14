@@ -21,11 +21,12 @@ MACRO: (chord) ( pitches -- )
     [ staff ] 2dip [a,b] { 1/2 1/4 1/4 } fomus-add-tenor ;
 
 :: (a-figure) ( staff base-pitch start -- )
-    staff fomus-set-voice
-    start fomus-set-time
+    staff fomus-set-voice start fomus-set-time
+    mus->..
     staff base-pitch over 1 = [ 1/3 (an-arpeggio) ] [
         [ 1 + 1/2 (4-chord) ] [ 1/4 fomus-inc-time 1/4 (2-chord) ] 2bi
     ] if
+    mus-..>
     start 1 + fomus-set-time
     staff base-pitch (a-scale) ;
 

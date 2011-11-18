@@ -4,6 +4,10 @@
    ALL-DIFFERENT2:
    first-verge, next-verge
    with-strains
+   fomus
+   timidity
+* fomus
+   factor out the backend, move elements and patterns to ff
 * with-verge
    clean up and document
 * tracing

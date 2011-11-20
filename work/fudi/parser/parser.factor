@@ -15,11 +15,11 @@ IN: fudi.parser
         but-last-slice " " split1-slice swap {
             {
                 [ dup "array" 5 head-slice = ] [
-                    drop " " split1 " " split [ string>number ] map update-remotes
+                    drop " " split1 " " split [ string>number ] map set-remote
                 ]
             } {
                 [ dup "value" 5 head-slice = ] [
-                    drop " " split1 string>number update-remotes
+                    drop " " split1 string>number set-remote
                 ]
             }
             [ 2drop ]

@@ -11,7 +11,7 @@ IN: fudi.parser
 ! FIXME validation
 : (parse-message) ( message -- )
     dup last CHAR: ; = [
-        dup \ (parse-message) fudi-DEBUG
+        ! dup \ (parse-message) fudi-DEBUG
         but-last-slice " " split1-slice swap {
             {
                 [ dup "array" 5 head-slice = ] [

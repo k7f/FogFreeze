@@ -4,10 +4,10 @@
 USING: math quotations ;
 IN: ff.types
 
-MIXIN: maybe-fixnum
-INSTANCE: f maybe-fixnum
-INSTANCE: fixnum maybe-fixnum
+MIXIN: ?fixnum
+INSTANCE: f ?fixnum
+INSTANCE: fixnum ?fixnum
 
-MIXIN: maybe-callable
-INSTANCE: f maybe-callable
-INSTANCE: callable maybe-callable
+MIXIN: ?callable
+INSTANCE: f ?callable
+INSTANCE: callable ?callable

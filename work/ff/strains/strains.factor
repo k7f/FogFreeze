@@ -13,9 +13,9 @@ GENERIC: check ( state new-value strain -- state new-value strain/f )
 
 TUPLE: strain
     { failure# fixnum }
-    { max-failures maybe-fixnum }
-    { push-quotation maybe-callable }
-    { drop-quotation maybe-callable } ;
+    { max-failures ?fixnum }
+    { push-quotation ?callable }
+    { drop-quotation ?callable } ;
 
 : new-strain ( class -- strain )
     new 0 >>failure# f >>max-failures f >>push-quotation f >>drop-quotation ;

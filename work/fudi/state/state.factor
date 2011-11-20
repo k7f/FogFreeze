@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors assocs classes ff.types fudi.logging kernel namespaces
-       prettyprint sequences vectors ;
+USING: accessors assocs classes ff.types fry fudi.logging kernel macros
+       namespaces prettyprint sequences vectors ;
 IN: fudi.state
 
 <PRIVATE
@@ -36,14 +36,9 @@ TUPLE: (cell) { value vector } { callback ?callable } ;
 
 : (set-callback) ( callback cell/f key state -- )
     [ [ [ (hook-replace) ] keep ] [ (callback>cell) ] if* ] 2dip set-at ;
-PRIVATE>
 
-: remote. ( name -- ) (remotes) get-global [ at ] [ drop f ] if* . ;
-
-: remotes. ( -- ) (remotes) get-global . ;
-
-: touch-remote ( name -- )
-    (remotes) get-global [
+: (touch-cell) ( name state -- )
+    [
         at [
             dup callback>> [
                 [ value>> ] dip call( value -- )
@@ -51,20 +46,41 @@ PRIVATE>
         ] when*
     ] [ drop ] if* ;
 
-: set-remote ( name object -- )
-    ! [ unparse [ \ set-remote fudi-DEBUG ] bi@ ] 2keep
-    swap (remotes) get-global [
-        [ at ] 2keep (set-value)
-    ] [
-        f swap H{ } clone [ (set-value) ] keep (remotes) set-global
-    ] if* ;
+MACRO: (set-cell) ( state-symbol -- )
+    [ name>> ] keep dup '[
+        [ unparse [ _ swap " " glue \ (set-cell) fudi-DEBUG ] bi@ ] 2keep
+        swap _ get-global [
+            [ at ] 2keep (set-value)
+        ] [
+            f swap H{ } clone [ (set-value) ] keep _ set-global
+        ] if*
+    ] ;
+
+MACRO: (tap-cell) ( state-symbol -- )
+    [ name>> ] keep dup '[
+        [ unparse [ _ swap " " glue \ (tap-cell) fudi-DEBUG ] bi@ ] 2keep
+        swap _ get-global [
+            [ at ] 2keep (set-callback)
+        ] [
+            f swap H{ } clone [ (set-callback) ] keep _ set-global
+        ] if*
+    ] ;
+PRIVATE>
+
+: local.  ( name -- ) (locals)  get-global [ at ] [ drop f ] if* . ;
+: remote. ( name -- ) (remotes) get-global [ at ] [ drop f ] if* . ;
+
+: locals.  ( -- ) (locals)  get-global . ;
+: remotes. ( -- ) (remotes) get-global . ;
+
+: touch-local  ( name -- ) (locals)  get-global (touch-cell) ;
+: touch-remote ( name -- ) (remotes) get-global (touch-cell) ;
+
+: set-local  ( name object -- ) (locals)  (set-cell) ;
+: set-remote ( name object -- ) (remotes) (set-cell) ;
 
 ! Callback is not fired until next set-remote.  In order to force
 ! immediate callback, call touch-remote after subscribe.
-: subscribe ( name quot/f -- )
-    ! [ unparse [ \ subscribe fudi-DEBUG ] bi@ ] 2keep
-    swap (remotes) get-global [
-        [ at ] 2keep (set-callback)
-    ] [
-        f swap H{ } clone [ (set-callback) ] keep (remotes) set-global
-    ] if* ;
+
+: publish   ( name quot/f -- ) (locals)  (tap-cell) ;
+: subscribe ( name quot/f -- ) (remotes) (tap-cell) ;

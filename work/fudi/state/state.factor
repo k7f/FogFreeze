@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors assocs classes ff.types fry fudi.logging kernel macros
-       namespaces prettyprint sequences vectors ;
+       namespaces prettyprint quotations sequences vectors ;
 IN: fudi.state
 
 <PRIVATE
@@ -76,11 +76,17 @@ PRIVATE>
 : touch-local  ( name -- ) (locals)  get-global (touch-cell) ;
 : touch-remote ( name -- ) (remotes) get-global (touch-cell) ;
 
-: set-local  ( name object -- ) (locals)  (set-cell) ;
-: set-remote ( name object -- ) (remotes) (set-cell) ;
+: set-local  ( name value -- ) (locals)  (set-cell) ;
+: set-remote ( name value -- ) (remotes) (set-cell) ;
+
+! Contract: Callback is not fired until next set-local.  In order to
+! force immediate callback, call touch-local after publish.
+GENERIC: publish ( name object -- )
+
+M: f publish (locals) (tap-cell) ;
+
+M: callable publish dupd curry (locals) (tap-cell) ;
 
 ! Callback is not fired until next set-remote.  In order to force
 ! immediate callback, call touch-remote after subscribe.
-
-: publish   ( name quot/f -- ) (locals)  (tap-cell) ;
 : subscribe ( name quot/f -- ) (remotes) (tap-cell) ;

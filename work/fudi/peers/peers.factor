@@ -1,26 +1,33 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors calendar concurrency.messaging continuations debugger fry
-       fudi.logging fudi.parser fudi.state io io.encodings.ascii io.servers
-       kernel lexer locals logging math namespaces parser present prettyprint
-       sequences strings threads words words.symbol ;
+USING: accessors calendar concurrency.messaging continuations debugger
+       ff.types fry fudi.logging fudi.parser fudi.state fudi.types io
+       io.encodings.ascii io.servers kernel lexer locals logging math
+       namespaces parser present prettyprint sequences strings threads
+       words.symbol ;
 FROM: io.sockets => <inet4> with-client ;
 IN: fudi.peers
 
-! Vanilla-style FUDI transmission is done over unidirectional channels:
-! fudin listens to netsends, fudout feeds netreceives.
+! A symbol created with the FUDIN: syntax is bound, permanently, to a fudin
+! tuple.  The worker field points to a fudin's parser thread.
+! The validity of that field should be guaranteed, i.e. its non-nil value is
+! expected to last precisely for the thread's lifetime.
+SYNTAX: FUDIN:
+    scan-new-word [
+        define-symbol scan-object scan-object f fudin boa
+    ] keep set-global ;
 
-! A symbol created with the FUDI: syntax is then to be bound to the
-! worker thread of a fudi: a fudin's parser thread or a fudout's
-! feeder thread.  The binding is expected to last precisely for the
-! thread's lifetime, i.e validity should be guaranteed.
-SYNTAX: FUDI:
-    scan-new-word [ define-symbol ]
-    [ scan-object "name" set-word-prop ]
-    [ scan-object "info" set-word-prop ] tri ;
+! A symbol created with the FUDOUT: syntax is bound, permanently, to a fudout
+! tuple.  The worker field points to a fudout's feeder thread.
+! The validity of that field should be guaranteed, i.e. its non-nil value is
+! expected to last precisely for the thread's lifetime.
+SYNTAX: FUDOUT:
+    scan-new-word [
+        define-symbol scan-object scan-object f fudout boa
+    ] keep set-global ;
 
-: get-fudins  ( fudi -- servers ) "name" word-prop get-servers-named ;
+: get-fudins  ( fudi -- servers ) id>> get-servers-named ;
 
 <PRIVATE
 SYMBOL: (rotate-request)
@@ -44,10 +51,10 @@ M: (not-running) error. fudi>> "no running " swap bi-print ;
     dup get-fudins empty? [ (not-running) ] [ drop ] if ;
 
 : (no-fudout!) ( fudi -- )
-    dup get-global [ (already-running) ] [ drop ] if ;
+    dup worker>> [ (already-running) ] [ drop ] if ;
 
 : (running-fudout!) ( fudi -- )
-    dup get-global [ drop ] [ (not-running) ] if ;
+    dup worker>> [ drop ] [ (not-running) ] if ;
 
 : (feeder-thread-name) ( feeder -- string )
     [ name>> ] [ insecure>> present ] bi " feeder on " glue ;
@@ -56,7 +63,7 @@ M: (not-running) error. fudi>> "no running " swap bi-print ;
     "OPEN connection: " fudi \ (listen) bi-NOTICE*
     [ readln dup ] [
         [ \ (listen) fudi-DEBUG* ] keep
-        fudi get-global send
+        fudi worker>> send
     ] while drop
     "CLOSE connection: " fudi \ (listen) bi-NOTICE* ;
 
@@ -82,28 +89,32 @@ M: (not-running) error. fudi>> "no running " swap bi-print ;
 ! never more than one feeder thread for a single fudout.
 :: (fudout-handler) ( feeder fudi quot -- quot' )
     [
-        self fudi set-global
+        self fudi worker<<
         feeder [ insecure>> ] [ encoding>> ] bi [
             fudi quot curry with-fudi-logging
         ] [ with-client ] [ error. 3drop ] recover
-        f fudi set-global
+        f fudi worker<<
     ] ;
 PRIVATE>
 
 : start-session ( -- ) t (rotate-request) set ;
 
 :: <fudin> ( fudi port quot -- server )
-    ascii <threaded-server> fudi "name" word-prop >>name
+    ascii <threaded-server> fudi id>> >>name
     f port <inet4> >>insecure f >>secure f >>timeout
     fudi quot (fudin-handler) >>handler ;
 
-: start-fudin ( fudi port -- )
-    over (no-fudin!) (?rotate-logs)
+: start-fudin ( fudi-word port -- )
+    [ get-global ] dip over (no-fudin!) (?rotate-logs)
     [ (listen) ] <fudin> start-server drop ;
 
-:: stop-fudin ( fudi -- )
-    fudi get-fudins [ "no running server for " fudi \ stop-fudin bi-WARNING ] [
-        dup length 1 > [ "more than one " fudi \ stop-fudin bi-WARNING ] when
+: stop-fudin ( fudi-word -- )
+    get-global dup get-fudins [
+        "no running server for " swap \ stop-fudin bi-WARNING
+    ] [
+        dup length 1 > [
+            "more than one " rot \ stop-fudin bi-WARNING
+        ] [ nip ] if
         [ stop-server ] each
     ] if-empty ;
 
@@ -122,14 +133,15 @@ TUPLE: threaded-feeder < identity-tuple
     ] with-logging ;
 
 :: <fudout> ( fudi port quot -- fudout )
-    ascii <threaded-feeder> fudi "name" word-prop >>name
+    ascii <threaded-feeder> fudi id>> >>name
     f port <inet4> >>insecure f >>timeout
     dup fudi quot (fudout-handler) >>handler ;
 
-: start-fudout ( fudi port -- )
-    over (no-fudout!) [ (feed) ] <fudout> start-threaded-feeder drop ;
+: start-fudout ( fudi-word port -- )
+    [ get-global ] dip over (no-fudout!)
+    [ (feed) ] <fudout> start-threaded-feeder drop ;
 
-:: stop-fudout ( fudi -- )
-    fudi get-global [ f swap send ] [
-        "no running feeder for " fudi \ stop-fudout bi-WARNING
+: stop-fudout ( fudi-word -- )
+    get-global dup worker>> [ f swap send drop ] [
+        "no running feeder for " swap \ stop-fudout bi-WARNING
     ] if* ;

@@ -1,22 +1,20 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors fry io kernel lexer logging macros namespaces sequences
-       strings words ;
+USING: accessors fry fudi.types io kernel lexer logging macros namespaces
+       sequences strings ;
 IN: fudi.logging
 
 <PRIVATE
-: (info+string) ( fudi string -- string' ) swap "info" word-prop prepend ; inline
-: (string+info) ( string fudi -- string' ) "info" word-prop append ; inline
+: (info+string) ( fudi string -- string' ) swap info>> prepend ; inline
+: (string+info) ( string fudi -- string' ) info>> append ; inline
 PRIVATE>
 
 : bi-info ( first second -- string )
     dup string? [ (info+string) ] [ (string+info) ] if ; inline
 
 : bi-print ( first second -- )
-    swap dup string?
-    [ write "info" word-prop print ]
-    [ "info" word-prop write print ] if ; inline
+    swap dup string? [ write info>> print ] [ info>> write print ] if ; inline
 
 <PRIVATE
 CONSTANT: (+log-name+) "fudi"

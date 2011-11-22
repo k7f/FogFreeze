@@ -58,7 +58,7 @@ MACRO: (set-cell) ( state-symbol -- )
 
 MACRO: (tap-cell) ( state-symbol -- )
     [ name>> ] keep dup '[
-        [ unparse [ _ swap " " glue \ (tap-cell) fudi-DEBUG ] bi@ ] 2keep
+        [ _ over " " glue \ (tap-cell) fudi-DEBUG ] dip
         swap _ get-global [
             [ at ] 2keep (set-callback)
         ] [

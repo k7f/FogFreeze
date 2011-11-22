@@ -15,7 +15,7 @@ IN: fudi.peers
 ! expected to last precisely for the thread's lifetime.
 SYNTAX: FUDIN:
     scan-new-word [
-        define-symbol scan-object scan-object f fudin boa
+        define-symbol scan-object scan-object <fudin>
     ] keep set-global ;
 
 ! A symbol created with the FUDOUT: syntax is bound, permanently, to a fudout
@@ -24,7 +24,7 @@ SYNTAX: FUDIN:
 ! expected to last precisely for the thread's lifetime.
 SYNTAX: FUDOUT:
     scan-new-word [
-        define-symbol scan-object scan-object f fudout boa
+        define-symbol scan-object scan-object <fudout>
     ] keep set-global ;
 
 : get-fudins  ( fudi -- servers ) id>> get-servers-named ;
@@ -99,24 +99,28 @@ PRIVATE>
 
 : start-session ( -- ) t (rotate-request) set ;
 
-:: <fudin> ( fudi port quot -- server )
+:: <fudi-server> ( fudi port quot -- server )
     ascii <threaded-server> fudi id>> >>name
     f port <inet4> >>insecure f >>secure f >>timeout
-    fudi quot (fudin-handler) >>handler ;
+    fudi quot (fudin-handler) >>handler
+    port fudi port<< ;
 
-: start-fudin ( fudi-word port -- )
-    [ get-global ] dip over (no-fudin!) (?rotate-logs)
-    [ (listen) ] <fudin> start-server drop ;
+: start-fudin* ( fudi port -- )
+    over (no-fudin!) (?rotate-logs) [ (listen) ] <fudi-server> start-server drop ;
 
-: stop-fudin ( fudi-word -- )
-    get-global dup get-fudins [
-        "no running server for " swap \ stop-fudin bi-WARNING
+: stop-fudin* ( fudi -- )
+    dup get-fudins [
+        "no running server for " swap \ stop-fudin* bi-WARNING
     ] [
         dup length 1 > [
-            "more than one " rot \ stop-fudin bi-WARNING
+            "more than one " rot \ stop-fudin* bi-WARNING
         ] [ nip ] if
         [ stop-server ] each
     ] if-empty ;
+
+: start-fudin ( fudi-word port -- ) [ get-global ] dip start-fudin* ;
+
+: stop-fudin ( fudi-word -- ) get-global stop-fudin* ;
 
 TUPLE: threaded-feeder < identity-tuple
     name log-level insecure timeout encoding handler stopped ;
@@ -132,16 +136,32 @@ TUPLE: threaded-feeder < identity-tuple
         [ (feeder-thread-name) ] bi spawn
     ] with-logging ;
 
-:: <fudout> ( fudi port quot -- fudout )
+:: <fudi-feeder> ( fudi port quot -- feeder )
     ascii <threaded-feeder> fudi id>> >>name
     f port <inet4> >>insecure f >>timeout
-    dup fudi quot (fudout-handler) >>handler ;
+    dup fudi quot (fudout-handler) >>handler
+    port fudi port<< ;
 
-: start-fudout ( fudi-word port -- )
-    [ get-global ] dip over (no-fudout!)
-    [ (feed) ] <fudout> start-threaded-feeder drop ;
+: start-fudout* ( fudi port -- )
+    over (no-fudout!) [ (feed) ] <fudi-feeder> start-threaded-feeder drop ;
 
-: stop-fudout ( fudi-word -- )
-    get-global dup worker>> [ f swap send drop ] [
-        "no running feeder for " swap \ stop-fudout bi-WARNING
+: stop-fudout* ( fudi -- )
+    dup worker>> [ f swap send drop ] [
+        "no running feeder for " swap \ stop-fudout* bi-WARNING
     ] if* ;
+
+: start-fudout ( fudi-word port -- ) [ get-global ] dip start-fudout* ;
+
+: stop-fudout ( fudi-word -- ) get-global stop-fudout* ;
+
+: new-responder ( fudi -- fudi' )
+    [ id>> ".responder" append ] [ info>> " responder" append ] bi <fudout> ;
+
+: get-responder ( fudi -- fudi' )
+    "get responder for " over \ get-responder bi-NOTICE
+    dup responder>> [
+        [ ] [ port>> 1 + ] [ new-responder ] tri
+        [ swap start-fudout* ] [ >>responder ] [ ] tri
+    ] unless* nip ;
+
+M: fudin publish ( name fudi -- ) get-responder publish ;

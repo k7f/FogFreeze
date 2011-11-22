@@ -3,7 +3,7 @@
 
 USING: accessors combinators concurrency.messaging fudi.logging fudi.state
        fudi.types kernel logging math math.parser namespaces sequences
-       splitting threads ;
+       splitting strings threads ;
 IN: fudi.parser
 
 <PRIVATE
@@ -23,12 +23,12 @@ IN: fudi.parser
                     drop " " split1 string>number set-remote drop
                 ]
             } {
-                [ dup "tap-in" 6 head-slice = ] [
-                    drop " " split1 drop swap publish
+                [ dup "tap-on" 6 head-slice = ] [
+                    drop " " split1 drop >string swap publish
                 ]
             } {
-                [ dup "tap-out" 7 head-slice = ] [
-                    drop " " split1 drop f publish drop
+                [ dup "tap-off" 7 head-slice = ] [
+                    drop " " split1 drop >string f publish drop
                 ]
             }
             [ 3drop ]
@@ -68,9 +68,4 @@ PRIVATE>
     2dup and [ send ] [ 2drop ] if ;
 PRIVATE>
 
-! FIXME
-! M: fudin publish ( name fudi -- )
-!    [ (tap-out) ] curry publish ;
-
-M: fudout publish ( name fudi -- )
-    [ (tap-out) ] curry publish ;
+M: fudout publish ( name fudi -- ) [ (tap-out) ] curry publish ;

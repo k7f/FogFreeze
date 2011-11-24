@@ -10,6 +10,14 @@ SYMBOLS: (locals) (remotes) ;
 
 TUPLE: (cell) { value vector } { callback ?callable } ;
 
+: (touch) ( cell -- )
+    dup callback>> [
+        [ value>> ] dip call( value -- )
+    ] [ drop ] if* ;
+
+: (touch-value) ( value cell -- )
+    callback>> [ call( value -- ) ] [ drop ] if* ;
+
 : (data-copy) ( new old -- )
     0 swap pick sequence? [ copy ] [ set-nth ] if ;
 
@@ -18,7 +26,15 @@ TUPLE: (cell) { value vector } { callback ?callable } ;
 
 : (data-replace) ( value cell -- )
     [ value>> [ [ (data-copy) ] keep ] [ (data-create) ] if* ] keep
-    [ callback>> [ call( value -- ) ] [ drop ] if* ] [ value<< ] 2bi ;
+    [ (touch-value) ] [ value<< ] 2bi ;
+
+: (data-push-unsafe) ( value cell -- )
+    [ value>> [ push ] keep ] keep
+    [ (touch-value) ] [ value<< ] 2bi ;
+
+: (data-push) ( value cell -- )
+    [ value>> [ [ push ] keep ] [ 1vector ] if* ] keep
+    [ (touch-value) ] [ value<< ] 2bi ;
 
 : (hook-replace) ( callback cell -- )
     over ?callable instance? [ callback<< ] [
@@ -32,19 +48,23 @@ TUPLE: (cell) { value vector } { callback ?callable } ;
     V{ } clone swap (cell) boa ;
 
 : (set-value) ( value cell/f key state -- )
-    [ [ [ (data-replace) ] keep ] [ (value>cell) ] if* ] 2dip set-at ;
+    [ [ [ (data-replace) ] keep t ] [ (value>cell) f ] if* ] 2dip rot
+    [ 3drop ] [ set-at ] if ;
+
+: (push-value) ( value cell -- )
+    [ (data-push) ] [ drop "missing cell" \ (push-value) fudi-ERROR ] if* ;
+
+: (2push-value) ( first second cell -- )
+    [ rot over (data-push) (data-push-unsafe) ] [
+        2drop "missing cell" \ (2push-value) fudi-ERROR
+    ] if* ;
 
 : (set-callback) ( callback cell/f key state -- )
-    [ [ [ (hook-replace) ] keep ] [ (callback>cell) ] if* ] 2dip set-at ;
+    [ [ [ (hook-replace) ] keep t ] [ (callback>cell) f ] if* ] 2dip rot
+    [ 3drop ] [ set-at ] if ;
 
-: (touch-cell) ( name state -- )
-    [
-        at [
-            dup callback>> [
-                [ value>> ] dip call( value -- )
-            ] [ drop ] if*
-        ] when*
-    ] [ drop ] if* ;
+: (touch-by-key) ( name state -- )
+    [ at [ (touch) ] when* ] [ drop ] if* ;
 
 MACRO: (set-cell) ( state-symbol -- )
     [ name>> ] keep dup '[
@@ -53,6 +73,26 @@ MACRO: (set-cell) ( state-symbol -- )
             [ at ] 2keep (set-value)
         ] [
             f swap H{ } clone [ (set-value) ] keep _ set-global
+        ] if*
+    ] ;
+
+MACRO: (grow-cell) ( state-symbol -- )
+    [ name>> ] keep over '[
+        [ unparse [ _ swap " " glue \ (grow-cell) fudi-DEBUG ] bi@ ] 2keep
+        swap _ get-global [
+            at (push-value)
+        ] [
+            2drop "missing state " _ append \ (grow-cell) fudi-ERROR
+        ] if*
+    ] ;
+
+MACRO: (2grow-cell) ( state-symbol -- )
+    [ name>> ] keep over '[
+        [ [ unparse ] bi@ " " glue [ _ swap " " glue \ (2grow-cell) fudi-DEBUG ] bi@ ] 3keep
+        rot _ get-global [
+            at (2push-value)
+        ] [
+            3drop "missing state " _ append \ (2grow-cell) fudi-ERROR
         ] if*
     ] ;
 
@@ -73,11 +113,17 @@ PRIVATE>
 : locals.  ( -- ) (locals)  get-global . ;
 : remotes. ( -- ) (remotes) get-global . ;
 
-: touch-local  ( name -- ) (locals)  get-global (touch-cell) ;
-: touch-remote ( name -- ) (remotes) get-global (touch-cell) ;
+: touch-local  ( name -- ) (locals)  get-global (touch-by-key) ;
+: touch-remote ( name -- ) (remotes) get-global (touch-by-key) ;
 
 : set-local  ( name value -- ) (locals)  (set-cell) ;
 : set-remote ( name value -- ) (remotes) (set-cell) ;
+
+: push-local  ( name value -- ) (locals)  (grow-cell) ;
+: push-remote ( name value -- ) (remotes) (grow-cell) ;
+
+: push-local-event ( name time-stamp value -- ) (locals) (2grow-cell) ;
+: push-remote-event ( name time-stamp value -- ) (remotes) (2grow-cell) ;
 
 ! Contract: Callback is not fired until next set-local.  In order to
 ! force immediate callback, call touch-local after publish.

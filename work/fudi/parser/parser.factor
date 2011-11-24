@@ -10,6 +10,14 @@ IN: fudi.parser
 : (unterminated-message) ( message -- ) \ (unterminated-message) fudi-ERROR ;
 
 ! FIXME validation
+! Expects a semicolon-terminated message consisting of a selector, a variable
+! and optional arguments.  The currently recognized forms of messages are
+! array <v> <list-of-numbers>
+! float <v> <number>
+! track <v>
+! event <v> <time-stamp> <number>
+! tap-on <v>
+! tap-off <v>
 : (parse-message) ( fudi message -- )
     dup last CHAR: ; = [
         ! dup \ (parse-message) fudi-DEBUG
@@ -21,6 +29,15 @@ IN: fudi.parser
             } {
                 [ dup "float" 5 head-slice = ] [
                     drop " " split1 string>number set-remote drop
+                ]
+            } {
+                [ dup "track" 5 head-slice = ] [
+                    drop " " split1 drop >string { } set-remote drop
+                ]
+            } {
+                [ dup "event" 5 head-slice = ] [
+                    drop " " split1 " " split1
+                    [ string>number ] bi@ push-remote-event drop
                 ]
             } {
                 [ dup "tap-on" 6 head-slice = ] [

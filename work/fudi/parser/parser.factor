@@ -23,6 +23,10 @@ IN: fudi.parser
         ! dup \ (parse-message) fudi-DEBUG
         but-last-slice " " split1-slice swap {
             {
+                [ dup "clear" 5 head-slice = ] [
+                    drop " " split1 drop >string f set-remote drop
+                ]
+            } {
                 [ dup "array" 5 head-slice = ] [
                     drop " " split1 " " split [ string>number ] map set-remote drop
                 ]

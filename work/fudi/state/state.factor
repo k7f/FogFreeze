@@ -18,14 +18,20 @@ TUPLE: (cell) { value vector } { callback ?callable } ;
 : (touch-value) ( value cell -- )
     callback>> [ call( value -- ) ] [ drop ] if* ;
 
-: (data-copy) ( new old -- )
-    0 swap pick sequence? [ copy ] [ set-nth ] if ;
+: (data-paste) ( new old -- )
+    0 swap pick [
+        dup sequence? [
+            length [ [ copy ] keep ] dip swap
+        ] [
+            drop [ set-nth 1 ] keep
+        ] if set-length
+    ] [ set-length drop ] if* ;
 
 : (data-create) ( value -- value' )
     dup sequence? [ >vector ] [ 1vector ] if ;
 
 : (data-replace) ( value cell -- )
-    [ value>> [ [ (data-copy) ] keep ] [ (data-create) ] if* ] keep
+    [ value>> [ [ (data-paste) ] keep ] [ (data-create) ] if* ] keep
     [ (touch-value) ] [ value<< ] 2bi ;
 
 : (data-push-unsafe) ( value cell -- )

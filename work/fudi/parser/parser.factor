@@ -11,14 +11,16 @@ IN: fudi.parser
 <PRIVATE
 : (unterminated-message) ( message -- ) \ (unterminated-message) fudi-ERROR ;
 
-! ______________________________________
-! Push interface -- requests for writing
+! ______________
+! Push interface
+! -- requests for writing to a remote cell.
 
 ! clear <v>
 ! array <v> <list-of-numbers>
 ! float <v> <number>
 ! track <v>
 ! event <v> <time-stamp> <number>
+! clone <vto> <vfrom>
 
 FUDI-RULE: clear => drop " " split1 drop >string f set-remote ;
 
@@ -30,8 +32,11 @@ FUDI-RULE: track => drop " " split1 drop >string { } set-remote ;
 
 FUDI-RULE: event => drop " " split1 " " split1 [ string>number ] bi@ push-remote-event ;
 
-! ______________________________________
-! Pull interface -- requests for reading
+FUDI-RULE: clone => drop " " split1 clone-remote ;
+
+! ______________
+! Pull interface
+! -- requests for reading from a cell (remote or local).
 
 ! get <v> (defined in peers)
 ! recall <v> (defined in peers)
@@ -45,8 +50,9 @@ FUDI-RULE: tap-off => drop " " split1 drop >string f publish ;
 <PRIVATE
 SYMBOLS: (log-rules?) (log-messages?) ;
 
-! Expects a semicolon-terminated message consisting of a selector, a variable
-! and optional arguments.
+! Expects a semicolon-terminated message consisting of a selector, a name
+! of a cell and optional arguments.  The namespace used for cell's look-up
+! is rule-dependent.
 MACRO: (parse-message) ( rules -- )  ! ( fudi message -- )
     dup '[
         (log-rules?) get-global [ _ unparse \ (parse-message) fudi-DEBUG ] when

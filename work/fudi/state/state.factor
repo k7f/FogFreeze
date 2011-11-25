@@ -53,6 +53,9 @@ TUPLE: (cell) { value vector } { callback ?callable } ;
 : (callback>cell) ( callback -- cell )
     V{ } clone swap (cell) boa ;
 
+: (get-value) ( key state -- value/f )
+    [ at [ value>> ] [ f ] if* ] [ drop f ] if* ;
+
 : (set-value) ( value cell/f key state -- )
     [ [ [ (data-replace) ] keep t ] [ (value>cell) f ] if* ] 2dip rot
     [ 3drop ] [ set-at ] if ;
@@ -102,6 +105,16 @@ MACRO: (2grow-cell) ( state-symbol -- )
         ] if*
     ] ;
 
+MACRO: (clone-cell) ( state-symbol -- )
+    [ name>> ] keep dup '[
+        [ [ _ swap " " glue \ (clone-cell) fudi-DEBUG ] bi@ ] 2keep
+        _ get-global [
+            swap over (get-value) [
+                clone -rot [ at ] 2keep [ (set-value) ] keep _ set-global
+            ] [ 2drop ] if*
+        ] [ 2drop ] if*
+    ] ;
+
 MACRO: (tap-cell) ( state-symbol -- )
     [ name>> ] keep dup '[
         [ _ over " " glue \ (tap-cell) fudi-DEBUG ] dip
@@ -113,8 +126,8 @@ MACRO: (tap-cell) ( state-symbol -- )
     ] ;
 PRIVATE>
 
-: get-local  ( name -- value ) (locals)  get-global [ at ] [ drop f ] if* ;
-: get-remote ( name -- value ) (remotes) get-global [ at ] [ drop f ] if* ;
+: get-local  ( name -- cell ) (locals)  get-global [ at ] [ drop f ] if* ;
+: get-remote ( name -- cell ) (remotes) get-global [ at ] [ drop f ] if* ;
 
 : touch-local  ( name -- ) (locals)  get-global (touch-by-key) ;
 : touch-remote ( name -- ) (remotes) get-global (touch-by-key) ;
@@ -127,6 +140,9 @@ PRIVATE>
 
 : push-local-event ( name time-stamp value -- ) (locals) (2grow-cell) ;
 : push-remote-event ( name time-stamp value -- ) (remotes) (2grow-cell) ;
+
+: clone-local  ( to from -- ) (locals)  (clone-cell) ;
+: clone-remote ( to from -- ) (remotes) (clone-cell) ;
 
 : local.  ( name -- ) get-local . ;
 : remote. ( name -- ) get-remote . ;

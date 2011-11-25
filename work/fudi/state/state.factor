@@ -113,11 +113,8 @@ MACRO: (tap-cell) ( state-symbol -- )
     ] ;
 PRIVATE>
 
-: local.  ( name -- ) (locals)  get-global [ at ] [ drop f ] if* . ;
-: remote. ( name -- ) (remotes) get-global [ at ] [ drop f ] if* . ;
-
-: locals.  ( -- ) (locals)  get-global . ;
-: remotes. ( -- ) (remotes) get-global . ;
+: get-local  ( name -- value ) (locals)  get-global [ at ] [ drop f ] if* ;
+: get-remote ( name -- value ) (remotes) get-global [ at ] [ drop f ] if* ;
 
 : touch-local  ( name -- ) (locals)  get-global (touch-by-key) ;
 : touch-remote ( name -- ) (remotes) get-global (touch-by-key) ;
@@ -131,6 +128,15 @@ PRIVATE>
 : push-local-event ( name time-stamp value -- ) (locals) (2grow-cell) ;
 : push-remote-event ( name time-stamp value -- ) (remotes) (2grow-cell) ;
 
+: local.  ( name -- ) get-local . ;
+: remote. ( name -- ) get-remote . ;
+
+: locals.  ( -- ) (locals)  get-global . ;
+: remotes. ( -- ) (remotes) get-global . ;
+
+! Publishing: a change in ff triggers a quotation.  When publishing on a fudin,
+! the quotation feeds Pd.  The fudin's method is defined in peers and it is
+! invoked by the parser.
 ! Contract: Callback is not fired until next set-local.  In order to
 ! force immediate callback, call touch-local after publish.
 GENERIC: publish ( name object -- )
@@ -139,6 +145,7 @@ M: f publish (locals) (tap-cell) ;
 
 M: callable publish dupd curry (locals) (tap-cell) ;
 
+! Subscription: a change in Pd triggers a quotation.
 ! Callback is not fired until next set-remote.  In order to force
 ! immediate callback, call touch-remote after subscribe.
 : subscribe ( name quot/f -- ) (remotes) (tap-cell) ;

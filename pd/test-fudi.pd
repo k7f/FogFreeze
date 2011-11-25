@@ -1,4 +1,4 @@
-#N canvas 718 313 744 468 24;
+#N canvas 723 341 744 468 24;
 #X floatatom 182 20 5 0 0 0 - - -;
 #X floatatom 25 120 5 0 0 0 - - -;
 #N canvas 0 0 450 300 (subpatch) 0;
@@ -51,6 +51,8 @@
 #X msg 183 68 send float f1 \$1;
 #X msg 200 117 send float f2 \$1;
 #X msg 538 118 send clear t1;
+#X msg 460 374 send get F1;
+#X obj 460 422 s >ff;
 #X connect 0 0 22 0;
 #X connect 6 0 23 0;
 #X connect 8 0 17 0;
@@ -69,3 +71,4 @@
 #X connect 22 0 7 0;
 #X connect 23 0 7 0;
 #X connect 24 0 12 0;
+#X connect 25 0 26 0;

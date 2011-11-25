@@ -7,6 +7,10 @@ IN: fudi.types
 ! Vanilla-style FUDI transmission is done over unidirectional channels:
 ! fudin listens to netsends, fudout feeds netreceives.
 
+! Conceptually, though, Pd is the client, while ff is the server.  Pd sends
+! requests and queries, ff obeys and responds -- the two should never act
+! the other way.
+
 TUPLE: (fudi) { id string } { info string } { port ?fixnum } { worker ?thread } ;
 
 TUPLE: fudout < (fudi) ;

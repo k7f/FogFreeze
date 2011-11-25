@@ -1,72 +1,80 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors combinators concurrency.messaging fudi.logging fudi.state
-       fudi.types kernel logging math math.parser namespaces sequences
-       splitting strings threads ;
+USING: accessors arrays combinators concurrency.messaging fry fudi.logging
+       fudi.parser.rules fudi.state fudi.types kernel logging macros math
+       math.parser namespaces prettyprint sequences splitting strings threads ;
 IN: fudi.parser
+
+! FIXME validation
 
 <PRIVATE
 : (unterminated-message) ( message -- ) \ (unterminated-message) fudi-ERROR ;
 
-! FIXME validation
-! Expects a semicolon-terminated message consisting of a selector, a variable
-! and optional arguments.  The currently recognized forms of messages are
+! ______________________________________
+! Push interface -- requests for writing
+
+! clear <v>
 ! array <v> <list-of-numbers>
 ! float <v> <number>
 ! track <v>
 ! event <v> <time-stamp> <number>
+
+FUDI-RULE: clear => " " split1 drop >string f set-remote drop ;
+
+FUDI-RULE: array => " " split1 " " split [ string>number ] map set-remote drop ;
+
+FUDI-RULE: float => " " split1 string>number set-remote drop ;
+
+FUDI-RULE: track => " " split1 drop >string { } set-remote drop ;
+
+FUDI-RULE: event => " " split1 " " split1 [ string>number ] bi@ push-remote-event drop ;
+
+! ______________________________________
+! Pull interface -- requests for reading
+
+! get <v> (defined in peers)
 ! tap-on <v>
 ! tap-off <v>
-: (parse-message) ( fudi message -- )
-    dup last CHAR: ; = [
-        ! dup \ (parse-message) fudi-DEBUG
-        but-last-slice " " split1-slice swap {
-            {
-                [ dup "clear" 5 head-slice = ] [
-                    drop " " split1 drop >string f set-remote drop
-                ]
-            } {
-                [ dup "array" 5 head-slice = ] [
-                    drop " " split1 " " split [ string>number ] map set-remote drop
-                ]
-            } {
-                [ dup "float" 5 head-slice = ] [
-                    drop " " split1 string>number set-remote drop
-                ]
-            } {
-                [ dup "track" 5 head-slice = ] [
-                    drop " " split1 drop >string { } set-remote drop
-                ]
-            } {
-                [ dup "event" 5 head-slice = ] [
-                    drop " " split1 " " split1
-                    [ string>number ] bi@ push-remote-event drop
-                ]
-            } {
-                [ dup "tap-on" 6 head-slice = ] [
-                    drop " " split1 drop >string swap publish
-                ]
-            } {
-                [ dup "tap-off" 7 head-slice = ] [
-                    drop " " split1 drop >string f publish drop
-                ]
-            }
-            [ 3drop ]
-        } cond
-    ] [ (unterminated-message) drop ] if ;
 
-: (parser-loop) ( fudi -- )
-    [ receive dup ] [ (parse-message) ] with while drop ;
+FUDI-RULE: tap-on => " " split1 drop >string swap publish ;
+
+FUDI-RULE: tap-off => " " split1 drop >string f publish drop ;
+
+<PRIVATE
+SYMBOLS: (log-rules?) (log-messages?) ;
+
+! Expects a semicolon-terminated message consisting of a selector, a variable
+! and optional arguments.
+MACRO: (parse-message) ( rules -- )  ! ( fudi message -- )
+    dup '[
+        (log-rules?) get-global [ _ unparse \ (parse-message) fudi-DEBUG ] when
+        dup last CHAR: ; = [
+            (log-messages?) get-global [ dup \ (parse-message) fudi-DEBUG ] when
+            but-last-slice " " split1-slice swap
+            _ cond
+        ] [ (unterminated-message) drop ] if
+    ] ;
+
+: (parser-loop) ( fudi rules -- )
+    [ receive dup ] swap [ (parse-message) ] curry with while drop ; inline
 
 : (parser-handler) ( fudi quot -- quot' )
     dupd curry [ with-fudi-logging f swap worker<< ] 2curry ;
 PRIVATE>
 
+: start-logging-rules ( -- ) t (log-rules?) set-global ;
+: stop-logging-rules ( -- ) f (log-rules?) set-global ;
+: start-logging-messages ( -- ) t (log-messages?) set-global ;
+: stop-logging-messages ( -- ) f (log-messages?) set-global ;
+
 ! FIXME do not spawn a new parser for every connection -- use only one, refcounted
 
 : start-parser ( fudi -- parser )
-    [ [ (parser-loop) ] (parser-handler) "FUDI parser" spawn dup ] keep worker<< ;
+    [
+        [ parse-rules (parser-loop) ]
+        (parser-handler) "FUDI parser" spawn dup
+    ] keep worker<< ;
 
 : stop-parser ( fudi -- )
     dup worker>> [ f swap send drop ] [
@@ -74,7 +82,7 @@ PRIVATE>
     ] if* ;
 
 <PRIVATE
-: (unparse-local) ( value name -- message/f )
+: (fudi-unparse-unsafe) ( value name -- message/f )
     over real? [ swap number>string " " glue " ;" append ] [
         over sequence? [
             swap [
@@ -84,9 +92,32 @@ PRIVATE>
         ] [ 2drop f ] if
     ] if ;
 
-: (tap-out) ( value name fudi -- )
-    [ (unparse-local) ] dip worker>>
-    2dup and [ send ] [ 2drop ] if ;
+: (fudi-unparse) ( value name -- message/f )
+    over [ (fudi-unparse-unsafe) ] [ 2drop f ] if ;
+
+: (fudi-unparse*) ( value name -- message/f )
+    over [ (fudi-unparse-unsafe) ] [ nip " bang ;" append ] if ;
+
+: (log-feed-out) ( value name fudi word -- )
+    [
+        dup string? [ drop "?" ] unless swap unparse " <- " glue " from " append
+    ] 2dip bi-DEBUG ;
 PRIVATE>
 
-M: fudout publish ( name fudi -- ) [ (tap-out) ] curry publish ;
+! The request is ignored, silently, unless there is both, anything
+! valid to send (a number or a sequence of numbers) and anything to
+! send to (a feeder thread is running).
+: feed-out ( value name fudi -- )
+    [ \ feed-out (log-feed-out) ] 3keep
+    [ (fudi-unparse) ] dip worker>>
+    2dup and [ send ] [ 2drop ] if ;
+
+! The request is ignored, silently, unless there is both, anything
+! valid to send (the f, a number, or a sequence of numbers) and
+! anything to send to (a feeder thread is running).
+: feed-out* ( value name fudi -- )
+    [ \ feed-out* (log-feed-out) ] 3keep
+    [ (fudi-unparse*) ] dip worker>>
+    2dup and [ send ] [ 2drop ] if ;
+
+M: fudout publish ( name fudi -- ) [ feed-out ] curry publish ;

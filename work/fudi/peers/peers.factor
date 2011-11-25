@@ -2,10 +2,10 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors calendar concurrency.messaging continuations debugger
-       ff.types fry fudi.logging fudi.parser fudi.state fudi.types io
-       io.encodings.ascii io.servers kernel lexer locals logging math
-       namespaces parser present prettyprint sequences strings threads
-       words.symbol ;
+       ff.types fry fudi.logging fudi.parser fudi.parser.rules fudi.state
+       fudi.types io io.encodings.ascii io.servers kernel lexer locals
+       logging math namespaces parser present prettyprint sequences
+       splitting strings threads words.symbol ;
 FROM: io.sockets => <inet4> with-client ;
 IN: fudi.peers
 
@@ -71,7 +71,7 @@ M: (not-running) error. fudi>> "no running " swap bi-print ;
     "OPEN connection: " fudi \ (feed) bi-NOTICE*
     [ receive dup ] [
         [ \ (feed) fudi-DEBUG* ] keep
-        print flush
+        [ print flush ] [ 2drop ] recover  ! FIXME terminate the thread on error
     ] while drop
     "CLOSE connection: " fudi \ (feed) bi-NOTICE* ;
 
@@ -155,13 +155,18 @@ TUPLE: threaded-feeder < identity-tuple
 : stop-fudout ( fudi-word -- ) get-global stop-fudout* ;
 
 : new-responder ( fudi -- fudi' )
-    [ id>> ".responder" append ] [ info>> " responder" append ] bi <fudout> ;
+    [ id>> ".responder" append ] [ info>> "'s responder" append ] bi <fudout> ;
 
 : get-responder ( fudi -- fudi' )
-    "get responder for " over \ get-responder bi-NOTICE
     dup responder>> [
+        "invoked by " over \ get-responder bi-NOTICE
         [ ] [ port>> 1 + ] [ new-responder ] tri
         [ swap start-fudout* ] [ >>responder ] [ ] tri
     ] unless* nip ;
+
+: respond ( name fudi -- )
+    get-responder [ dup get-local [ value>> ] [ f ] if* swap ] dip feed-out* ;
+
+FUDI-RULE: get => " " split1 drop >string swap respond ;
 
 M: fudin publish ( name fudi -- ) get-responder publish ;

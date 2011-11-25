@@ -5,8 +5,8 @@ USING: fudi.peers ;
 IN: fudi
 
 <PRIVATE
-FUDIN:  +main-fudin+  "main.fudin"  "main FUDI source"
-FUDOUT: +main-fudout+ "main.fudout" "main FUDI sink"
+FUDIN:  +main-fudin+  "main.fudin"  "main FUDI listener"
+FUDOUT: +main-fudout+ "main.fudout" "main FUDI feeder"
 PRIVATE>
 
 : start-main-fudin  ( -- ) +main-fudin+  3000 start-fudin ;

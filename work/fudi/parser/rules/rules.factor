@@ -13,9 +13,9 @@ PRIVATE>
 : parse-rules ( -- rules ) (parse-rules) get-global ;
 
 ! FIXME replace if already added
-! FIXME validate the stack effect: ( selector quot: ( fudi tail -- ) -- )
+! FIXME validate the stack effect: ( selector quot: ( tail fudi -- ) -- )
 SYNTAX: FUDI-RULE:
     scan-token "=>" expect
     dup length head-slice '[ dup _ = ]
-    parse-definition [ drop ] prepose 2array
+    parse-definition [ drop swap ] prepose 2array
     (parse-rules) [ swap prefix ] with change-global ;

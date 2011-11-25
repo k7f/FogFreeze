@@ -164,9 +164,11 @@ TUPLE: threaded-feeder < identity-tuple
         [ swap start-fudout* ] [ >>responder ] [ ] tri
     ] unless* nip ;
 
-: respond ( name fudi -- )
-    get-responder [ dup get-local [ value>> ] [ f ] if* swap ] dip feed-out* ;
+: respond ( cell name fudi -- )
+    get-responder [ [ value>> ] [ f ] if* ] 2dip feed-out* ;
 
-FUDI-RULE: get => " " split1 drop >string swap respond ;
+FUDI-RULE: get => [ " " split1 drop >string [ get-local ] keep ] dip respond ;
+
+FUDI-RULE: recall => [ " " split1 drop >string [ get-remote ] keep ] dip respond ;
 
 M: fudin publish ( name fudi -- ) get-responder publish ;

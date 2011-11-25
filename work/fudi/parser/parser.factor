@@ -20,26 +20,27 @@ IN: fudi.parser
 ! track <v>
 ! event <v> <time-stamp> <number>
 
-FUDI-RULE: clear => " " split1 drop >string f set-remote drop ;
+FUDI-RULE: clear => drop " " split1 drop >string f set-remote ;
 
-FUDI-RULE: array => " " split1 " " split [ string>number ] map set-remote drop ;
+FUDI-RULE: array => drop " " split1 " " split [ string>number ] map set-remote ;
 
-FUDI-RULE: float => " " split1 string>number set-remote drop ;
+FUDI-RULE: float => drop " " split1 string>number set-remote ;
 
-FUDI-RULE: track => " " split1 drop >string { } set-remote drop ;
+FUDI-RULE: track => drop " " split1 drop >string { } set-remote ;
 
-FUDI-RULE: event => " " split1 " " split1 [ string>number ] bi@ push-remote-event drop ;
+FUDI-RULE: event => drop " " split1 " " split1 [ string>number ] bi@ push-remote-event ;
 
 ! ______________________________________
 ! Pull interface -- requests for reading
 
 ! get <v> (defined in peers)
+! recall <v> (defined in peers)
 ! tap-on <v>
 ! tap-off <v>
 
-FUDI-RULE: tap-on => " " split1 drop >string swap publish ;
+FUDI-RULE: tap-on => [ " " split1 drop >string ] dip publish ;
 
-FUDI-RULE: tap-off => " " split1 drop >string f publish drop ;
+FUDI-RULE: tap-off => drop " " split1 drop >string f publish ;
 
 <PRIVATE
 SYMBOLS: (log-rules?) (log-messages?) ;

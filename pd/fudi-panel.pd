@@ -1,0 +1,12 @@
+#N canvas 101 292 341 240 24;
+#X obj 50 30 cnv 28 130 145 empty empty \$1 100 65 1 20 -162280 -262144
+0;
+#X obj 54 33 bng 28 250 50 0 \$1-capture! empty capture 35 12 1 20 -1
+-257985 -1;
+#X obj 54 93 bng 28 250 50 0 \$1-play! empty play 35 12 1 20 -1 -257985
+-1;
+#X floatatom 114 124 5 0 0 3 recall #1-recall-id #1-recall;
+#X floatatom 54 124 5 0 0 3 clone #1-clone-id #1-clone;
+#X obj 54 63 bng 28 250 50 0 \$1-recall! empty recall 35 12 1 20 -1
+-257985 -1;
+#X coords 0 -1 1 1 130 145 2 50 30;

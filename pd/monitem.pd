@@ -1,0 +1,8 @@
+#N canvas 568 282 239 177 24;
+#X obj 18 19 r \$1;
+#X obj 16 130 print \$1;
+#X obj 17 75 spigot;
+#X obj 102 19 r monitor;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
+#X connect 3 0 2 1;

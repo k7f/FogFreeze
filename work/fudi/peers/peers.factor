@@ -167,8 +167,12 @@ TUPLE: threaded-feeder < identity-tuple
 : respond ( cell name fudi -- )
     get-responder [ [ value>> ] [ f ] if* ] 2dip feed-out* ;
 
-FUDI-RULE: get => [ " " split1 drop >string [ get-local ] keep ] dip respond ;
+FUDI-RULE: get => [
+    " " split1 [ >string [ get-local ] keep ] dip [ nip >string ] when*
+] dip respond ;
 
-FUDI-RULE: recall => [ " " split1 drop >string [ get-remote ] keep ] dip respond ;
+FUDI-RULE: recall => [
+    " " split1 [ >string [ get-remote ] keep ] dip [ nip >string ] when*
+] dip respond ;
 
 M: fudin publish ( name fudi -- ) get-responder publish ;

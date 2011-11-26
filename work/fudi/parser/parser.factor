@@ -38,10 +38,14 @@ FUDI-RULE: clone => drop " " split1 clone-remote ;
 ! Pull interface
 ! -- requests for reading from a cell (remote or local).
 
-! get <v> (defined in peers)
-! recall <v> (defined in peers)
 ! tap-on <v>
 ! tap-off <v>
+
+! defined in peers:
+! get <v>
+! get <v> <alias>
+! recall <v>
+! recall <v> <alias>
 
 FUDI-RULE: tap-on => [ " " split1 drop >string ] dip publish ;
 

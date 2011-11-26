@@ -1,0 +1,6 @@
+#N canvas 563 254 288 261 24;
+#X obj 25 21 monitem \$1-capture!;
+#X obj 26 65 monitem \$1-recall!;
+#X obj 27 112 monitem \$1-play!;
+#X obj 26 207 monitem \$1-recall;
+#X obj 27 160 monitem \$1-clone;

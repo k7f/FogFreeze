@@ -1,78 +1,55 @@
-#N canvas 412 257 876 220 24;
-#X floatatom 25 126 5 0 0 0 - - -;
-#N canvas 165 258 469 384 netio 0;
-#X obj 28 281 netsend;
-#X msg 45 176 connect localhost 3000;
-#X msg 28 227 disconnect;
-#X obj 188 228 r >ff;
-#X obj 28 18 inlet;
-#X obj 28 70 sel;
-#X obj 29 338 outlet;
-#X obj 180 282 netreceive 3001;
-#X obj 340 339 outlet;
-#X obj 180 338 s ff>;
-#X obj 124 19 r ff>;
-#X obj 123 72 print ff>;
-#X obj 339 227 s start-ff;
-#X obj 339 173 del 500;
-#X obj 123 123 t b;
-#X connect 0 0 6 0;
-#X connect 1 0 0 0;
-#X connect 2 0 0 0;
-#X connect 3 0 0 0;
-#X connect 4 0 5 0;
-#X connect 5 0 2 0;
-#X connect 5 1 14 0;
-#X connect 7 0 9 0;
-#X connect 7 1 8 0;
-#X connect 10 0 11 0;
-#X connect 13 0 12 0;
-#X connect 14 0 13 0;
-#X connect 14 0 1 0;
-#X restore 25 71 pd netio;
-#X floatatom 109 126 5 0 0 0 - - -;
-#X obj 26 17 tgl 28 0 empty empty empty 17 7 0 10 -262144 -1 -1 1 1
+#N canvas 150 498 964 223 24;
+#X floatatom 15 124 5 0 0 0 - - -;
+#X floatatom 88 124 5 0 0 0 - - -;
+#X obj 16 17 tgl 28 0 empty empty empty 17 7 0 10 -262144 -1 -1 0 1
 ;
-#X floatatom 260 124 5 0 0 0 recall - -;
-#X floatatom 398 123 5 0 0 1 clone - -;
-#X obj 211 170 bng 28 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 210 18 bng 28 250 50 0 empty empty reset -52 12 1 20 -262144
--1 -1;
-#X floatatom 407 18 5 0 0 0 - - -;
-#X obj 276 18 hsl 128 28 0 127 0 0 empty p empty -2 -8 0 10 -262144
--1 -1 2600 0;
-#X obj 357 68 bng 28 250 50 0 empty empty play 32 12 1 20 -262144 -1
--1;
-#X obj 261 172 fudi-scenes p;
-#X obj 211 70 fudi-track p;
-#X floatatom 602 124 5 0 0 0 recall - -;
-#X floatatom 740 123 5 0 0 1 clone - -;
-#X obj 553 170 bng 28 250 50 0 empty empty empty 17 7 0 10 -262144
--1 -1;
-#X obj 552 18 bng 28 250 50 0 empty empty reset -52 12 1 20 -262144
--1 -1;
-#X floatatom 749 18 5 0 0 0 - - -;
-#X obj 618 18 hsl 128 28 0 127 0 0 empty q empty -2 -8 0 10 -262144
--1 -1 9000 0;
-#X obj 699 68 bng 28 250 50 0 empty empty play 32 12 1 20 -262144 -1
--1;
-#X obj 603 172 fudi-scenes q;
-#X obj 553 70 fudi-track q;
-#X connect 1 0 0 0;
-#X connect 1 1 2 0;
-#X connect 3 0 1 0;
-#X connect 4 0 11 0;
-#X connect 5 0 11 1;
-#X connect 6 0 11 0;
-#X connect 7 0 12 0;
-#X connect 9 0 8 0;
-#X connect 9 0 12 1;
-#X connect 10 0 12 2;
-#X connect 13 0 20 0;
-#X connect 14 0 20 1;
-#X connect 15 0 20 0;
-#X connect 16 0 21 0;
+#X floatatom 705 167 5 0 0 0 - - -;
+#X obj 705 17 vsl 55 140 0 127 0 0 p1>> >>p1 empty -2 -8 0 10 -262144
+-1 -1 0 0;
+#N canvas 100 202 331 228 tracks 0;
+#X obj 35 31 fudi-track p1;
+#X obj 35 75 fudi-track p2;
+#X obj 34 116 fudi-track q1;
+#X obj 33 159 fudi-track q2;
+#X restore 124 178 pd tracks;
+#X obj 162 15 fudi-panel p1;
+#X obj 294 15 fudi-panel p2;
+#N canvas 60 172 346 214 init 0;
+#X obj 25 24 loadbang;
+#X obj 25 123 s monitor;
+#X obj 24 71 tgl 28 0 empty empty empty 17 7 0 10 -262144 -1 -1 1 1
+;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
+#X restore 19 178 pd init;
+#N canvas 97 135 321 228 scenes 0;
+#X obj 33 32 fudi-scenes p1;
+#X obj 33 77 fudi-scenes p2;
+#X obj 31 123 fudi-scenes q1;
+#X obj 31 168 fudi-scenes q2;
+#X restore 248 179 pd scenes;
+#N canvas 51 106 279 229 monitors 0;
+#X obj 24 29 monitor p1;
+#X obj 25 72 monitor p2;
+#X obj 23 115 monitor q1;
+#X obj 24 158 monitor q2;
+#X restore 374 179 pd monitors;
+#X obj 426 15 fudi-panel q1;
+#X obj 558 15 fudi-panel q2;
+#X floatatom 766 166 5 0 0 0 - - -;
+#X obj 766 17 vsl 55 140 0 127 0 0 p2>> >>p2 empty -2 -8 0 10 -262144
+-1 -1 0 0;
+#X floatatom 827 166 5 0 0 0 - - -;
+#X obj 827 17 vsl 55 140 0 127 0 0 q1>> >>q1 empty -2 -8 0 10 -262144
+-1 -1 0 0;
+#X floatatom 888 165 5 0 0 0 - - -;
+#X obj 888 17 vsl 55 140 0 127 0 0 q2>> >>q2 empty -2 -8 0 10 -262144
+-1 -1 0 0;
+#X obj 15 71 fudi-io;
+#X connect 2 0 19 0;
+#X connect 4 0 3 0;
+#X connect 14 0 13 0;
+#X connect 16 0 15 0;
 #X connect 18 0 17 0;
-#X connect 18 0 21 1;
-#X connect 19 0 21 2;
+#X connect 19 0 0 0;
+#X connect 19 1 1 0;

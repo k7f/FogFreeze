@@ -1,7 +1,7 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: kernel math math.ranges om.kernel tools.test ;
+USING: arrays kernel math math.ranges om.kernel tools.test ;
 IN: om.kernel.tests
 
 [ 5 ] [
@@ -259,10 +259,54 @@ IN: om.kernel.tests
     [ < ] { 0 1 2 3 4 3 2 } 3 rang-p
 ] unit-test
 
+[ { { 1 2 3 4 5 } { 6 7 8 9 } } ] [
+    9 [1,b] 2 list-explode
+] unit-test
+
+[ { { 1 2 } { 3 4 } { 5 } { 6 7 } { 8 9 } } ] [
+    9 [1,b] 5 list-explode
+] unit-test
+
+[ { { 1 } { 2 } { 3 } { 4 } { 5 } { 6 } { 7 } { 8 } { 9 } { 9 } { 9 } { 9 } } ] [
+    9 [1,b] 12 list-explode
+] unit-test
+
 [ { 5 6 8 } ] [
     { 5 6 "a" "b" 8 } [ number? ] 'pass list-filter
 ] unit-test
 
 [ { "a" "b" } ] [
     { 5 6 "a" "b" 8 } [ number? ] 'reject list-filter
+] unit-test
+
+[ { { 4 5 6 } } ] [
+    { { 1 2 3 } { 4 5 6 } { 7 8 9 } } 1 \ odd? 'pass table-filter
+] unit-test
+
+[ { { 1 2 3 } { 7 8 9 } } ] [
+    { { 1 2 3 } { 4 5 6 } { 7 8 9 } } 1 \ odd? 'reject table-filter
+] unit-test
+
+[ { 3 4 5 10 11 } ] [
+    11 [1,b] >array { { 3 5 } { 10 11 } } 'pass band-filter
+] unit-test
+
+[ { 1 2 6 7 8 9 } ] [
+    11 [1,b] >array { { 3 5 } { 10 11 } } 'reject band-filter
+] unit-test
+
+[ { 10 11 13 14 } ] [
+    { 10 11 12 13 14 15 16 } { { 0 1 } { 3 4 } } 'pass range-filter
+] unit-test
+
+[ { 10 11 15 16 } ] [
+    { 10 11 12 13 14 15 16 } { { 0 1 } { 5 6 } } 'pass range-filter
+] unit-test
+
+[ { 12 13 } ] [
+    { 10 11 12 13 14 15 16 } { { 0 1 } { 4 6 } } 'reject range-filter
+] unit-test
+
+[ { 12 13 15 16 } ] [
+    { 10 11 12 13 14 15 16 } { { 0 1 } { 4 4 } } 'reject range-filter
 ] unit-test

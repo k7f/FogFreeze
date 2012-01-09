@@ -1,7 +1,7 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel math math.order sequences words.symbol ;
+USING: arrays help.markup help.syntax kernel math math.order sequences words.symbol ;
 IN: om.kernel
 
 HELP: om+
@@ -220,6 +220,15 @@ $nl
 $nl
 { $snippet "key" } " is a function or function name that will be applied to elements before the test." } ;
 
+HELP: list-explode
+{ $values
+  { "seq" sequence }
+  { "|dst|" integer }
+  { "dst" array }
+}
+{ $description "Segments " { $snippet "list" } " into " { $snippet "nlist" } " sublists of (if possible) equal length." }
+{ $notes "If the number of divisions exceeds the number of elements in the list, the divisions will have one element each, and remaining divisions are repeat the last division value." } ;
+
 HELP: list-filter
 { $values
   { "seq" sequence }
@@ -236,6 +245,58 @@ $nl
 { $snippet "mode" } " " { $link 'reject } " means reject elements that verify " { $snippet "test" } "."
 $nl
 { $snippet "mode" } " " { $link 'pass } " means retain only elements that verify " { $snippet "test" } "." } ;
+
+HELP: table-filter
+{ $values
+  { "seq" sequence }
+  { "numcol" integer }
+  { "fun" object }
+  { "mode" symbol }
+  { "seq'" sequence }
+}
+{ $description "Filters out " { $snippet "list" } " (a list of lists) using the predicate " { $snippet "test" } "."
+$nl
+{ $snippet "test" } " may be a function name (a symbol) or it may be a visual function or patch in 'lambda' mode."
+$nl
+  "The predicate " { $snippet "test" } " is applied to the element of rank " { $snippet "numcol" } " in every sublist in " { $snippet "list" } " and filters the whole sublists."
+$nl
+{ $snippet "numcol" } " counts from 0."
+$nl
+{ $snippet "mode" } " " { $link 'reject } " means reject elements whose " { $snippet "numcol" } "th element verifies " { $snippet "test" } "."
+$nl
+{ $snippet "mode" } " " { $link 'pass } " means retain only elements whose " { $snippet "numcol" } "th element verifies " { $snippet "test" } "." } ;
+
+HELP: band-filter
+{ $values
+  { "seq" sequence }
+  { "bounds" sequence }
+  { "mode" symbol }
+  { "seq'" sequence }
+}
+{ $description "Filters out " { $snippet "list" } " using " { $snippet "bounds" } ". " { $snippet "bounds" } " is a pair or list of pairs " { $snippet "{ min-value max-value }" } "."
+$nl
+"If " { $snippet "list" } " is a list of lists, the filter is applied recursively in the sub-lists."
+$nl
+  "If " { $snippet "bounds" } " is a list of pairs, each pair is applied to each successive element in " { $snippet "list" } "."
+$nl
+{ $snippet "mode" } " " { $link 'reject } " means reject elements between the bounds."
+$nl
+{ $snippet "mode" } " " { $link 'pass } " means retain only elements between the bounds." } ;
+
+HELP: range-filter
+{ $values
+  { "seq" sequence }
+  { "ranges" sequence }
+  { "mode" symbol }
+  { "seq'" sequence }
+}
+{ $description "Select elements in " { $snippet "list" } " whose positions (couting from 0) in the list are defined by " { $snippet "posn" } "."
+$nl
+{ $snippet "posn" } " is a list of pairs " { $snippet "{ min-pos max-pos }" } " in increasing order with no everlap."
+$nl
+{ $snippet "mode" } " " { $link 'reject } " means reject the selected elements."
+$nl
+{ $snippet "mode" } " " { $link 'pass } " means retain only the selected elements." } ;
 
 HELP: pgcd
 { $values

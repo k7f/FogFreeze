@@ -1,10 +1,11 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays classes combinators ff.errors kernel locals math math.constants
-       math.functions math.order math.primes.factors math.statistics namespaces
-       om.support quotations random sequences sequences.deep words
-       io prettyprint ;
+USING: arrays classes combinators combinators.short-circuit ff.errors kernel
+       grouping locals math math.constants math.functions math.order
+       math.primes.factors math.ranges math.statistics math.vectors namespaces
+       om.support quotations random sequences sequences.deep sequences.private
+       words io prettyprint ;
 IN: om.kernel
 
 ! _____________________________________
@@ -350,7 +351,7 @@ M: integer factorize ( num -- seq ) group-factors ;
 : (reduce-tree) ( obj identity quot -- result )
     {
         { [ pick number? ] [ call( num prev -- num' ) ] }
-        { [ pick sequence? ] [ [ swap ] prepose deep-reduce* ] }
+        { [ pick sequence? ] [ [ swap ] prepose fixed-deep-reduce ] }
         [ 2drop class-of invalid-input ]
     } cond ; inline
 PRIVATE>
@@ -428,10 +429,48 @@ PRIVATE>
 GENERIC: rang-p ( &optionals seq obj -- seq' )
 
 M: number rang-p ( &optionals seq test-elt -- seq' )
-    rot [ = ] &optional-unpack2 (scalar-filter-test) filter/indices* ;
+    rot [ = ] &optional-unpack2 (scalar-filter-test) fixed-filter/indices ;
 
 M: sequence rang-p ( &optionals seq test-seq -- seq' )
-    rot [ = ] &optional-unpack2 (vector-filter-test) filter/indices* ;
+    rot [ = ] &optional-unpack2 (vector-filter-test) fixed-filter/indices ;
+
+! ____________
+! list-explode
+
+<PRIVATE
+: (explode-fill) ( src dst -- src dst )
+    over [ [ 1array ] dip pick set-nth-unsafe ] each-index ; inline
+
+: (explode-repeat) ( src dst |src| |dst| -- dst )
+    [ 1 - ] bi@ [a,b] rot last 1array swap
+    [ pick set-nth-unsafe ] with each ; inline
+
+: (explode-extend) ( src |src| |dst| -- dst )
+    [ nip { } new-sequence (explode-fill) ] 2keep (explode-repeat) ; inline
+
+! FIXME add an OM-compatible variant, perhaps?
+: (explode-partition) ( |src| |dst| -- sizes offsets )
+    [ [0,b] swap ] keep / [ * round ] curry map
+    dup dup rest-slice [ swap - ] 2map swap ; inline
+
+: (explode-chunk) ( src |chunk| offset -- src chunk )
+    swap over + pick subseq ; inline
+
+: (list-explode) ( src |src| |dst| -- dst )
+    (explode-partition) [ (explode-chunk) ] 2map nip ; inline
+PRIVATE>
+
+GENERIC# list-explode 1 ( src |dst| -- array )
+
+M: sequence list-explode ( src |dst| -- array )
+    {
+        { [ dup 1 <= ] [ drop >array ] }
+        {
+            [ [ dup length ] [ >integer ] bi* 2dup < ] [ (explode-extend) ]
+        }
+        { [ 2dup divisor? ] [ / group ] }
+        [ (list-explode) ]
+    } cond ;
 
 ! ___________
 ! list-filter
@@ -443,8 +482,52 @@ GENERIC# list-filter 1 ( seq fun mode -- seq' )
 M: word list-filter ( seq sym mode -- seq' )
     [ 1quotation ] dip list-filter ;
 
-M: callable list-filter ( seq quot mode -- seq' )
-    'reject eq? [ [ not ] compose ] when deep-filter-leaves* ;
+M: callable list-filter ( seq quot: ( elt -- ? ) mode -- seq' )
+    'reject eq? [ [ not ] compose ] when fixed-deep-filter-leaves ;
+
+! ____________
+! table-filter
+
+GENERIC# table-filter 1 ( seq numcol fun mode -- seq' )
+
+M: word table-filter ( seq numcol sym mode -- seq' )
+    [ 1quotation ] dip table-filter ;
+
+M: callable table-filter ( seq numcol quot: ( elt -- ? ) mode -- seq' )
+    'reject eq? [ [ not ] compose ] when
+    swap [ swap nth ] curry prepose fixed-filter ;
+
+! ___________
+! band-filter
+
+<PRIVATE
+: (in-range?) ( elt range -- ? )
+    { [ first >= ] [ second <= ] } 2&& ; inline
+PRIVATE>
+
+GENERIC# band-filter 1 ( seq bounds mode -- seq' )
+
+M: sequence band-filter ( seq bounds mode -- seq' )
+    [ [ [ (in-range?) ] with any? ] curry ] dip list-filter ;
+
+! ____________
+! range-filter
+
+<PRIVATE
+: (next-range) ( ndx range-ndx ranges --  range-ndx' )
+    dupd nth second rot <= [ 1 + ] when ; inline
+
+: (range-test) ( range-ndx elt ndx ranges -- range-ndx' ? )
+    [ nip swap ] dip dup length pick > [
+        [ nth (in-range?) ] 3keep (next-range) swap
+    ] [ drop nip f ] if ; inline
+PRIVATE>
+
+GENERIC# range-filter 1 ( seq ranges mode -- seq' )
+
+M: sequence range-filter ( seq ranges mode -- seq' )
+    'reject eq? [ [ (range-test) not ] ] [ [ (range-test) ] ] if curry
+    [ 0 ] 2dip fixed1-filter-index nip ;
 
 ! ____
 ! pgcd

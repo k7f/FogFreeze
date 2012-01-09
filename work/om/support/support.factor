@@ -36,12 +36,15 @@ MACRO:: om-binop-sequence ( quot: ( elt1 elt2 -- elt' ) -- )
         } cond
     ] ;
 
-: deep-each* ( obj quot: ( elt -- ) -- )
-    [ call( elt -- ) ] 2keep over branch?
-    [ [ deep-each* ] curry each ] [ 2drop ] if ; inline recursive
+! ____________________________
+! nonstandard deep combinators
 
-: deep-filter* ( obj quot: ( elt -- ? ) -- seq )
-    over [ selector [ deep-each* ] dip ] dip dup branch?
+: fixed-deep-each ( obj quot: ( elt -- ) -- )
+    [ call( elt -- ) ] 2keep over branch?
+    [ [ fixed-deep-each ] curry each ] [ 2drop ] if ; inline recursive
+
+: fixed-deep-filter ( obj quot: ( elt -- ? ) -- seq )
+    over [ selector [ fixed-deep-each ] dip ] dip dup branch?
     [ like ] [ drop ] if ; inline
 
 ! FIXME keep the structure
@@ -51,7 +54,7 @@ MACRO:: om-binop-sequence ( quot: ( elt1 elt2 -- elt' ) -- )
     ] dip dup branch? [ like ] [ drop ] if ; inline
 
 ! FIXME keep the structure
-: deep-filter-leaves* ( obj quot: ( elt -- ? ) -- seq )
+: fixed-deep-filter-leaves ( obj quot: ( elt -- ? ) -- seq )
     over [
         selector [
             '[ dup branch? [ drop ] [ _ call( elt -- ) ] if ] deep-each
@@ -61,36 +64,89 @@ MACRO:: om-binop-sequence ( quot: ( elt1 elt2 -- elt' ) -- )
 : deep-reduce ( ..a seq identity quot: ( ..a prev elt -- ..b next ) -- ..b result )
     swapd '[ dup branch? [ drop ] [ @ ] if ] deep-each ; inline
 
-: deep-reduce* ( seq identity quot: ( prev elt -- next ) -- result )
+: fixed-deep-reduce ( seq identity quot: ( prev elt -- next ) -- result )
     swapd '[ dup branch? [ drop ] [ _ call( prev elt -- next ) ] if ] deep-each ; inline
 
-: push-if/index ( ..a ndx elt quot: ( ..a elt -- ..b ? ) accum -- ..b )
-    [ rot [ call ] dip f ? ] dip
-    swap [ swap push ] [ drop ] if* ; inline
+! ____________________________
+! nonstandard flat combinators
 
-: push-if/index* ( ndx elt quot: ( elt -- ? ) accum -- )
-    [ rot [ call( elt -- ? ) ] dip f ? ] dip
-    swap [ swap push ] [ drop ] if* ; inline
+<PRIVATE
+: (push-when) ( ? elt seq -- )
+    rot [ push ] [ 2drop ] if ; inline
 
-: selector-for/index ( quot: ( ..a elt -- ..b ? ) exemplar -- selector accum )
-    [ length ] keep new-resizable [ [ push-if/index ] 2curry ] keep ; inline
+: (fixed-push-if) ( elt quot: ( elt -- ? ) accum -- )
+    [ over [ call( elt -- ? ) ] dip ] dip (push-when) ; inline
 
-: selector-for/index* ( quot: ( elt -- ? ) exemplar -- selector accum )
-    [ length ] keep new-resizable [ [ push-if/index* ] 2curry ] keep ; inline
+: (push-if-index) ( ..a ndx elt quot: ( ..a elt ndx -- ..b ? ) accum -- ..b )
+    [ over [ swapd call ] dip ] dip (push-when) ; inline
+
+: (fixed1-push-if-index) ( a ndx elt quot: ( a elt ndx -- b ? ) accum -- b )
+    [ over [ swapd call( a elt ndx -- b ? ) ] dip ] dip (push-when) ; inline
+
+: (push-if/index) ( ..a ndx elt quot: ( ..a elt -- ..b ? ) accum -- ..b )
+    [ rot [ call ] dip ] dip (push-when) ; inline
+
+: (fixed-push-if/index) ( ndx elt quot: ( elt -- ? ) accum -- )
+    [ rot [ call( elt -- ? ) ] dip ] dip (push-when) ; inline
+
+: (fixed-selector-for) ( quot exemplar -- selector accum )
+    [ length ] keep new-resizable [ [ (fixed-push-if) ] 2curry ] keep ; inline
+
+: (selector-for-index) ( quot: ( ..a elt ndx -- ..b ? ) exemplar -- selector accum )
+    [ length ] keep new-resizable [ [ (push-if-index) ] 2curry ] keep ; inline
+
+: (fixed1-selector-for-index) ( quot: ( a elt ndx -- b ? ) exemplar -- selector accum )
+    [ length ] keep new-resizable [ [ (fixed1-push-if-index) ] 2curry ] keep ; inline
+
+: (selector-for/index) ( quot: ( ..a elt -- ..b ? ) exemplar -- selector accum )
+    [ length ] keep new-resizable [ [ (push-if/index) ] 2curry ] keep ; inline
+
+: (fixed-selector-for/index) ( quot: ( elt -- ? ) exemplar -- selector accum )
+    [ length ] keep new-resizable [ [ (fixed-push-if/index) ] 2curry ] keep ; inline
+PRIVATE>
+
+! non-polymorphic variants (fixed stack depth)
+
+: fixed-filter-as ( seq quot: ( elt -- ? ) exemplar -- seq' )
+    dup [ (fixed-selector-for) [ each ] dip ] curry dip like ; inline
+
+: fixed-filter ( seq quot: ( elt -- ? ) -- seq' )
+    over fixed-filter-as ; inline
+
+! index-dependent variants
+
+: filter-as-index ( ..a seq quot: ( ..a elt ndx -- ..b ? ) exemplar -- ..b seq' )
+    [ [ length iota ] keep ] 2dip
+    dup [ (selector-for-index) [ 2each ] dip ] curry dip like ; inline
+
+: fixed1-filter-as-index ( a seq quot: ( a elt ndx -- b ? ) exemplar -- b seq' )
+    [ [ length iota ] keep ] 2dip
+    dup [ (fixed1-selector-for-index) [ 2each ] dip ] curry dip like ; inline
+
+: filter-index ( ..a seq quot: ( ..a elt ndx -- ..b ? ) -- ..b seq' )
+    over filter-as-index ; inline
+
+: fixed1-filter-index ( a seq quot: ( a elt ndx -- b ? ) -- b seq' )
+    over fixed1-filter-as-index ; inline
+
+! index-collecting variants
 
 : filter-as/indices ( ..a seq quot: ( ..a elt -- ..b ? ) exemplar -- ..b seq' )
     [ [ length iota ] keep ] 2dip
-    dup [ selector-for/index [ 2each ] dip ] curry dip like ; inline
+    dup [ (selector-for/index) [ 2each ] dip ] curry dip like ; inline
 
-: filter-as/indices* ( seq quot: ( elt -- ? ) exemplar -- seq' )
+: fixed-filter-as/indices ( seq quot: ( elt -- ? ) exemplar -- seq' )
     [ [ length iota ] keep ] 2dip
-    dup [ selector-for/index* [ 2each ] dip ] curry dip like ; inline
+    dup [ (fixed-selector-for/index) [ 2each ] dip ] curry dip like ; inline
 
 : filter/indices ( ..a seq quot: ( ..a elt -- ..b ? ) -- ..b seq' )
     over filter-as/indices ; inline
 
-: filter/indices* ( seq quot: ( elt -- ? ) -- seq' )
-    over filter-as/indices* ; inline
+: fixed-filter/indices ( seq quot: ( elt -- ? ) -- seq' )
+    over fixed-filter-as/indices ; inline
+
+! ____
+! math
 
 : >power-of-2 ( m -- n )
     dup 0 > [ log2 2^ ] [ drop 0 ] if ; inline

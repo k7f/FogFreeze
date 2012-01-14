@@ -6,6 +6,8 @@ USING: classes combinators combinators.short-circuit ff.errors fry kernel
        sequences.private strings ;
 IN: om.support
 
+UNION: optionals number sequence ;
+
 : &optional-unpack1 ( &optionals -- arg1/f )
     dup { [ sequence? ] [ quotation? not ] [ string? not ] } 1&& [
         [ f ] [ first ] if-empty

@@ -451,7 +451,7 @@ M: sequence rang-p ( &optionals seq test-seq -- seq' )
 ! FIXME add an OM-compatible variant, perhaps?
 : (explode-partition) ( |src| |dst| -- sizes offsets )
     [ [0,b] swap ] keep / [ * round ] curry map
-    dup dup rest-slice [ swap - ] 2map swap ; inline
+    [ [ rest-slice ] keep [ - ] over 2map-as ] keep ; inline
 
 : (explode-chunk) ( src |chunk| offset -- src chunk )
     swap over + pick subseq ; inline
@@ -528,6 +528,17 @@ GENERIC# range-filter 1 ( seq ranges mode -- seq' )
 M: sequence range-filter ( seq ranges mode -- seq' )
     'reject eq? [ [ (range-test) not ] ] [ [ (range-test) ] ] if curry
     [ 0 ] 2dip fixed1-filter-index nip ;
+
+! __________
+! posn-match
+
+GENERIC: posn-match ( seq positions -- seq' )
+
+M: integer posn-match ( seq position -- seq' )
+    swap nth ;
+
+M: sequence posn-match ( seq positions -- seq' )
+    [ over 2dup bounds-check? [ nth ] [ 2drop f ] if ] deep-map-leaves nip ;
 
 ! ____
 ! pgcd

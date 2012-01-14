@@ -298,6 +298,14 @@ $nl
 $nl
 { $snippet "mode" } " " { $link 'pass } " means retain only the selected elements." } ;
 
+HELP: posn-match
+{ $values
+  { "seq" sequence }
+  { "positions" object }
+  { "seq'" sequence }
+}
+{ $description "Constructs a new list by peeking elements in " { $snippet "list" } " at positions defined by " { $snippet "positions" } " (a list or tree of positions)." } ;
+
 HELP: pgcd
 { $values
   { "a" null }

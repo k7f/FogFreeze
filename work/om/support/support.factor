@@ -3,7 +3,7 @@
 
 USING: classes combinators combinators.short-circuit ff.errors fry kernel
        locals macros math math.functions quotations sequences sequences.deep
-       strings ;
+       sequences.private strings ;
 IN: om.support
 
 : &optional-unpack1 ( &optionals -- arg1/f )
@@ -46,6 +46,9 @@ MACRO:: om-binop-sequence ( quot: ( elt1 elt2 -- elt' ) -- )
 : fixed-deep-filter ( obj quot: ( elt -- ? ) -- seq )
     over [ selector [ fixed-deep-each ] dip ] dip dup branch?
     [ like ] [ drop ] if ; inline
+
+: deep-map-leaves ( ..a obj quot: ( ..a elt -- ..b elt' ) -- ..b newobj )
+    '[ dup branch? [ @ ] unless ] deep-map ; inline
 
 ! FIXME keep the structure
 : deep-filter-leaves ( ..a obj quot: ( ..a elt -- ..b ? ) -- ..b seq )
@@ -144,6 +147,25 @@ PRIVATE>
 
 : fixed-filter/indices ( seq quot: ( elt -- ? ) -- seq' )
     over fixed-filter-as/indices ; inline
+
+! accumulator
+
+<PRIVATE
+: (iterator) ( seq quot -- n quot' )
+    [ [ length ] keep ] dip
+    [ [ nth-unsafe ] dip curry keep ] 2curry ; inline
+
+: (map-integers+) ( ..a len quot: ( ..a i -- ..b elt ) exemplar -- ..b newseq )
+    [ over 1 + ] dip [ [ collect ] keep ] new-like ; inline
+PRIVATE>
+
+: accumulate-all-as ( ..a seq identity quot: ( ..a prev elt -- ..b next ) exemplar -- ..b newseq )
+    [ swapd (iterator) ] dip pick
+    [ (map-integers+) ] dip swap
+    [ set-nth-unsafe ] keep ; inline
+
+: accumulate-all ( ..a seq identity quot: ( ..a prev elt -- ..b next ) -- ..b newseq )
+    pick accumulate-all-as ; inline
 
 ! ____
 ! math

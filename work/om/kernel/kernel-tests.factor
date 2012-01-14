@@ -1,7 +1,7 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays kernel math math.ranges om.kernel tools.test ;
+USING: arrays kernel math math.ranges om.kernel sequences tools.test ;
 IN: om.kernel.tests
 
 [ 5 ] [
@@ -309,4 +309,12 @@ IN: om.kernel.tests
 
 [ { 12 13 15 16 } ] [
     { 10 11 12 13 14 15 16 } { { 0 1 } { 4 4 } } 'reject range-filter
+] unit-test
+
+[ { { 10 20 } 50 { 70 } } ] [
+    { 10 20 30 40 50 60 70 80 90 } { { 0 1 } 4 { 6 } } posn-match
+] unit-test
+
+[ { 10 10 10 40 50 60 70 } ] [
+    { 10 20 30 40 50 60 70 80 90 } 3 0 <repetition> 3 6 [a,b] append posn-match
 ] unit-test

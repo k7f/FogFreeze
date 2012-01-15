@@ -46,14 +46,13 @@ M: sequence om-e ( seq -- seq' ) [ exp ] map ; inline
 ! om-log
 
 ! &optionals: (base (exp 1))
-GENERIC: om-log ( &optionals obj -- result )
+GENERIC# om-log 1 ( obj &optionals -- result )
 
-M: number om-log ( &optionals num -- num' )
-    swap &optional-unpack1
-    [ [ log ] bi@ / ] [ log ] if* ;
+M: number om-log ( num &optionals -- num' )
+    unpack1 [ [ log ] bi@ / ] [ log ] if* ;
 
-M: sequence om-log ( &optionals seq -- seq' )
-    swap &optional-unpack1 [
+M: sequence om-log ( seq &optionals -- seq' )
+    unpack1 [
         log [ [ log ] dip / ] curry map
     ] [ [ log ] map ] if* ;
 
@@ -66,14 +65,13 @@ M: sequence om-log ( &optionals seq -- seq' )
 PRIVATE>
 
 ! &optionals: (num-decimals 0) (divisor 1)
-GENERIC: om-round ( &optionals obj -- obj' )
+GENERIC# om-round 1 ( obj &optionals -- obj' )
 
-M: number om-round ( &optionals num -- num' )
-    [ 0 &optional-unpack2 ] dip swap
-    [ / ] when* (approx-decimals) ;
+M: number om-round ( num &optionals -- num' )
+    0 unpack2 swapd [ / ] when* (approx-decimals) ;
 
-M: sequence om-round ( &optionals seq -- seq' )
-    swap 0 &optional-unpack2 [
+M: sequence om-round ( seq &optionals -- seq' )
+    0 unpack2 [
         [ swapd / (approx-decimals) ] 2curry map
     ] [
         [ swap (approx-decimals) ] curry map
@@ -162,22 +160,22 @@ M: object list-max ( obj -- obj ) ;
 ! tree-min tree-max
 
 ! &optionals (min MOST-POSITIVE-LONG-FLOAT)
-GENERIC: tree-min ( &optionals obj -- result )
+GENERIC# tree-min 1 ( obj &optionals -- result )
 
-M: number tree-min ( &optionals num -- num' )
-    swap &optional-unpack1 [ largest-float ] unless* min ;
+M: number tree-min ( num &optionals -- num' )
+    unpack1 [ largest-float ] unless* min ;
 
-M: sequence tree-min ( &optionals seq -- num )
-    swap &optional-unpack1 [ largest-float ] unless* [ min ] deep-reduce ;
+M: sequence tree-min ( seq &optionals -- num )
+    unpack1 [ largest-float ] unless* [ min ] deep-reduce ;
 
 ! &optionals (max MOST-NEGATIVE-LONG-FLOAT)
-GENERIC: tree-max ( &optionals obj -- result )
+GENERIC# tree-max 1 ( obj &optionals -- result )
 
-M: number tree-max ( &optionals num -- num' )
-    swap &optional-unpack1 [ largest-float neg ] unless* max ;
+M: number tree-max ( num &optionals -- num' )
+    unpack1 [ largest-float neg ] unless* max ;
 
-M: sequence tree-max ( &optionals seq -- num )
-    swap &optional-unpack1 [ largest-float neg ] unless* [ max ] deep-reduce ;
+M: sequence tree-max ( seq &optionals -- num )
+    unpack1 [ largest-float neg ] unless* [ max ] deep-reduce ;
 
 ! _______
 ! om-mean
@@ -189,10 +187,10 @@ M: sequence tree-max ( &optionals seq -- num )
 PRIVATE>
 
 ! &optionals: (weights 1)
-GENERIC: om-mean ( &optionals obj -- result )
+GENERIC# om-mean 1 ( obj &optionals -- result )
 
-M: sequence om-mean ( &optionals seq -- result )
-    over sequence? [ swap [ f ] when-empty ] [ nip f ] if
+M: sequence om-mean ( seq &optionals -- result )
+    dup sequence? [ [ f ] when-empty ] [ drop f ] if
     [ (average-weighted) ] [ mean >float ] if* ;
 
 ! _________
@@ -242,23 +240,23 @@ M: sequence perturbation ( percent seq -- result )
 ! om-scale
 
 <PRIVATE
-: (om-scale-unpack) ( &optionals minout maxout obj -- minout maxout minin maxin obj ? )
-    [ rot 0 &optional-unpack2 [ 0 ] unless* 2dup = ] dip swap ;
+: (om-scale-unpack) ( &optionals obj -- minin maxin obj ? )
+    [ 0 unpack2 [ 0 ] unless* 2dup = ] dip swap ; inline
 
 : (om-scale) ( minout maxout minin maxin num -- num' )
     pick - [ over - ] 3dip [ swap - ] dip rot * swap / + ;
 PRIVATE>
 
 ! &optionals: (minin 0) (maxin 0)
-GENERIC: om-scale ( &optionals minout maxout obj -- result )
+GENERIC# om-scale 1 ( minout maxout obj &optionals -- result )
 
-M: number om-scale ( &optionals minout maxout num -- result )
-    (om-scale-unpack) [
+M: number om-scale ( minout maxout num &optionals -- result )
+    swap (om-scale-unpack) [
         2drop [ 2drop ] dip
     ] [ (om-scale) ] if ;
 
-M: sequence om-scale ( &optionals minout maxout seq -- result )
-    [ 3drop f ] [
+M: sequence om-scale ( minout maxout seq &optionals -- result )
+    swap [ 3drop f ] [
         (om-scale-unpack) [
             2nip [ infimum ] [ supremum ] [ ] tri
             [ 2dup = [ [ drop 0 ] [ abs ] bi* ] when ] dip
@@ -357,14 +355,14 @@ M: integer factorize ( num -- seq ) group-factors ;
 PRIVATE>
 
 ! &optionals: (accum nil)
-GENERIC: reduce-tree ( &optionals obj fun -- result )
+GENERIC# reduce-tree 1 ( obj fun &optionals -- result )
 
-M: word reduce-tree ( &optionals obj sym -- result )
-    rot [ swap ] [ [ (neutral-element) ] keep ] if*
+M: word reduce-tree ( obj sym &optionals -- result )
+    [ swap ] [ [ (neutral-element) ] keep ] if*
     1quotation (reduce-tree) ; inline
 
-M: callable reduce-tree ( &optionals obj quot -- result )
-    swapd (reduce-tree) ; inline
+M: callable reduce-tree ( obj quot &optionals -- result )
+    swap (reduce-tree) ; inline
 
 ! _____________
 ! interpolation
@@ -426,13 +424,13 @@ M: sequence interpolation ( curve num-samples begin end -- seq )
 PRIVATE>
 
 ! &optionals: (test 'eq) (key nil)
-GENERIC: rang-p ( &optionals seq obj -- seq' )
+GENERIC# rang-p 1 ( seq obj &optionals -- seq' )
 
-M: number rang-p ( &optionals seq test-elt -- seq' )
-    rot [ = ] &optional-unpack2 (scalar-filter-test) fixed-filter/indices ;
+M: number rang-p ( seq test-elt &optionals -- seq' )
+    [ = ] unpack2 (scalar-filter-test) fixed-filter/indices ;
 
-M: sequence rang-p ( &optionals seq test-seq -- seq' )
-    rot [ = ] &optional-unpack2 (vector-filter-test) fixed-filter/indices ;
+M: sequence rang-p ( seq test-seq &optionals -- seq' )
+    [ = ] unpack2 (vector-filter-test) fixed-filter/indices ;
 
 ! ____________
 ! list-explode

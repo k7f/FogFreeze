@@ -73,47 +73,47 @@ IN: om.kernel.tests
 ] unit-test
 
 [ 54.59815 ] [
-    4 om-e 6 swap om-round
+    4 om-e 6 om-round
 ] unit-test
 
 [ { 20.085537 54.59815 } ] [
-    { 3 4 } om-e 6 swap om-round
+    { 3 4 } om-e 6 om-round
 ] unit-test
 
 [ 1.0986123 ] [
-    f 3 om-log 7 swap om-round
+    3 f om-log 7 om-round
 ] unit-test
 
 [ 0.4771213 ] [
-    10 3 om-log 7 swap om-round
+    3 10 om-log 7 om-round
 ] unit-test
 
 [ { 1.0986123 1.3862944 } ] [
-    f { 3 4 } om-log 7 swap om-round
+    { 3 4 } f om-log 7 om-round
 ] unit-test
 
 [ { 0.4771213 0.60206 } ] [
-    10 { 3 4 } om-log 7 swap om-round
+    { 3 4 } 10 om-log 7 om-round
 ] unit-test
 
 [ 4 ] [
-    f 4.3 om-round
+    4.3 f om-round
 ] unit-test
 
 [ { 4 5 7 } ] [
-    f { 4.3 5.0 6.8 } om-round
+    { 4.3 5.0 6.8 } f om-round
 ] unit-test
 
 [ { 4.31 5.17 6.81 } ] [
-    2 { 4.308 5.167 6.809 } om-round
+    { 4.308 5.167 6.809 } 2 om-round
 ] unit-test
 
 [ { 2 3 3 } ] [
-    { 0 2 } { 4.308 5.167 6.809 } om-round
+    { 4.308 5.167 6.809 } { 0 2 } om-round
 ] unit-test
 
 [ { 2.2 2.6 3.4 } ] [
-    { 1 2 } { 4.308 5.167 6.809 } om-round
+    { 4.308 5.167 6.809 } { 1 2 } om-round
 ] unit-test
 
 [ 2 1.5 ] [
@@ -180,24 +180,40 @@ IN: om.kernel.tests
     { 2 4 1 3 } list-max
 ] unit-test
 
+[ 1 ] [
+    { { 2 { 1 } } 4 { 3 } } f tree-min
+] unit-test
+
+[ 4 ] [
+    { { 2 { 1 } } 4 { 3 } } f tree-max
+] unit-test
+
+[ 0 ] [
+    { { 2 { 1 } } 4 { 3 } } 0 tree-min
+] unit-test
+
+[ 5 ] [
+    { { 2 { 1 } } 4 { 3 } } 5 tree-max
+] unit-test
+
 [ 2.5 ] [
-    f { 1 2 3 4 } om-mean
+    { 1 2 3 4 } f om-mean
 ] unit-test
 
 [ 2.0 ] [
-    { 3 2 1 1 } { 1 2 3 4 } om-mean
+    { 1 2 3 4 } { 3 2 1 1 } om-mean
 ] unit-test
 
 [ 50 ] [
-    { 0 10 } 0 100 5 om-scale
+    0 100 5 { 0 10 } om-scale
 ] unit-test
 
 [ { 0 20 50 } ] [
-    { 0 10 } 0 100 { 0 2 5 } om-scale
+    0 100 { 0 2 5 } { 0 10 } om-scale
 ] unit-test
 
 [ { 0 40 100 } ] [
-    f 0 100 { 0 2 5 } om-scale
+    0 100 { 0 2 5 } f om-scale
 ] unit-test
 
 [ { 6 9 15 } ] [
@@ -217,11 +233,11 @@ IN: om.kernel.tests
 ] unit-test
 
 [ 0 ] [
-    -4950 99 [1,b] \ + reduce-tree
+    99 [1,b] \ + -4950 reduce-tree
 ] unit-test
 
 [ 720.0 ] [
-    f 6 [1,b] \ * reduce-tree
+    6 [1,b] \ * f reduce-tree
 ] unit-test
 
 [ { 2.5 } ] [
@@ -252,11 +268,11 @@ IN: om.kernel.tests
 ] unit-test
 
 [ { 3 5 } ] [
-    f { 0 1 2 3 4 3 2 } 3 rang-p
+    { 0 1 2 3 4 3 2 } 3 f rang-p
 ] unit-test
 
 [ { 0 1 2 6 } ] [
-    [ < ] { 0 1 2 3 4 3 2 } 3 rang-p
+    { 0 1 2 3 4 3 2 } 3 [ < ] rang-p
 ] unit-test
 
 [ { { 1 2 3 4 5 } { 6 7 8 9 } } ] [

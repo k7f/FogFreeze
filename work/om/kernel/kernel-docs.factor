@@ -1,7 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays help.markup help.syntax kernel math math.order sequences words.symbol ;
+USING: arrays help.markup help.syntax kernel math math.order om.support
+       sequences words.symbol ;
 IN: om.kernel
 
 HELP: om+
@@ -54,8 +55,8 @@ HELP: om-e
 
 HELP: om-log
 { $values
-  { "&optionals" null }
   { "obj" object }
+  { "&optionals" object }
   { "result" null }
 }
 { $description "Logarithm function.  (The logarithm of a number to the base is the power to which the base must be raised in order to produce the number.)" }
@@ -65,8 +66,8 @@ $nl
 
 HELP: om-round
 { $values
-  { "&optionals" null }
   { "obj" object }
+  { "&optionals" object }
   { "obj'" object }
 }
 { $description "Rounds a number or a list of numbers with a given number of decimals (default = 0, i.e. returns integer values) and a divisor." }
@@ -122,11 +123,27 @@ HELP: list-max
 }
 { $description "Returns the maximum element in a list." } ;
 
+HELP: tree-min
+{ $values
+  { "obj" object }
+  { "&optionals" object }
+  { "result" number }
+}
+{ $description "Returns the minimum element in a tree." } ;
+
+HELP: tree-max
+{ $values
+  { "obj" object }
+  { "&optionals" object }
+  { "result" number }
+}
+{ $description "Returns the maximum element in a tree." } ;
+
 HELP: om-mean
 { $values
-  { "&optionals" null }
   { "obj" object }
-  { "result" null }
+  { "&optionals" object }
+  { "result" float }
 }
 { $description "Arithmetic mean of numbers in a list." }
 { $notes "The optional input " { $snippet "weights" } " is a list of weights used to ponderate the successive elements in the list." } ;
@@ -150,10 +167,10 @@ HELP: perturbation
 
 HELP: om-scale
 { $values
-  { "&optionals" object }
   { "minout" number }
   { "maxout" number }
   { "obj" object }
+  { "&optionals" object }
   { "result" object }
 }
 { $description "Scales " { $snippet "self" } " (a number or list of numbers) considered to be in the interval [" { $snippet "minin" } " " { $snippet "maxin" } "] towards the interval [" { $snippet "minout" } " " { $snippet "maxout" } "]." }
@@ -185,9 +202,9 @@ HELP: factorize
 
 HELP: reduce-tree
 { $values
-  { "&optionals" object }
   { "obj" object }
   { "fun" object }
+  { "&optionals" object }
   { "result" object }
 }
 { $description "Applies the commutative binary " { $snippet "function" } " recursively throughout the list " { $snippet "self" } ".  (Applies to the first elements, then the result to the next one, and so forth until the list is exhausted.)"
@@ -209,9 +226,9 @@ $nl
 
 HELP: rang-p
 { $values
-  { "&optionals" object }
   { "seq" sequence }
   { "obj" object }
+  { "&optionals" object }
   { "seq'" sequence }
 }
 { $description "Returns the position(s) of " { $snippet "elem" } " in " { $snippet "liste" } "."

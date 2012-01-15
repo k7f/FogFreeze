@@ -28,5 +28,5 @@ PRIVATE>
 
 ! &optionals: (nummax MOST-POSITIVE-FIXNUM)
 : arithm-ser ( begin end step &optionals -- seq )
-    &optional-unpack1 [ most-positive-fixnum ] unless*
+    unpack1 [ most-positive-fixnum ] unless*
     (arithm-ser-range) >array ;

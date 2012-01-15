@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax math om.support sequences ;
+USING: help.markup help.syntax kernel math om.support sequences ;
 IN: om.series
 
 HELP: x->dx
@@ -28,7 +28,7 @@ HELP: arithm-ser
   { "begin" number }
   { "end" number }
   { "step" number }
-  { "&optionals" optionals }
+  { "&optionals" object }
   { "seq" sequence }
 }
 { $description "Arithmetic series: returns a list of numbers from " { $snippet "begin" } " to " { $snippet "end" } " with increment of " { $snippet "step" } "." }

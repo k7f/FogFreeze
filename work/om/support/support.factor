@@ -1,24 +1,29 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: classes combinators combinators.short-circuit ff.errors fry kernel
-       locals macros math math.functions quotations sequences sequences.deep
-       sequences.private strings ;
+USING: classes combinators ff.errors fry kernel locals macros math
+       math.functions quotations sequences sequences.deep sequences.private
+       strings ;
 IN: om.support
 
-UNION: optionals number sequence ;
+GENERIC: unpack1 ( &optionals -- arg1/f )
 
-: &optional-unpack1 ( &optionals -- arg1/f )
-    dup { [ sequence? ] [ quotation? not ] [ string? not ] } 1&& [
-        [ f ] [ first ] if-empty
-    ] when ; inline
+M: quotation unpack1 ( &optionals -- arg1/f ) ; inline
+M: string    unpack1 ( &optionals -- arg1/f ) ; inline
+M: sequence  unpack1 ( &optionals -- arg1/f ) [ f ] [ first ] if-empty ; inline
+M: object    unpack1 ( &optionals -- arg1/f ) ; inline
 
-: &optional-unpack2 ( &optionals arg1-default -- arg1 arg2/f )
-    over { [ sequence? ] [ quotation? not ] [ string? not ] } 1&& [
-        swap [ f ] [
-            nip dup length 1 = [ first f ] [ first2 ] if
-        ] if-empty
-    ] [ drop f ] if ; inline
+GENERIC# unpack2 1 ( &optionals arg1-default -- arg1 arg2/f )
+
+M: quotation unpack2 ( &optionals arg1-default -- arg1 arg2/f ) drop f ; inline
+M: string    unpack2 ( &optionals arg1-default -- arg1 arg2/f ) drop f ; inline
+
+M: sequence unpack2 ( &optionals arg1-default -- arg1 arg2/f )
+    swap [ f ] [
+        nip dup length 1 = [ first f ] [ first2 ] if
+    ] if-empty ;
+
+M: object unpack2 ( &optionals arg1-default -- arg1 arg2/f ) drop f ; inline
 
 MACRO:: om-binop-number ( quot: ( elt1 elt2 -- elt' ) -- )
     [

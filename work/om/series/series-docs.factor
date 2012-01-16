@@ -68,6 +68,16 @@ $nl
 $nl
 { $snippet "nummax" } " allows to limit the number of elements." } ;
 
+HELP: prime-ser
+{ $values
+  { "max-value" number }
+  { "&optionals" object }
+  { "seq" sequence }
+}
+{ $description "Prime numbers series: returns the set of prime-numbers ranging from 0 upto " { $snippet "max" } "."
+$nl
+"The optional parametre " { $snippet "numelem" } " limits the number of elements." } ;
+
 HELP: inharm-ser
 { $values
   { "start" number }

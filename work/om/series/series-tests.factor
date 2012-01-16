@@ -48,6 +48,18 @@ IN: om.series.tests
     2 3 60 f geometric-ser
 ] unit-test
 
+[ { 2 3 5 7 11 } ] [
+    11 f prime-ser
+] unit-test
+
+[ { 2 3 5 7 11 } ] [
+    12 10 prime-ser
+] unit-test
+
+[ { 2 3 5 } ] [
+    13 3 prime-ser
+] unit-test
+
 [ { -1 -4 -9 } ] [
     -1 2 3 inharm-ser
 ] unit-test

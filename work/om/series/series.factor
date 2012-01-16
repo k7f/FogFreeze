@@ -2,8 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: arrays classes ff.errors fry kernel layouts locals macros make
-       math math.functions math.order math.ranges om.support prettyprint
-       quotations sequences ;
+       math math.functions math.order math.primes math.ranges om.support
+       prettyprint quotations sequences ;
 IN: om.series
 
 ! _____________________________________
@@ -103,6 +103,21 @@ PRIVATE>
 : geometric-ser ( seed factor limit &optionals -- seq )
     most-positive-fixnum 0 unpack3 [ most-positive-fixnum ] unless*
     (geometric-ser) ; inline
+
+! _________
+! prime-ser
+
+<PRIVATE
+: (prime-ser) ( first-value max-value max-count -- seq )
+    [
+        [ 2over > [ f ] [ dup 0 > ] if ]
+        [ [ dup , next-prime ] 2dip 1 - ] while 3drop
+    ] { } make ; inline
+PRIVATE>
+
+! &optionals: (numelem (expt 2 32))
+: prime-ser ( max-value &optionals -- seq )
+    unpack1 [ 2 -rot (prime-ser) ] [ primes-upto { } like ] if* ;
 
 ! __________
 ! inharm-ser

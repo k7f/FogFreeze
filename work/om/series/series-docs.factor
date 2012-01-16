@@ -52,6 +52,22 @@ $nl
 $nl
 { $snippet "begin" } " and " { $snippet "end" } " can be used to limit the calculation of the series." } ;
 
+HELP: geometric-ser
+{ $values
+  { "seed" number }
+  { "factor" number }
+  { "limit" number }
+  { "&optionals" object }
+  { "seq" sequence }
+}
+{ $description "Geometric series: starts from " { $snippet "seed" } " and returns a list with f(i) = factor * f(i-1)."
+$nl
+{ $snippet "limit" } " is the limit of returned list list."
+$nl
+{ $snippet "begin" } " and " { $snippet "end" } " allow to delimit the series."
+$nl
+{ $snippet "nummax" } " allows to limit the number of elements." } ;
+
 ARTICLE: "om.series" "om.series"
 "The " { $vocab-link "om.series" } " vocabulary is an experimental port of the file " { $snippet "projects/01-basicproject/functions/series.lisp" } " from the main " { $snippet "code" } " tree of OpenMusic."
 $nl

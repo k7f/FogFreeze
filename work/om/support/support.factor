@@ -25,6 +25,22 @@ M: sequence unpack2 ( &optionals arg1-default -- arg1 arg2/f )
 
 M: object unpack2 ( &optionals arg1-default -- arg1 arg2/f ) drop f ; inline
 
+GENERIC# unpack3 2 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f )
+
+M: quotation unpack3 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f ) nip f ; inline
+M: string    unpack3 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f ) nip f ; inline
+
+M: sequence unpack3 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f )
+    rot [ f ] [
+        dup length {
+            { 1 [ rot drop first swap f ] }
+            { 2 [ 2nip first2 f ] }
+            [ drop 2nip first3 ]
+        } case
+    ] if-empty ;
+
+M: object unpack3 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f ) nip f ; inline
+
 MACRO:: om-binop-number ( quot: ( elt1 elt2 -- elt' ) -- )
     [
         {

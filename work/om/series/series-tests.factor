@@ -39,3 +39,11 @@ IN: om.series.tests
 [ { 7 11 18 29 } ] [
     1 3 30 { 3 6 } fibo-ser
 ] unit-test
+
+[ { 1 3 9 27 } ] [
+    1 3 60 f geometric-ser
+] unit-test
+
+[ { 2 6 18 54 } ] [
+    2 3 60 f geometric-ser
+] unit-test

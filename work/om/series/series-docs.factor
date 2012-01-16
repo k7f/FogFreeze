@@ -34,6 +34,24 @@ HELP: arithm-ser
 { $description "Arithmetic series: returns a list of numbers from " { $snippet "begin" } " to " { $snippet "end" } " with increment of " { $snippet "step" } "." }
 { $notes { $snippet "nummax" } " allows to limit the number of elements returned." } ;
 
+HELP: fibo-ser
+{ $values
+  { "seed1" number }
+  { "seed2" number }
+  { "limit" number }
+  { "&optionals" object }
+  { "seq" sequence }
+}
+{ $description "Fibonacci series: f(i) = f(i-1) + f(i-2)."
+$nl
+{ $snippet "seed1" } " = f(0) the first element of the series."
+$nl
+{ $snippet "seed2" } " = f(1) the second element of the series."
+$nl
+{ $snippet "limit" } " is the limit of this list."
+$nl
+{ $snippet "begin" } " and " { $snippet "end" } " can be used to limit the calculation of the series." } ;
+
 ARTICLE: "om.series" "om.series"
 "The " { $vocab-link "om.series" } " vocabulary is an experimental port of the file " { $snippet "projects/01-basicproject/functions/series.lisp" } " from the main " { $snippet "code" } " tree of OpenMusic."
 $nl

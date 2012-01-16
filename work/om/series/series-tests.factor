@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: math.ranges om.series tools.test ;
+USING: kernel math math.ranges om.series sequences tools.test ;
 IN: om.series.tests
 
 [ { 700 200 } ] [
@@ -46,4 +46,16 @@ IN: om.series.tests
 
 [ { 2 6 18 54 } ] [
     2 3 60 f geometric-ser
+] unit-test
+
+[ { -1 -4 -9 } ] [
+    -1 2 3 inharm-ser
+] unit-test
+
+[ { -1 -1/4 -1/9 } ] [
+    -1 -2 3 inharm-ser
+] unit-test
+
+[ { 10000 20000 30000 } ] [
+    100 .5 3 inharm-ser [ dup * >fixnum ] map
 ] unit-test

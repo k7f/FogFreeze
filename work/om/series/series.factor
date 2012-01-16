@@ -1,8 +1,9 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays classes ff.errors fry kernel layouts locals macros make math
-       math.order math.ranges om.support prettyprint quotations sequences ;
+USING: arrays classes ff.errors fry kernel layouts locals macros make
+       math math.functions math.order math.ranges om.support prettyprint
+       quotations sequences ;
 IN: om.series
 
 ! _____________________________________
@@ -84,7 +85,7 @@ PRIVATE>
 
 MACRO: (geometric-test) ( limit factor -- curry: ( accum count -- accum count ? ) )
     1 < [ < ] [ > ] ? '[
-        _ [ [ 2dup ] dip -rot 0 > _ [ 2drop f ] if ] curry
+        [ dup 0 > [ _ pick @ ] [ f ] if ]
     ] ;
 
 : (geometric-step) ( factor -- curry: ( accum count -- accum' count' ) )
@@ -102,3 +103,9 @@ PRIVATE>
 : geometric-ser ( seed factor limit &optionals -- seq )
     most-positive-fixnum 0 unpack3 [ most-positive-fixnum ] unless*
     (geometric-ser) ; inline
+
+! __________
+! inharm-ser
+
+: inharm-ser ( start dist npart -- seq )
+    iota [ 1 + swap ^ * ] with with map ;

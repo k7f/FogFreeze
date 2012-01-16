@@ -68,6 +68,15 @@ $nl
 $nl
 { $snippet "nummax" } " allows to limit the number of elements." } ;
 
+HELP: inharm-ser
+{ $values
+  { "start" number }
+  { "dist" number }
+  { "npart" number }
+  { "seq" sequence }
+}
+{ $description "Generates a list of " { $snippet "npart" } " partials from " { $snippet "begin" } " when partial n = " { $snippet "begin" } " * n^" { $snippet "dist" } "." } ;
+
 ARTICLE: "om.series" "om.series"
 "The " { $vocab-link "om.series" } " vocabulary is an experimental port of the file " { $snippet "projects/01-basicproject/functions/series.lisp" } " from the main " { $snippet "code" } " tree of OpenMusic."
 $nl

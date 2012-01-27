@@ -78,6 +78,13 @@ HELP: prime-ser
 $nl
 "The optional parametre " { $snippet "numelem" } " limits the number of elements." } ;
 
+HELP: prime-factors
+{ $values
+  { "num" number }
+  { "seq" sequence }
+}
+{ $description "Returns the prime decomposition of " { $snippet "number" } " in the form " { $snippet "{ ... { prime exponent } ... }" } "." } ;
+
 HELP: inharm-ser
 { $values
   { "start" number }

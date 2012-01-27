@@ -1,10 +1,15 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: classes combinators ff.errors fry kernel locals macros math
+USING: arrays classes combinators ff.errors fry kernel locals macros math
        math.functions quotations sequences sequences.deep sequences.private
        strings ;
 IN: om.support
+
+M: quotation branch? drop f ;
+
+! __________
+! &optionals
 
 GENERIC: unpack1 ( &optionals -- arg1/f )
 
@@ -58,6 +63,16 @@ MACRO:: om-binop-sequence ( quot: ( elt1 elt2 -- elt' ) -- )
             [ drop class-of invalid-input ]
         } cond
     ] ;
+
+! _____
+! &rest
+
+GENERIC: &rest>sequence ( obj -- seq/f )
+
+M: quotation &rest>sequence ( str -- seq/f ) 1array ; inline
+M: string    &rest>sequence ( str -- seq/f ) 1array ; inline
+M: sequence  &rest>sequence ( seq -- seq/f ) [ f ] when-empty ; inline
+M: object    &rest>sequence ( obj -- seq/f ) 1array ; inline
 
 ! ____________________________
 ! nonstandard deep combinators
@@ -189,6 +204,12 @@ PRIVATE>
 
 : accumulate-all ( ..a seq identity quot: ( ..a prev elt -- ..b next ) -- ..b newseq )
     pick accumulate-all-as ; inline
+
+! ________________________
+! a variant of sum-lengths
+
+: sum-lengths-with-atoms ( seq -- n )
+    0 [ dup branch? [ length ] [ drop 1 ] if + ] reduce ; inline
 
 ! ____
 ! math

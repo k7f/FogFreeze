@@ -43,3 +43,23 @@ IN: om.lists.tests
 [ { 1 2 3 { 4 5 } 6 } ] [
     { { 1 2 } 3 { { 4 5 } 6 } } 1 flat
 ] unit-test
+
+[ { create-list create-list create-list create-list } ] [
+    4 \ create-list create-list
+] unit-test
+
+[ { { 1 "a" 4 } { 2 "b" 5 } { 3 "c" 6 } } ] [
+    { { 1 2 3 } { "a" "b" "c" } { 4 5 6 } } mat-trans
+] unit-test
+
+[ { 0 "a" 1 2 "b" 3 } ] [
+    { 0 1 2 3 } { "a" "b" } { 1 3 } interlock
+] unit-test
+
+[ { 0 1 "a" 3 } ] [
+    { 0 1 2 3 } 2 "a" subs-posn
+] unit-test
+
+[ { 0 "a" 2 "b" } ] [
+    { 0 1 2 3 } { 1 3 } { "a" "b" } subs-posn
+] unit-test

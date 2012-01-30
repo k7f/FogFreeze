@@ -3,7 +3,7 @@
 
 USING: arrays classes combinators ff.errors fry kernel locals macros math
        math.functions quotations sequences sequences.deep sequences.private
-       strings ;
+       strings vectors ;
 IN: om.support
 
 M: quotation branch? drop f ;
@@ -144,6 +144,11 @@ M: object    &rest>sequence ( obj -- seq/f ) 1array ; inline
 
 : (fixed-selector-for/index) ( quot: ( elt -- ? ) exemplar -- selector accum )
     [ length ] keep new-resizable [ [ (fixed-push-if/index) ] 2curry ] keep ; inline
+
+: (fixed-find) ( seq quot quot' -- i elt )
+    pick [
+        [ (each) ] dip call( n quot: ( i -- ? ) -- i )
+    ] dip finish-find ; inline
 PRIVATE>
 
 ! non-polymorphic variants (fixed stack depth)
@@ -153,6 +158,12 @@ PRIVATE>
 
 : fixed-filter ( seq quot: ( elt -- ? ) -- seq' )
     over fixed-filter-as ; inline
+
+: fixed-find ( seq quot: ( elt -- ? ) -- i elt )
+    [ find-integer ] (fixed-find) ; inline
+
+: fixed-any? ( seq quot: ( elt -- ? ) -- ? )
+    fixed-find drop >boolean ; inline
 
 ! index-dependent variants
 
@@ -210,6 +221,22 @@ PRIVATE>
 
 : sum-lengths-with-atoms ( seq -- n )
     0 [ dup branch? [ length ] [ drop 1 ] if + ] reduce ; inline
+
+! _________________________
+! a variant of sets:members
+
+<PRIVATE
+: (?add-member*) ( elt vec quot: ( obj1 obj2 -- ? ) -- )
+    [ over ] dip curry dupd fixed-any?
+    [ 2drop ] [ push ] if ; inline
+
+: (members*) ( seq quot: ( obj1 obj2 -- ? ) -- vec )
+    [ dup length <vector> ] dip
+    over [ [ (?add-member*) ] 2curry each ] dip ; inline
+PRIVATE>
+
+: members* ( seq quot: ( obj1 obj2 -- ? ) -- seq' )
+    [ (members*) ] curry keep like ; inline
 
 ! ____
 ! math

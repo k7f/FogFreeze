@@ -27,8 +27,8 @@ PRIVATE>
 : power-lower-bounds ( results expo coef -- results' )
     [ pick first rot ^ * swap [ second ] [ third ] bi 3array ] 2curry map ;
 
-: power-lower-bounds! ( results expo coef -- checks )
+: power-lower-bounds?* ( results expo coef -- checks )
     power-lower-bounds [ [ first ] [ second ] bi < ] map ;
 
-: power-compare-unary! ( quot1: ( seq -- ) quot2: ( seq -- ) base from to expo coef -- checks )
-    [ power-compare-unary ] 2dip power-lower-bounds! ; inline
+: power-compare-unary?* ( quot1: ( seq -- ) quot2: ( seq -- ) base from to expo coef -- checks )
+    [ power-compare-unary ] 2dip power-lower-bounds?* ; inline

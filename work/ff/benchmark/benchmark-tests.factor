@@ -15,5 +15,5 @@ IN: ff.benchmark.tests
     [ (numbers>string-preallocated) drop ] ; inline
 
 [ { t t t t t t t } ] [
-    (numbers>string-candidates) 3 0 6 .8 .25 power-compare-unary!
+    (numbers>string-candidates) 3 0 6 .8 .25 power-compare-unary?*
 ] unit-test

@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel math sequences ;
+USING: arrays help.markup help.syntax kernel math quotations sequences words ;
 IN: om.lists
 
 HELP: last-elem
@@ -65,6 +65,25 @@ HELP: mat-trans
 { $description "Matrix transposition."
 $nl
 "The matrix is represented by a list of rows. Each row is a list of items. Rows and columns are interchanged." } ;
+
+HELP: remove-dup
+{ $values
+  { "seq" sequence }
+  { "test-fun" "a " { $link word } " or a " { $link callable } }
+  { "depth" integer }
+  { "seq'" sequence }
+}
+{ $description "Removes duplicates elements from " { $snippet "list" } "."
+$nl
+"If " { $snippet "depth" } " is more than 1 duplicates are removed from sublists of level " { $snippet "depth" } "." } ;
+
+HELP: list-modulo
+{ $values
+  { "seq" sequence }
+  { "n" integer }
+  { "arr" array }
+}
+{ $description "Groups the elements of a list distant of a regular interval " { $snippet "ncol" } " and returns these groups as a list of lists." } ;
 
 HELP: interlock
 { $values

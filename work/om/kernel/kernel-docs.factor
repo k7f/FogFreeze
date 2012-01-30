@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: arrays help.markup help.syntax kernel math math.order om.support
-       sequences words.symbol ;
+       quotations sequences words words.symbol ;
 IN: om.kernel
 
 HELP: om+
@@ -249,7 +249,7 @@ HELP: list-explode
 HELP: list-filter
 { $values
   { "seq" sequence }
-  { "fun" object }
+  { "fun" "a " { $link word } " or a " { $link callable } }
   { "mode" symbol }
   { "seq'" sequence }
 }
@@ -267,7 +267,7 @@ HELP: table-filter
 { $values
   { "seq" sequence }
   { "numcol" integer }
-  { "fun" object }
+  { "fun" "a " { $link word } " or a " { $link callable } }
   { "mode" symbol }
   { "seq'" sequence }
 }

@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: om.lists tools.test ;
+USING: kernel om.lists tools.test ;
 IN: om.lists.tests
 
 [ 5 ] [
@@ -50,6 +50,22 @@ IN: om.lists.tests
 
 [ { { 1 "a" 4 } { 2 "b" 5 } { 3 "c" 6 } } ] [
     { { 1 2 3 } { "a" "b" "c" } { 4 5 6 } } mat-trans
+] unit-test
+
+[ { 1 3 2 4 } ] [
+    { 1 2 3 2 2 4 } \ = 1 remove-dup
+] unit-test
+
+[ { { 1 2 } { 3 2 } 4 } ] [
+    { { 1 2 } { 3 2 2 } 4 } \ = 2 remove-dup
+] unit-test
+
+[ { { 1 4 7 } { 2 5 8 } { 3 6 9 } } ] [
+    { 1 2 3 4 5 6 7 8 9 } 3 list-modulo
+] unit-test
+
+[ { { 1 3 5 7 9 } { 2 4 6 8 } } ] [
+    { 1 2 3 4 5 6 7 8 9 } 2 list-modulo
 ] unit-test
 
 [ { 0 "a" 1 2 "b" 3 } ] [

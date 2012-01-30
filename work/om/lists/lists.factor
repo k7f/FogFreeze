@@ -1,8 +1,10 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays ff.assertions kernel make math math.order om.support
-       prettyprint quotations sequences sequences.deep strings ;
+USING: accessors arrays assocs classes ff.assertions ff.errors grouping
+       kernel make math math.order om.support prettyprint quotations
+       sequences sequences.deep strings words ;
+QUALIFIED: sets
 IN: om.lists
 
 ! _____________________________________
@@ -132,6 +134,47 @@ M: sequence mat-trans ( mat -- mat' )
         [ [ ?nth ] with V{ } map-as [ ] { } filter-as ] curry
         { } map-as
     ] unless ;
+
+! __________
+! remove-dup
+
+<PRIVATE
+: (remove-dup*) ( seq test: ( obj1 obj2 -- ? ) depth -- seq' )
+    pick sequence? [
+        dup 1 <= [
+            drop [ <reversed> ] dip members* reverse  ! FIXME compatibility hack
+        ] [
+            1 - [ (remove-dup*) ] 2curry map
+        ] if
+    ] [ 2drop ] if ; inline recursive
+
+: (remove-dup) ( seq depth -- seq' )
+    over sequence? [
+        dup 1 <= [
+            drop <reversed> sets:members reverse  ! FIXME compatibility hack
+        ] [
+            1 - [ (remove-dup) ] curry map
+        ] if
+    ] [ drop ] if ; inline recursive
+PRIVATE>
+
+GENERIC# remove-dup 1 ( seq test-fun depth -- seq' )
+
+M: word remove-dup ( seq test-sym depth -- seq' )
+    [ 1quotation ] dip remove-dup ;
+
+M: callable remove-dup ( seq test: ( obj1 obj2 -- ? ) depth -- seq' )
+    dup fixnum? [
+        over [ = ] = [ nip (remove-dup) ] [ (remove-dup*) ] if
+    ] [ class-of invalid-input ] if ;
+
+! ___________
+! list-modulo
+
+GENERIC# list-modulo 1 ( seq n -- arr )
+
+M: sequence list-modulo ( seq n -- arr )
+    <groups> mat-trans ;
 
 ! _________
 ! interlock

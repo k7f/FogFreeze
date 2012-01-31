@@ -52,6 +52,18 @@ IN: om.lists.tests
     { { 1 2 3 } { "a" "b" "c" } { 4 5 6 } } mat-trans
 ] unit-test
 
+[ { { 1 } { 2 3 4 } } ] [
+    { 1 2 3 4 } { 1 3 } 'linear group-list
+] unit-test
+
+[ { { 1 } { 2 3 } { 4 } } ] [
+    { 1 2 3 4 } { 1 2 3 } 'linear group-list
+] unit-test
+
+[ { { 1 } { 2 3 } { 4 1 2 } } ] [
+    { 1 2 3 4 } { 1 2 3 } 'circular group-list
+] unit-test
+
 [ { 1 3 2 4 } ] [
     { 1 2 3 2 2 4 } \ = 1 remove-dup
 ] unit-test

@@ -1,9 +1,10 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays assocs classes ff.assertions ff.errors grouping
-       kernel make math math.order om.support prettyprint quotations
-       sequences sequences.deep strings words ;
+USING: accessors arrays assocs circular classes ff.assertions ff.errors
+       grouping kernel make math math.functions math.order om.support
+       prettyprint quotations sequences sequences.deep strings words
+       sequences.private ;
 QUALIFIED: sets
 IN: om.lists
 
@@ -134,6 +135,68 @@ M: sequence mat-trans ( mat -- mat' )
         [ [ ?nth ] with V{ } map-as [ ] { } filter-as ] curry
         { } map-as
     ] unless ;
+
+! __________
+! group-list
+
+SYMBOLS: 'linear 'circular ;
+
+<PRIVATE
+: (size>sizes) ( seq size -- seq sizes )
+    over length over / ceiling swap <repetition> ; inline
+
+: (sizes>offsets-check) ( len offset ndx sizes -- len offset ndx sizes ? )
+    2dup length < [
+        [ 2dup > ] 2dip rot
+    ] [ f ] if ; inline
+
+: (sizes>offsets-check*) ( len offset ndx sizes -- len offset ndx sizes ? )
+    2dup length < ; inline
+
+: (sizes>offsets-step) ( offset ndx sizes -- offset' ndx' sizes offset )
+    pick [ [ nth + ] 2keep [ 1 + ] dip ] dip ; inline
+
+: (sizes>offsets-step*) ( len offset ndx sizes -- len offset' ndx' sizes offset )
+    pick [ [ nth + over mod ] 2keep [ 1 + ] dip ] dip ; inline
+
+: (sizes>offsets) ( len sizes mode -- sizes offsets )
+    [ 0 0 ] 2dip 'circular eq?
+    [ [ (sizes>offsets-check*) ] [ (sizes>offsets-step*) ] pick produce-as ]
+    [ [ (sizes>offsets-check)  ] [ (sizes>offsets-step)  ] pick produce-as ]
+    if [ 3drop ] 2dip ; inline
+
+: ((next-chunk)) ( seq size offset -- chunk )
+    pick [
+        pick length over - rot min swapd
+        [ [ [ nth , ] [ [ 1 + ] dip ] 2bi ] fixed2-times ]
+    ] dip make 2nip ; inline
+
+: ((next-chunk*)) ( seq size offset -- chunk )
+    pick [
+        swap [ circular boa ] dip
+        [ [ [ first , ] [ rotate-circular ] [ ] tri ] fixed1-times ]
+    ] dip make nip ; inline
+
+: (next-chunk) ( seq ndx sizes offset -- seq ndx' sizes chunk )
+    [ 2dup nth [ 1 + over ] 2dip swapd ] dip ((next-chunk)) ; inline
+
+: (next-chunk*) ( seq ndx sizes offset -- seq ndx' sizes chunk )
+    [ 2dup nth [ 1 + over ] 2dip swapd ] dip ((next-chunk*)) ; inline
+
+: (group-list) ( seq sizes offsets mode -- seq' )
+    [ 0 ] 3dip 'circular eq?
+    [ [ (next-chunk*) ] fixed3-map! ]
+    [ [ (next-chunk)  ] fixed3-map! ]
+    if [ 3drop ] dip ; inline
+PRIVATE>
+
+GENERIC# group-list 1 ( seq segmentation mode -- seq' )
+
+M: integer group-list ( seq size mode -- seq' )
+    [ (size>sizes) ] dip group-list ;
+
+M: sequence group-list ( seq sizes mode -- seq' )
+    [ dup length ] 2dip [ (sizes>offsets) ] keep (group-list) ;
 
 ! __________
 ! remove-dup

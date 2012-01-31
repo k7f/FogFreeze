@@ -1,7 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays help.markup help.syntax kernel math quotations sequences words ;
+USING: arrays help.markup help.syntax kernel math quotations sequences words
+       words.symbol ;
 IN: om.lists
 
 HELP: last-elem
@@ -14,7 +15,7 @@ HELP: last-elem
 HELP: last-n
 { $values
   { "seq" sequence }
-  { "n" integer }
+  { "n" "a non-negative " { $link integer } }
   { "seq'" sequence }
 }
 { $description "Returns the " { $snippet "n" } " last elements of " { $snippet "list" } "." } ;
@@ -22,7 +23,7 @@ HELP: last-n
 HELP: first-n
 { $values
   { "seq" sequence }
-  { "n" integer }
+  { "n" "a non-negative " { $link integer } }
   { "seq'" sequence }
 }
 { $description "Returns the " { $snippet "n" } " first elements of " { $snippet "list" } "." } ;
@@ -51,7 +52,7 @@ $nl
 
 HELP: create-list
 { $values
-  { "n" integer }
+  { "n" "a non-negative " { $link integer } }
   { "obj" object }
   { "seq" sequence }
 }
@@ -66,11 +67,21 @@ HELP: mat-trans
 $nl
 "The matrix is represented by a list of rows. Each row is a list of items. Rows and columns are interchanged." } ;
 
+HELP: group-list
+{ $values
+  { "seq" sequence }
+  { "segmentation" "a non-negative " { $link integer } " or a " { $link sequence } }
+  { "mode" symbol }
+  { "seq'" sequence }
+}
+{ $description "Segments a " { $snippet "list" } " in successives sublists which lengths are successive values of the list " { $snippet "segmentation" } "." }
+{ $notes { $snippet "mode" } " indicates if " { $snippet "list" } " is to be read in a circular way." } ;
+
 HELP: remove-dup
 { $values
   { "seq" sequence }
   { "test-fun" "a " { $link word } " or a " { $link callable } }
-  { "depth" integer }
+  { "depth" fixnum }
   { "seq'" sequence }
 }
 { $description "Removes duplicates elements from " { $snippet "list" } "."
@@ -80,7 +91,7 @@ $nl
 HELP: list-modulo
 { $values
   { "seq" sequence }
-  { "n" integer }
+  { "n" "a non-negative " { $link integer } }
   { "arr" array }
 }
 { $description "Groups the elements of a list distant of a regular interval " { $snippet "ncol" } " and returns these groups as a list of lists." } ;

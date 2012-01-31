@@ -149,6 +149,16 @@ M: object    &rest>sequence ( obj -- seq/f ) 1array ; inline
     pick [
         [ (each) ] dip call( n quot: ( i -- ? ) -- i )
     ] dip finish-find ; inline
+
+: (fixed1-each-integer) ( a i n quot: ( a i -- a' ) -- a' )
+    2over < [
+        [ nip call( a i -- a' ) ] 3keep [ 1 + ] 2dip (fixed1-each-integer)
+    ] [ 3drop ] if ; inline recursive
+
+: (fixed2-each-integer) ( a b i n quot: ( a b i -- a' b' ) -- a' b' )
+    2over < [
+        [ nip call( a b i -- a' b' ) ] 3keep [ 1 + ] 2dip (fixed2-each-integer)
+    ] [ 3drop ] if ; inline recursive
 PRIVATE>
 
 ! non-polymorphic variants (fixed stack depth)
@@ -164,6 +174,21 @@ PRIVATE>
 
 : fixed-any? ( seq quot: ( elt -- ? ) -- ? )
     fixed-find drop >boolean ; inline
+
+: fixed1-each-integer ( a n quot: ( a i -- a' ) -- a' )
+    [ 0 ] 2dip (fixed1-each-integer) ; inline
+
+: fixed2-each-integer ( a b n quot: ( a b i -- a' b' ) -- a' b' )
+    [ 0 ] 2dip (fixed2-each-integer) ; inline
+
+: fixed1-times ( a n quot: ( a -- a' ) -- a' )
+    [ drop ] prepose fixed1-each-integer ; inline
+
+: fixed2-times ( a b n quot: ( a b -- a' b' ) -- a' b' )
+    [ drop ] prepose fixed2-each-integer ; inline
+
+: fixed3-map! ( a b c seq quot: ( a b c elt -- a b c newelt ) -- a b c seq )
+    over [ map-into ] over [ call( a b c seq quot into -- a b c ) ] dip ; inline
 
 ! index-dependent variants
 

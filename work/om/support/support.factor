@@ -274,6 +274,19 @@ PRIVATE>
 : cl-floor ( num div -- quo rem )
     2dup / floor [ * - ] [ >integer ] bi swap ;
 
+! _________
+! find-tail
+
+: find-tail ( seq candidates -- tailseq/f )
+    dupd [
+        [ eq? ] with find drop
+    ] curry find drop [ tail ] [ drop f ] if* ; inline
+
+: find-tail* ( seq candidates -- tailseq/f )
+    [ f over ] dip [
+        [ eq? ] curry find rot drop
+    ] with find drop [ tail ] [ 2drop f ] if ; inline
+
 ! _______________
 ! '( ... ) syntax
 

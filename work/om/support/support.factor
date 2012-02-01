@@ -1,10 +1,12 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays classes combinators ff.errors fry kernel locals macros math
-       math.functions quotations sequences sequences.deep sequences.private
-       strings vectors ;
+USING: arrays classes combinators ff.errors fry kernel lexer locals macros
+       math math.functions math.parser parser quotations sequences
+       sequences.deep sequences.private strings vectors words ;
 IN: om.support
+
+! FIXME replace ad-hoc definitions of monomorphic combinators with generic macros
 
 M: quotation branch? drop f ;
 
@@ -271,3 +273,35 @@ PRIVATE>
 
 : cl-floor ( num div -- quo rem )
     2dup / floor [ * - ] [ >integer ] bi swap ;
+
+! _______________
+! '( ... ) syntax
+
+TUPLE: cl-symbol { name string } ;
+
+<PRIVATE
+: (lparse-datum) ( string -- word/numberstring )
+    {
+        { "\"" [ \ " ] }
+        { "CHAR:" [ \ CHAR: ] }
+        [ dup string>number [ ] [ ] ?if ]
+    } case ;
+
+: (lparse-step) ( accum end -- accum ? )
+    (scan-token) dup [ (lparse-datum) ] when {
+        { [ 2dup equal? ] [ 2drop f ] }
+        { [ dup not ] [ drop unexpected-eof t ] }
+        { [ dup delimiter? ] [ unexpected t ] }
+        { [ dup parsing-word? ] [ nip execute-parsing t ] }
+        { [ dup number? ] [ pick push drop t ] }
+        [ cl-symbol boa pick push drop t ]
+    } cond ;
+
+: (lparse-until) ( accum end -- accum )
+    [ (lparse-step) ] keep swap [ (lparse-until) ] [ drop ] if ;
+
+: (lparse-literal) ( accum end quot -- accum )
+    [ 100 <vector> swap (lparse-until) ] dip call suffix! ; inline
+PRIVATE>
+
+SYNTAX: '( ")" [ >array ] (lparse-literal) ;

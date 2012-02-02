@@ -346,7 +346,9 @@ HELP: cl-symbol
 { $see-also "lisp-alikes" } ;
 
 HELP: '(
-{ $description "Starts a literal " { $link array } ", which has to be terminated with " { $snippet ")" } ".  Similar to " { $link POSTPONE: { } ", but " { $link word } "s inside are converted to " { $link cl-symbol } "s." }
+{ $description "Starts a literal " { $link array } ", which has to be terminated with closing parenthesis: " { $snippet ")" } ".  This is similar to " { $link POSTPONE: { } ", but " { $link word } "s inside parens are converted to " { $link cl-symbol } "s."
+$nl
+{ $snippet "()" } "-arrays may be nested.  However, internal opening parentheses should be left unescaped: those with leading " { $snippet "'" } "s will be converted to " { $link cl-symbol } "s ." }
 { $notes "Not converted are two parsing words: " { $link POSTPONE: " } " and " { $link POSTPONE: CHAR: } "." }
 { $see-also "lisp-alikes" } ;
 

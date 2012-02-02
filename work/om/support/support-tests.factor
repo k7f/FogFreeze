@@ -15,3 +15,7 @@ IN: om.support.tests
 [ { 123 "test" T{ cl-symbol { name "test" } } } ] [
     '( 123 "test" test )
 ] unit-test
+
+[ { 123 "test" T{ cl-symbol { name "test" } } { 123 "test" T{ cl-symbol { name "test" } } } } ] [
+    '( 123 "test" test ( 123 "test" test ) )
+] unit-test

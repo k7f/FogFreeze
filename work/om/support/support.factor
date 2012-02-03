@@ -48,6 +48,19 @@ M: sequence unpack3 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f )
 
 M: object unpack3 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f ) nip f ; inline
 
+! _____
+! &rest
+
+GENERIC: &rest>sequence ( obj -- seq/f )
+
+M: quotation &rest>sequence ( str -- seq/f ) 1array ; inline
+M: string    &rest>sequence ( str -- seq/f ) 1array ; inline
+M: sequence  &rest>sequence ( seq -- seq/f ) [ f ] when-empty ; inline
+M: object    &rest>sequence ( obj -- seq/f ) 1array ; inline
+
+! ________________
+! binop generators
+
 MACRO:: om-binop-number ( quot: ( elt1 elt2 -- elt' ) -- )
     [
         {
@@ -65,16 +78,6 @@ MACRO:: om-binop-sequence ( quot: ( elt1 elt2 -- elt' ) -- )
             [ drop class-of invalid-input ]
         } cond
     ] ;
-
-! _____
-! &rest
-
-GENERIC: &rest>sequence ( obj -- seq/f )
-
-M: quotation &rest>sequence ( str -- seq/f ) 1array ; inline
-M: string    &rest>sequence ( str -- seq/f ) 1array ; inline
-M: sequence  &rest>sequence ( seq -- seq/f ) [ f ] when-empty ; inline
-M: object    &rest>sequence ( obj -- seq/f ) 1array ; inline
 
 ! ____________________________
 ! nonstandard deep combinators
@@ -104,10 +107,10 @@ M: object    &rest>sequence ( obj -- seq/f ) 1array ; inline
         ] dip
     ] dip dup branch? [ like ] [ drop ] if ; inline
 
-: deep-reduce ( ..a seq identity quot: ( ..a prev elt -- ..b next ) -- ..b result )
+: deep-reduce ( ..a obj identity quot: ( ..a prev elt -- ..b next ) -- ..b result )
     swapd '[ dup branch? [ drop ] [ @ ] if ] deep-each ; inline
 
-: fixed-deep-reduce ( seq identity quot: ( prev elt -- next ) -- result )
+: fixed-deep-reduce ( obj identity quot: ( prev elt -- next ) -- result )
     swapd '[ dup branch? [ drop ] [ _ call( prev elt -- next ) ] if ] deep-each ; inline
 
 ! ____________________________

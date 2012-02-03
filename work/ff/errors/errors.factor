@@ -33,3 +33,5 @@ M: (invalid-input-class)
 PRIVATE>
 
 M: class invalid-input (invalid-input-class) ;
+
+ERROR: not-a-number { object read-only } ;

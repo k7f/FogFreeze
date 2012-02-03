@@ -2,9 +2,14 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: arrays combinators help.markup help.syntax kernel math math.functions
-       quotations sequences words words.symbol ;
+       quotations sequences sequences.deep words words.symbol ;
 QUALIFIED: sets
 IN: om.support
+
+<PRIVATE
+: $ad-hoc-warning ( children -- )
+    drop { "Ad-hoc definitions of monomorphic combinators will (hopefully) be replaced with generic macros or some other mechanism (e.g. " { $link call-effect } " with run-time stack-effect resolution)." } $warning ;
+PRIVATE>
 
 HELP: unpack1
 { $values
@@ -46,76 +51,96 @@ HELP: &rest>sequence
 
 HELP: om-binop-number
 { $values
-  { "quot" quotation }
+  { "quot" { $quotation "( elt1 elt2 -- elt' )" } }
   { "quot" quotation }
 }
 { $description "A factory yielding " { $link number } "\u{medium-white-circle}" { $link number } " and " { $link sequence } "\u{medium-white-circle}" { $link number } " binary operators." } ;
 
 HELP: om-binop-sequence
 { $values
-  { "quot" quotation }
+  { "quot" { $quotation "( elt1 elt2 -- elt' )" } }
   { "quot" quotation }
 }
 { $description "A factory yielding " { $link number } "\u{medium-white-circle}" { $link sequence } " and " { $link sequence } "\u{medium-white-circle}" { $link sequence } " binary operators." } ;
 
+HELP: deep-reduce
+{ $values
+  { "obj" object }
+  { "identity" object }
+  { "quot" { $quotation "( ..a prev elt -- ..b next )" } }
+  { "result" object }
+}
+{ $description "Traverses nested elements of an object, in preorder, combines successively visited elements using a binary operation, and outputs the final result." }
+{ $see-also reduce } ;
+
 HELP: deep-filter-leaves
 { $values
   { "obj" object }
-  { "quot" quotation }
+  { "quot" { $quotation "( ..a elt -- ..b ? )" } }
   { "seq" sequence }
 }
-{ $description "" } ;
+{ $description "Like " { $link deep-filter } ", but operates only on non-branching elements of an object." } ;
 
 HELP: deep-map-leaves
 { $values
   { "obj" object }
-  { "quot" quotation }
+  { "quot" { $quotation "( ..a elt -- ..b elt' )" } }
   { "newobj" object }
 }
-{ $description "" } ;
-
-HELP: deep-reduce
-{ $values
-  { "seq" sequence }
-  { "identity" object }
-  { "quot" quotation }
-  { "result" object }
-}
-{ $description "" } ;
+{ $description "Like " { $link deep-map } ", but operates only on non-branching elements of an object." } ;
 
 HELP: filter-as-index
 { $values
   { "seq" sequence }
-  { "quot" quotation }
+  { "quot" { $quotation "( ..a elt ndx -- ..b ? )" } }
   { "exemplar" object }
   { "seq'" sequence }
 }
-{ $description "" } ;
-
-HELP: filter-as/indices
-{ $values
-  { "seq" sequence }
-  { "quot" quotation }
-  { "exemplar" object }
-  { "seq'" sequence }
-}
-{ $description "" } ;
+{ $description "Like " { $link filter-as } ", but the quotation takes both, element " { $emphasis "and" } " its index, similarly to " { $link each-index } "." } ;
 
 HELP: filter-index
 { $values
   { "seq" sequence }
-  { "quot" quotation }
+  { "quot" { $quotation "( ..a elt ndx -- ..b ? )" } }
   { "seq'" sequence }
 }
-{ $description "" } ;
+{ $description "Like " { $link filter } ", but the quotation takes both, element " { $emphasis "and" } " its index, similarly to " { $link each-index } "." } ;
+
+HELP: filter-as/indices
+{ $values
+  { "seq" sequence }
+  { "quot" { $quotation "( ..a elt -- ..b ? )" } }
+  { "exemplar" object }
+  { "seq'" sequence }
+}
+{ $description "Like " { $link filter-as } ", but outputs a sequence of element indices, not the elements themselves." } ;
 
 HELP: filter/indices
 { $values
   { "seq" sequence }
-  { "quot" quotation }
+  { "quot" { $quotation "( ..a elt -- ..b ? )" } }
   { "seq'" sequence }
 }
-{ $description "" } ;
+{ $description "Like " { $link filter } ", but outputs a sequence of element indices, not the elements themselves." } ;
+
+HELP: accumulate-all-as
+{ $values
+  { "seq" sequence }
+  { "identity" object }
+  { "quot" { $quotation "( ..a prev elt -- ..b next )" } }
+  { "exemplar" object }
+  { "newseq" sequence }
+}
+{ $description "Like " { $link accumulate-as } ", but stores all steps (including final result) in the output sequence." } ;
+
+HELP: accumulate-all
+{ $values
+  { "seq" sequence }
+  { "identity" object }
+  { "quot" { $quotation "( ..a prev elt -- ..b next )" } }
+  { "newseq" sequence }
+}
+{ $description "Like " { $link accumulate } ", but stores all steps (including final result) in the output sequence." } ;
 
 HELP: fixed-any?
 { $values
@@ -123,14 +148,16 @@ HELP: fixed-any?
   { "quot" quotation }
   { "?" boolean }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also any? } ;
 
 HELP: fixed-deep-each
 { $values
   { "obj" object }
   { "quot" quotation }    
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also deep-each } ;
 
 HELP: fixed-deep-filter
 { $values
@@ -138,7 +165,8 @@ HELP: fixed-deep-filter
   { "quot" quotation }
   { "seq" sequence }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also deep-filter } ;
 
 HELP: fixed-deep-filter-leaves
 { $values
@@ -146,16 +174,18 @@ HELP: fixed-deep-filter-leaves
   { "quot" quotation }
   { "seq" sequence }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also deep-filter-leaves } ;
 
 HELP: fixed-deep-reduce
 { $values
-  { "seq" sequence }
+  { "obj" object }
   { "identity" object }
   { "quot" quotation }
   { "result" object }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also deep-reduce } ;
 
 HELP: fixed-filter
 { $values
@@ -163,7 +193,8 @@ HELP: fixed-filter
   { "quot" quotation }
   { "seq'" sequence }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also filter } ;
 
 HELP: fixed-filter-as
 { $values
@@ -172,7 +203,8 @@ HELP: fixed-filter-as
   { "exemplar" object }
   { "seq'" sequence }
 }
-{ $description "" } ;
+$ad-hoc-warning 
+{ $see-also filter-as } ;
 
 HELP: fixed-filter-as/indices
 { $values
@@ -181,7 +213,8 @@ HELP: fixed-filter-as/indices
   { "exemplar" object }
   { "seq'" sequence }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also filter-as/indices } ;
 
 HELP: fixed-filter/indices
 { $values
@@ -189,7 +222,8 @@ HELP: fixed-filter/indices
   { "quot" quotation }
   { "seq'" sequence }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also filter/indices } ;
 
 HELP: fixed-find
 { $values
@@ -198,7 +232,8 @@ HELP: fixed-find
   { "i" object }
   { "elt" object }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also find } ;
 
 HELP: fixed1-each-integer
 { $values
@@ -207,7 +242,8 @@ HELP: fixed1-each-integer
   { "quot" quotation }
   { "a'" object }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also each-integer } ;
 
 HELP: fixed1-filter-as-index
 { $values
@@ -218,7 +254,8 @@ HELP: fixed1-filter-as-index
   { "b" object }
   { "seq'" sequence }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also filter-as-index } ;
 
 HELP: fixed1-filter-index
 { $values
@@ -228,7 +265,8 @@ HELP: fixed1-filter-index
   { "b" object }
   { "seq'" sequence }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also filter-index } ;
 
 HELP: fixed1-times
 { $values
@@ -237,7 +275,8 @@ HELP: fixed1-times
   { "quot" quotation }
   { "a'" object }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also times } ;
 
 HELP: fixed2-each-integer
 { $values
@@ -248,7 +287,8 @@ HELP: fixed2-each-integer
   { "a'" object }
   { "b'" object }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also each-integer } ;
 
 HELP: fixed2-times
 { $values
@@ -259,7 +299,8 @@ HELP: fixed2-times
   { "a'" object }
   { "b'" object }
 }
-{ $description "" } ;
+$ad-hoc-warning
+{ $see-also times } ;
 
 HELP: fixed3-map!
 { $values
@@ -269,26 +310,8 @@ HELP: fixed3-map!
   { "seq" sequence }
   { "quot" quotation }    
 }
-{ $description "" } ;
-
-HELP: accumulate-all
-{ $values
-  { "seq" sequence }
-  { "identity" object }
-  { "quot" quotation }
-  { "newseq" sequence }
-}
-{ $description "Like " { $link accumulate } ", but stores all steps, including final result, in the returned sequence." } ;
-
-HELP: accumulate-all-as
-{ $values
-  { "seq" sequence }
-  { "identity" object }
-  { "quot" quotation }
-  { "exemplar" object }
-  { "newseq" sequence }
-}
-{ $description "Like " { $link accumulate-as } ", but stores all steps, including final result, in the returned sequence." } ;
+$ad-hoc-warning
+{ $see-also map! } ;
 
 HELP: sum-lengths-with-atoms
 { $values
@@ -300,10 +323,10 @@ HELP: sum-lengths-with-atoms
 HELP: members*
 { $values
   { "seq" sequence }
-  { "quot" quotation }
+  { "quot" { $quotation "( obj1 obj2 -- ? )" } }
   { "seq'" sequence }
 }
-{ $description "A variant of " { $link sets:members } "." }
+{ $description "Like " { $link sets:members } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." }
 { $see-also "lisp-alikes" } ;
 
 HELP: >power-of-2
@@ -329,7 +352,7 @@ HELP: find-tail
   { "candidates" sequence }
   { "tailseq/f" "a " { $link sequence } " or an " { $link f } }
 }
-{ $description "Returns the tail of " { $snippet "seq" } " starting from first " { $snippet "seq" } " element in " { $snippet "candidates" } "." }
+{ $description "Outputs the tail of " { $snippet "seq" } " starting from the first " { $snippet "seq" } "'s element found in " { $snippet "candidates" } "." }
 { $see-also find-tail* } ;
 
 HELP: find-tail*
@@ -338,7 +361,7 @@ HELP: find-tail*
   { "candidates" sequence }
   { "tailseq/f" "a " { $link sequence } " or an " { $link f } }
 }
-{ $description "Returns the tail of " { $snippet "seq" } " starting from first occurence of first element of " { $snippet "candidates" } " in " { $snippet "seq" } "." }
+{ $description "Outputs the tail of " { $snippet "seq" } " starting from the first occurence of the first such element of " { $snippet "candidates" } ", that is also contained in " { $snippet "seq" } "." }
 { $see-also find-tail } ;
 
 HELP: cl-symbol
@@ -367,7 +390,7 @@ $nl
 
 ARTICLE: "om.support" "om.support"
 "The " { $vocab-link "om.support" } " vocabulary supplies the \"om\" tree of vocabularies with various helper words (among others, " { $link "lisp-alikes" } " \u{em-dash} replacements for Common Lisp constructs)."
-{ $warning "Ad-hoc definitions of monomorphic combinators will (hopefully) be replaced with generic macros or some other mechanism (e.g. " { $link call-effect } " with run-time stack-effect resolution)." }
+$ad-hoc-warning
 { $see-also "lisp-alikes" } ;
 
 ABOUT: "om.support"

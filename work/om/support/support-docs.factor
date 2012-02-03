@@ -36,6 +36,14 @@ HELP: unpack3
 { $description "Used for unpacking three " { $snippet "&optional" } " parameters." }
 { $see-also unpack1 unpack2 "lisp-alikes" } ;
 
+HELP: &keys:test:key>quotation
+{ $values
+  { "&keys" { $keys } }
+  { "quot" { $quotation "( obj1 obj2 -- ? )" } }
+}
+{ $description "Used for unpacking two " { $snippet "&key" } " parameters, " { $snippet ":test" } " and " { $snippet ":key" } ", and composing them into a single quotation." }
+{ $see-also "lisp-alikes" } ;
+
 HELP: &rest>sequence
 { $values
   { "&rest" { $rest } }
@@ -395,6 +403,7 @@ $nl
 { $table
   { " Common Lisp construct" " Factor replacement" " Factor implementation helpers" " Common Lisp documentation" }
   { { "keyword " { $snippet "&optional" } } { } { $links unpack1 unpack2 unpack3 } { $url "clhs.lisp.se/Body/03_dab.htm" } }
+  { { "keyword " { $snippet "&key" } } { } { $link &keys:test:key>quotation } { $url "clhs.lisp.se/Body/03_dad.htm" } }
   { { "keyword " { $snippet "&rest" } } { } { $link &rest>sequence } { $url "clhs.lisp.se/Body/03_dac.htm" } }
   { { "quoted list expression " { $snippet "'(...)" } } { $link POSTPONE: '( } { } { $url "clhs.lisp.se/Body/02_dc.htm" } }
   { { "system class " { $snippet "SYMBOL" } } { $link cl-symbol } { } { $url "clhs.lisp.se/Body/t_symbol.htm" } }

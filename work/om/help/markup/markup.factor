@@ -12,10 +12,13 @@ IN: om.help.markup
     { "The text in descriptions and notes was copied verbatim from the original docstrings.  There may be little or no meaning left in it after the transfer." } $warning ;
 
 : $optionals ( children -- )
-    drop { "an " { $link object } " providing optional arguments" } print-element ;
+    drop { "an " { $link object } " providing " { $snippet "&optional" } " arguments" } print-element ;
 
 : $optional-defaults ( element -- )
     "Default values of optional arguments" $heading [ values-row ] map $table ;
+
+: $keys ( children -- )
+    drop { "an " { $link object } " providing " { $snippet "&key" } " arguments" } print-element ;
 
 : $rest ( children -- )
     drop { "an " { $link object } " containing a variable number of arguments" } print-element ;

@@ -49,6 +49,19 @@ M: sequence unpack3 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f )
 M: object unpack3 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f ) nip f ; inline
 
 ! _____
+! &keys
+
+<PRIVATE
+: (>callable) ( word/callable -- callable )
+    dup word? [ 1quotation ] when ; inline
+PRIVATE>
+
+: &keys:test:key>quotation ( &keys -- quot: ( obj1 obj2 -- ? ) )
+    [ = ] unpack2 [
+        [ (>callable) ] bi@ [ bi@ ] curry prepose
+    ] [ (>callable) ] if* ; inline
+
+! _____
 ! &rest
 
 GENERIC: &rest>sequence ( obj -- seq/f )

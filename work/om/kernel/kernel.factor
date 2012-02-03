@@ -45,7 +45,6 @@ M: sequence om-e ( seq -- seq' ) [ exp ] map ; inline
 ! ______
 ! om-log
 
-! &optionals: (base (exp 1))
 GENERIC# om-log 1 ( obj &optionals -- result )
 
 M: number om-log ( num &optionals -- num' )
@@ -64,7 +63,6 @@ M: sequence om-log ( seq &optionals -- seq' )
     over 0 > [ swap 10^ [ recip / round ] keep / ] [ nip round >integer ] if ;
 PRIVATE>
 
-! &optionals: (num-decimals 0) (divisor 1)
 GENERIC# om-round 1 ( obj &optionals -- obj' )
 
 M: number om-round ( num &optionals -- num' )
@@ -159,7 +157,6 @@ M: object list-max ( obj -- obj ) ;
 ! _________________
 ! tree-min tree-max
 
-! &optionals (min MOST-POSITIVE-LONG-FLOAT)
 GENERIC# tree-min 1 ( obj &optionals -- result )
 
 M: number tree-min ( num &optionals -- num' )
@@ -168,7 +165,6 @@ M: number tree-min ( num &optionals -- num' )
 M: sequence tree-min ( seq &optionals -- num )
     unpack1 [ largest-float ] unless* [ min ] deep-reduce ;
 
-! &optionals (max MOST-NEGATIVE-LONG-FLOAT)
 GENERIC# tree-max 1 ( obj &optionals -- result )
 
 M: number tree-max ( num &optionals -- num' )
@@ -186,7 +182,6 @@ M: sequence tree-max ( seq &optionals -- num )
     [ [ >float * ] [ + ] 2map-reduce ] [ sum ] bi / ;
 PRIVATE>
 
-! &optionals: (weights 1)
 GENERIC# om-mean 1 ( obj &optionals -- result )
 
 M: sequence om-mean ( seq &optionals -- result )
@@ -247,7 +242,6 @@ M: sequence perturbation ( percent seq -- result )
     pick - [ over - ] 3dip [ swap - ] dip rot * swap / + ;
 PRIVATE>
 
-! &optionals: (minin 0) (maxin 0)
 GENERIC# om-scale 1 ( minout maxout obj &optionals -- result )
 
 M: number om-scale ( minout maxout num &optionals -- result )
@@ -354,7 +348,6 @@ M: integer factorize ( num -- seq ) group-factors ;
     } cond ; inline
 PRIVATE>
 
-! &optionals: (accum nil)
 GENERIC# reduce-tree 1 ( obj fun &optionals -- result )
 
 M: word reduce-tree ( obj sym &optionals -- result )
@@ -423,7 +416,6 @@ M: sequence interpolation ( curve num-samples begin end -- seq )
     [ [ [ with any? ] 2curry ] dip prepose ] [ [ with any? ] 2curry ] if* ; inline
 PRIVATE>
 
-! &optionals: (test 'eq) (key nil)
 GENERIC# rang-p 1 ( seq obj &optionals -- seq' )
 
 M: number rang-p ( seq test-elt &optionals -- seq' )

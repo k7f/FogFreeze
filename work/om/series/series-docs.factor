@@ -1,7 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel math om.support sequences ;
+USING: help.markup help.syntax kernel layouts math om.help.markup om.support
+       sequences ;
 IN: om.series
 
 HELP: x->dx
@@ -28,8 +29,11 @@ HELP: arithm-ser
   { "begin" number }
   { "end" number }
   { "step" number }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "seq" sequence }
+}
+{ $optional-defaults
+  { "nummax" { $link most-positive-fixnum } }
 }
 { $description "Arithmetic series: returns a list of numbers from " { $snippet "begin" } " to " { $snippet "end" } " with increment of " { $snippet "step" } "." }
 { $notes { $snippet "nummax" } " allows to limit the number of elements returned." } ;
@@ -39,8 +43,12 @@ HELP: fibo-ser
   { "seed1" number }
   { "seed2" number }
   { "limit" number }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "seq" sequence }
+}
+{ $optional-defaults
+  { "begin" { $snippet "0" } }
+  { "end" { $link most-positive-fixnum } }
 }
 { $description "Fibonacci series: f(i) = f(i-1) + f(i-2)."
 $nl
@@ -57,8 +65,13 @@ HELP: geometric-ser
   { "seed" number }
   { "factor" number }
   { "limit" number }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "seq" sequence }
+}
+{ $optional-defaults
+  { "nummax" { $link most-positive-fixnum } }
+  { "begin" { $snippet "0" } }
+  { "end" { $link most-positive-fixnum } }
 }
 { $description "Geometric series: starts from " { $snippet "seed" } " and returns a list with f(i) = factor * f(i-1)."
 $nl
@@ -71,8 +84,11 @@ $nl
 HELP: prime-ser
 { $values
   { "max-value" number }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "seq" sequence }
+}
+{ $optional-defaults
+  { "numelem" { $link f } }
 }
 { $description "Prime numbers series: returns the set of prime-numbers ranging from 0 upto " { $snippet "max" } "."
 $nl
@@ -95,8 +111,6 @@ HELP: inharm-ser
 { $description "Generates a list of " { $snippet "npart" } " partials from " { $snippet "begin" } " when partial n = " { $snippet "begin" } " * n^" { $snippet "dist" } "." } ;
 
 ARTICLE: "om.series" "om.series"
-"The " { $vocab-link "om.series" } " vocabulary is an experimental port of the file " { $snippet "projects/01-basicproject/functions/series.lisp" } " from the main " { $snippet "code" } " tree of OpenMusic."
-$nl
-"The text in descriptions and notes was copied verbatim from the original docstrings.  There may be little or no meaning left in it after the transfer." ;
+{ $vocab-intro "om.series" "projects/01-basicproject/functions/series.lisp" } ;
 
 ABOUT: "om.series"

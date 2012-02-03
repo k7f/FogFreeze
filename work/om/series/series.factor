@@ -39,7 +39,6 @@ M: sequence dx->x ( start seq -- seq' )
     swap [ min 0 max ] dip range boa ; inline
 PRIVATE>
 
-! &optionals: (nummax MOST-POSITIVE-FIXNUM)
 : arithm-ser ( begin end step &optionals -- seq )
     unpack1 [ most-positive-fixnum ] unless*
     (arithm-ser-range) >array ;
@@ -67,7 +66,6 @@ PRIVATE>
     [ limit (fibo-make) ] [ 2array ] if* ; inline
 PRIVATE>
 
-! &optionals: (begin 0) (end MOST-POSITIVE-FIXNUM)
 : fibo-ser ( seed1 seed2 limit &optionals -- seq )
     0 unpack2 [ most-positive-fixnum ] unless* (fibo-ser) ;
 
@@ -99,7 +97,6 @@ MACRO: (geometric-test) ( limit factor -- curry: ( accum count -- accum count ? 
     ] [ 1array ] if* ; inline
 PRIVATE>
 
-! &optionals: (nummax (expt 2 32)) (begin 0) (end (expt 2 32))
 : geometric-ser ( seed factor limit &optionals -- seq )
     most-positive-fixnum 0 unpack3 [ most-positive-fixnum ] unless*
     (geometric-ser) ; inline
@@ -115,7 +112,6 @@ PRIVATE>
     ] { } make ; inline
 PRIVATE>
 
-! &optionals: (numelem (expt 2 32))
 : prime-ser ( max-value &optionals -- seq )
     unpack1 [ 2 -rot (prime-ser) ] [ primes-upto { } like ] if* ;
 

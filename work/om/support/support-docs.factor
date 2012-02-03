@@ -2,51 +2,46 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: arrays combinators help.markup help.syntax kernel math math.functions
-       quotations sequences sequences.deep words words.symbol ;
+       om.help.markup quotations sequences sequences.deep words words.symbol ;
 QUALIFIED: sets
 IN: om.support
 
-<PRIVATE
-: $ad-hoc-warning ( children -- )
-    drop { "Ad-hoc definitions of monomorphic combinators will (hopefully) be replaced with generic macros or some other mechanism (e.g. " { $link call-effect } " with run-time stack-effect resolution)." } $warning ;
-PRIVATE>
-
 HELP: unpack1
 { $values
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "arg1/f" object }
 }
-{ $description "" }
-{ $see-also "lisp-alikes" } ;
+{ $description "Used for unpacking a single " { $snippet "&optional" } " parameter." }
+{ $see-also unpack2 unpack3 "lisp-alikes" } ;
 
 HELP: unpack2
 { $values
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "arg1-default" object }
   { "arg1" object }
   { "arg2/f" object }
 }
-{ $description "" }
-{ $see-also "lisp-alikes" } ;
+{ $description "Used for unpacking two " { $snippet "&optional" } " parameters." }
+{ $see-also unpack1 unpack3 "lisp-alikes" } ;
 
 HELP: unpack3
 { $values
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "arg1-default" object }
   { "arg2-default" object }
   { "arg1" object }
   { "arg2" object }
   { "arg3/f" object }
 }
-{ $description "" }
-{ $see-also "lisp-alikes" } ;
+{ $description "Used for unpacking three " { $snippet "&optional" } " parameters." }
+{ $see-also unpack1 unpack2 "lisp-alikes" } ;
 
 HELP: &rest>sequence
 { $values
-  { "obj" object }
+  { "&rest" { $rest } }
   { "seq/f" "a " { $link sequence } " or an " { $link f } }
 }
-{ $description "Used for unpacking " { $snippet "&rest" } " parameter specifier." }
+{ $description "Outputs a sequence of arguments corresponding to a " { $snippet "&rest" } " parameter specifier." }
 { $see-also "lisp-alikes" } ;
 
 HELP: om-binop-number
@@ -148,7 +143,7 @@ HELP: fixed-any?
   { "quot" quotation }
   { "?" boolean }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also any? } ;
 
 HELP: fixed-deep-each
@@ -156,7 +151,7 @@ HELP: fixed-deep-each
   { "obj" object }
   { "quot" quotation }    
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also deep-each } ;
 
 HELP: fixed-deep-filter
@@ -165,7 +160,7 @@ HELP: fixed-deep-filter
   { "quot" quotation }
   { "seq" sequence }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also deep-filter } ;
 
 HELP: fixed-deep-filter-leaves
@@ -174,7 +169,7 @@ HELP: fixed-deep-filter-leaves
   { "quot" quotation }
   { "seq" sequence }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also deep-filter-leaves } ;
 
 HELP: fixed-deep-reduce
@@ -184,7 +179,7 @@ HELP: fixed-deep-reduce
   { "quot" quotation }
   { "result" object }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also deep-reduce } ;
 
 HELP: fixed-filter
@@ -193,7 +188,7 @@ HELP: fixed-filter
   { "quot" quotation }
   { "seq'" sequence }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also filter } ;
 
 HELP: fixed-filter-as
@@ -203,7 +198,7 @@ HELP: fixed-filter-as
   { "exemplar" object }
   { "seq'" sequence }
 }
-$ad-hoc-warning 
+$ad-hoc-monomorphic 
 { $see-also filter-as } ;
 
 HELP: fixed-filter-as/indices
@@ -213,7 +208,7 @@ HELP: fixed-filter-as/indices
   { "exemplar" object }
   { "seq'" sequence }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also filter-as/indices } ;
 
 HELP: fixed-filter/indices
@@ -222,7 +217,7 @@ HELP: fixed-filter/indices
   { "quot" quotation }
   { "seq'" sequence }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also filter/indices } ;
 
 HELP: fixed-find
@@ -232,7 +227,7 @@ HELP: fixed-find
   { "i" object }
   { "elt" object }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also find } ;
 
 HELP: fixed1-each-integer
@@ -242,7 +237,7 @@ HELP: fixed1-each-integer
   { "quot" quotation }
   { "a'" object }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also each-integer } ;
 
 HELP: fixed1-filter-as-index
@@ -254,7 +249,7 @@ HELP: fixed1-filter-as-index
   { "b" object }
   { "seq'" sequence }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also filter-as-index } ;
 
 HELP: fixed1-filter-index
@@ -265,7 +260,7 @@ HELP: fixed1-filter-index
   { "b" object }
   { "seq'" sequence }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also filter-index } ;
 
 HELP: fixed1-times
@@ -275,7 +270,7 @@ HELP: fixed1-times
   { "quot" quotation }
   { "a'" object }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also times } ;
 
 HELP: fixed2-each-integer
@@ -287,7 +282,7 @@ HELP: fixed2-each-integer
   { "a'" object }
   { "b'" object }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also each-integer } ;
 
 HELP: fixed2-times
@@ -299,7 +294,7 @@ HELP: fixed2-times
   { "a'" object }
   { "b'" object }
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also times } ;
 
 HELP: fixed3-map!
@@ -310,7 +305,7 @@ HELP: fixed3-map!
   { "seq" sequence }
   { "quot" quotation }    
 }
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also map! } ;
 
 HELP: sum-lengths-with-atoms
@@ -390,7 +385,7 @@ $nl
 
 ARTICLE: "om.support" "om.support"
 "The " { $vocab-link "om.support" } " vocabulary supplies the \"om\" tree of vocabularies with various helper words (among others, " { $link "lisp-alikes" } " \u{em-dash} replacements for Common Lisp constructs)."
-$ad-hoc-warning
+$ad-hoc-monomorphic
 { $see-also "lisp-alikes" } ;
 
 ABOUT: "om.support"

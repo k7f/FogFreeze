@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays help.markup help.syntax kernel math math.order om.support
-       quotations sequences words words.symbol ;
+USING: arrays help.markup help.syntax kernel math math.constants math.order
+       om.help.markup om.support quotations sequences words words.symbol ;
 IN: om.kernel
 
 HELP: om+
@@ -56,8 +56,11 @@ HELP: om-e
 HELP: om-log
 { $values
   { "obj" object }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "result" null }
+}
+{ $optional-defaults
+  { "base" "the number " { $link e } }
 }
 { $description "Logarithm function.  (The logarithm of a number to the base is the power to which the base must be raised in order to produce the number.)" }
 { $notes "The " { $snippet "base" } " argument is optional.  By default, " { $snippet "base" } " is equal to the number " { $emphasis "e" } ", so " { $snippet "om-log" } " computes the " { $emphasis "natural" } " logarithm of " { $snippet "n" } "."
@@ -67,8 +70,12 @@ $nl
 HELP: om-round
 { $values
   { "obj" object }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "obj'" object }
+}
+{ $optional-defaults
+  { "num-decimals" { $snippet "0" } }
+  { "divisor" { $snippet "1" } }
 }
 { $description "Rounds a number or a list of numbers with a given number of decimals (default = 0, i.e. returns integer values) and a divisor." }
 { $notes "This function can be applied to numbers or lists." } ;
@@ -126,24 +133,33 @@ HELP: list-max
 HELP: tree-min
 { $values
   { "obj" object }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "result" number }
+}
+{ $optional-defaults
+  { "min" { $link largest-float } }
 }
 { $description "Returns the minimum element in a tree." } ;
 
 HELP: tree-max
 { $values
   { "obj" object }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "result" number }
+}
+{ $optional-defaults
+  { "max" { $link largest-float } " negated " }
 }
 { $description "Returns the maximum element in a tree." } ;
 
 HELP: om-mean
 { $values
   { "obj" object }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "result" float }
+}
+{ $optional-defaults
+  { "weights" { $link f } }
 }
 { $description "Arithmetic mean of numbers in a list." }
 { $notes "The optional input " { $snippet "weights" } " is a list of weights used to ponderate the successive elements in the list." } ;
@@ -170,8 +186,12 @@ HELP: om-scale
   { "minout" number }
   { "maxout" number }
   { "obj" object }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "result" object }
+}
+{ $optional-defaults
+  { "minin" { $snippet "0" } }
+  { "maxin" { $snippet "0" } }
 }
 { $description "Scales " { $snippet "self" } " (a number or list of numbers) considered to be in the interval [" { $snippet "minin" } " " { $snippet "maxin" } "] towards the interval [" { $snippet "minout" } " " { $snippet "maxout" } "]." }
 { $notes "If [" { $snippet "minin" } " " { $snippet "maxin" } "] not specified or equal to [0 0], it is bound to the min and the max of the list." } ;
@@ -204,8 +224,11 @@ HELP: reduce-tree
 { $values
   { "obj" object }
   { "fun" object }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "result" object }
+}
+{ $optional-defaults
+  { "accum" { $link f } }
 }
 { $description "Applies the commutative binary " { $snippet "function" } " recursively throughout the list " { $snippet "self" } ".  (Applies to the first elements, then the result to the next one, and so forth until the list is exhausted.)"
 $nl
@@ -228,8 +251,12 @@ HELP: rang-p
 { $values
   { "seq" sequence }
   { "obj" object }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "seq'" sequence }
+}
+{ $optional-defaults
+  { "test" { $link = } }
+  { "key" { $link f } }
 }
 { $description "Returns the position(s) of " { $snippet "elem" } " in " { $snippet "liste" } "."
 $nl
@@ -332,8 +359,6 @@ HELP: pgcd
 { $description "Find the greats common divisor bethween 2 rational." } ;
 
 ARTICLE: "om.kernel" "om.kernel"
-"The " { $vocab-link "om.kernel" } " vocabulary is an experimental port of the file " { $snippet "projects/01-basicproject/functions/kernel.lisp" } " from the main " { $snippet "code" } " tree of OpenMusic."
-$nl
-"The text in descriptions and notes was copied verbatim from the original docstrings.  There may be little or no meaning left in it after the transfer." ;
+{ $vocab-intro "om.kernel" "projects/01-basicproject/functions/kernel.lisp" } ;
 
 ABOUT: "om.kernel"

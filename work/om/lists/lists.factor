@@ -1,10 +1,10 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays assocs circular classes ff.assertions ff.errors
-       grouping kernel make math math.functions math.order om.support
-       prettyprint quotations sequences sequences.deep strings words
-       sequences.private ;
+USING: accessors arrays assocs circular classes  ff.assertions ff.errors
+       grouping kernel locals make math math.functions math.order math.parser
+       om.series om.support parser prettyprint quotations sequences
+       sequences.deep strings vocabs.parser words ;
 QUALIFIED: sets
 IN: om.lists
 
@@ -101,7 +101,6 @@ PRIVATE>
     ] if ; inline
 PRIVATE>
 
-! &optionals: (level nil)
 GENERIC# flat 1 ( seq &optionals -- seq' )
 
 M: sequence flat ( seq &optionals -- seq' )
@@ -135,6 +134,73 @@ M: sequence mat-trans ( mat -- mat' )
         [ [ ?nth ] with V{ } map-as [ ] { } filter-as ] curry
         { } map-as
     ] unless ;
+
+! __________
+! expand-lst
+
+<PRIVATE
+CONSTANT: (*valid-expand-chars*) { CHAR: * CHAR: _ }
+
+DEFER: (expand-lst)
+
+: (expand-*) ( ndx seq nrep -- count ? )
+    [ 1 + ] [ ] [ nonnegative-integer! ] tri*
+    -rot nth (expand-lst) <repetition> { } concat-as % 2 t ; inline
+
+: (expand-_1) ( begin tailchars -- count ? )
+    >string dup string>number [
+        1 f arithm-ser %
+    ] [ not-a-number ] ?if 1 t ; inline
+
+: (expand-_s) ( begin tailchars s-ndx -- count ? )
+    cut-slice rest-slice [ >string ] bi@ 2dup [ string>number ] bi@ dupd and [
+        [ 2drop ] 2dip f arithm-ser %
+    ] [ -rot swap ? not-a-number ] if* 1 t ; inline
+
+: (expand-_) ( begin tailchars -- count ? )
+    CHAR: s over index [ (expand-_s) ] [ (expand-_1) ] if* ; inline
+
+: (expand-other) ( elt -- count )
+    dup search [ , ] [ no-word , ] ?if 1 ; inline
+
+:: (expand-string-eval) ( ndx seq elt pre sep post -- count )
+    0 f pre [
+        post empty? [
+            sep CHAR: * eq? [ 2drop ndx seq pre (expand-*) ] when
+        ] [
+            sep CHAR: _ eq? [ 2drop pre post (expand-_) ] when
+        ] if
+    ] when [ drop elt (expand-other) ] unless ; inline
+
+: (expand-string-parse) ( elt -- pre sep post )
+    >array dup (*valid-expand-chars*) find-tail*
+    [ length head* string>number ] [ ?first ] [ ] tri
+    over [ rest ] [ drop f ] if ; inline
+
+: (expand-string) ( ndx seq elt -- count )
+    dup (expand-string-parse) (expand-string-eval) ; inline
+
+: (expand-any) ( ndx seq elt -- count )
+    dup cl-symbol? [ name>> (expand-string) ] [
+        2nip dup branch? [ (expand-lst) ] when , 1
+    ] if ;
+
+: (expand-pred) ( ndx seq -- ndx seq elt f )
+    2dup ?nth dup ; inline
+
+: (expand-step) ( ndx seq elt -- ndx' seq )
+    2over [ [ (expand-any) ] dip + ] dip ; inline
+
+: (expand-lst) ( obj -- seq )
+    dup branch? [
+        [ f ] [
+            [ [ 0 swap [ (expand-pred) ] [ (expand-step) ] while ] curry ]
+            keep make [ 3drop ] dip
+        ] if-empty
+    ] [ [ [ 0 f ] dip (expand-any) drop ] { } make ] if ;
+PRIVATE>
+
+ALIAS: expand-lst (expand-lst)
 
 ! __________
 ! group-list

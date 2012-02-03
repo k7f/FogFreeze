@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays help.markup help.syntax kernel math quotations sequences words
-       words.symbol ;
+USING: arrays help.markup help.syntax kernel math om.help.markup quotations
+       sequences words words.symbol ;
 IN: om.lists
 
 HELP: last-elem
@@ -41,8 +41,11 @@ HELP: x-append
 HELP: flat
 { $values
   { "seq" sequence }
-  { "&optionals" object }
+  { "&optionals" { $optionals } }
   { "seq'" sequence }
+}
+{ $optional-defaults
+  { "level" { $link f } }
 }
 { $description "Transforms a tree-list (i.e. a list of lists) into a flat list."
 $nl
@@ -67,6 +70,20 @@ HELP: mat-trans
 $nl
 "The matrix is represented by a list of rows. Each row is a list of items. Rows and columns are interchanged." } ;
 
+HELP: expand-lst
+{ $values
+  { "obj" object }
+  { "seq" sequence }
+}
+{ $description "Expands a list following repetition patterns."
+$nl
+"1. <number>* (x1\u{horizontal-ellipsis}x2)\n"
+"repeats the pattern x1\u{horizontal-ellipsis}x2 <number> times."
+$nl
+"2. <n>_<m>s<k>\n"
+"appends an arithmetic series counting from <n> to <m> by step <k>.\n"
+"s<k> can be omitted (k=1)." } ;
+
 HELP: group-list
 { $values
   { "seq" sequence }
@@ -80,7 +97,7 @@ HELP: group-list
 HELP: remove-dup
 { $values
   { "seq" sequence }
-  { "test-fun" "a " { $link word } " or a " { $link callable } }
+  { "test-fun" "a " { $link word } " or a " { $link callable }  " with stack effect " { $snippet "( obj1 obj2 -- ? )" } }
   { "depth" fixnum }
   { "seq'" sequence }
 }
@@ -115,8 +132,6 @@ HELP: subs-posn
 { $description "Substitutes the elements of " { $snippet "lis1" } " at position(s) " { $snippet "posn" } " (if they exist) with the corresponding elements in " { $snippet "val" } "." } ;
 
 ARTICLE: "om.lists" "om.lists"
-"The " { $vocab-link "om.lists" } " vocabulary is an experimental port of the file " { $snippet "projects/01-basicproject/functions/lists.lisp" } " from the main " { $snippet "code" } " tree of OpenMusic."
-$nl
-"The text in descriptions and notes was copied verbatim from the original docstrings.  There may be little or no meaning left in it after the transfer." ;
+{ $vocab-intro "om.lists" "projects/01-basicproject/functions/lists.lisp" } ;
 
 ABOUT: "om.lists"

@@ -268,6 +268,18 @@ PRIVATE>
 : members* ( seq quot: ( obj1 obj2 -- ? ) -- seq' )
     [ (members*) ] curry keep like ; inline
 
+! __________________________
+! a variant of sets:set-like
+
+: set-like* ( seq quot: ( obj1 obj2 -- ? ) exemplar -- seq' )
+    [ members* ] dip like ; inline
+
+! _______________________
+! a variant of sets:union
+
+: union* ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- seq' )
+    swap over 2dup swap [ [ members* ] 2bi@ append ] 2dip set-like* ; inline
+
 ! ____
 ! math
 
@@ -276,6 +288,8 @@ PRIVATE>
 
 : cl-floor ( num div -- quo rem )
     2dup / floor [ * - ] [ >integer ] bi swap ;
+
+: cl-identity ( x -- x ) ;
 
 ! _________
 ! find-tail

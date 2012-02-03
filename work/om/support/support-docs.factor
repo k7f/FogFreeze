@@ -324,6 +324,25 @@ HELP: members*
 { $description "Like " { $link sets:members } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." }
 { $see-also "lisp-alikes" } ;
 
+HELP: set-like*
+{ $values
+  { "seq" sequence }
+  { "quot" { $quotation "( obj1 obj2 -- ? )" } }
+  { "exemplar" sets:set }
+  { "set" sets:set }
+}
+{ $description "Like " { $link sets:set-like } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." } ;
+
+HELP: union*
+{ $values
+  { "seq1" sequence }
+  { "seq2" sequence }
+  { "quot" { $quotation "( obj1 obj2 -- ? )" } }
+  { "seq'" sequence }
+}
+{ $description "Like " { $link sets:union } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." }
+{ $see-also "lisp-alikes" } ;
+
 HELP: >power-of-2
 { $values
   { "m" "a non-negative " { $link integer } }
@@ -379,7 +398,9 @@ $nl
   { { "keyword " { $snippet "&rest" } } { } { $link &rest>sequence } { $url "clhs.lisp.se/Body/03_dac.htm" } }
   { { "quoted list expression " { $snippet "'(...)" } } { $link POSTPONE: '( } { } { $url "clhs.lisp.se/Body/02_dc.htm" } }
   { { "system class " { $snippet "SYMBOL" } } { $link cl-symbol } { } { $url "clhs.lisp.se/Body/t_symbol.htm" } }
+  { { "function " { $snippet "identity" } } { $link cl-identity } { } { $url "clhs.lisp.se/Body/f_identi.htm" } }
   { { "function " { $snippet "remove-duplicates" } " with " { $snippet ":test" } " argument" } { $link members* } { } { $url "clhs.lisp.se/Body/f_rm_dup.htm" } }
+  { { "function " { $snippet "union" } " with " { $snippet ":test" } " argument" } { $link union* } { } { $url "clhs.lisp.se/Body/f_unionc.htm" } }
   { { "function " { $snippet "floor" } } { $link cl-floor } { } { $url "clhs.lisp.se/Body/f_floorc.htm" } }
 } ;
 

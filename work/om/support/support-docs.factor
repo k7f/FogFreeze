@@ -351,6 +351,16 @@ HELP: union*
 { $description "Like " { $link sets:union } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." }
 { $see-also "lisp-alikes" } ;
 
+HELP: subset*?
+{ $values
+  { "seq1" sequence }
+  { "seq2" sequence }
+  { "quot" { $quotation "( obj1 obj2 -- ? )" } }
+  { "?" boolean }
+}
+{ $description "Like " { $link sets:subset? } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." }
+{ $see-also "lisp-alikes" } ;
+
 HELP: >power-of-2
 { $values
   { "m" "a non-negative " { $link integer } }
@@ -410,6 +420,7 @@ $nl
   { { "function " { $snippet "identity" } } { $link cl-identity } { } { $clhs-link "f_identi.htm" } }
   { { "function " { $snippet "remove-duplicates" } " with " { $snippet ":test" } " argument" } { $link members* } { } { $clhs-link "f_rm_dup.htm" } }
   { { "function " { $snippet "union" } " with " { $snippet ":test" } " argument" } { $link union* } { } { $clhs-link "f_unionc.htm" } }
+  { { "function " { $snippet "subsetp" } " with " { $snippet ":test" } " argument" } { $link subset*? } { } { $clhs-link "f_subset.htm" } }
   { { "function " { $snippet "floor" } } { $link cl-floor } { } { $clhs-link "f_floorc.htm" } }
 } ;
 

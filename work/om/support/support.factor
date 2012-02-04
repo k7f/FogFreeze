@@ -3,7 +3,7 @@
 
 USING: arrays classes combinators ff.errors fry kernel lexer locals macros
        math math.functions math.parser parser quotations sequences
-       sequences.deep sequences.private strings vectors words ;
+       sequences.deep sequences.private sets strings vectors words ;
 IN: om.support
 
 ! FIXME replace ad-hoc definitions of monomorphic combinators with generic macros
@@ -292,6 +292,17 @@ PRIVATE>
 
 : union* ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- seq' )
     swap over 2dup swap [ [ members* ] 2bi@ append ] 2dip set-like* ; inline
+
+! _________________________
+! a variant of sets:subset?
+
+<PRIVATE
+: (subset*?) ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- ? )
+    dup [ members* ] curry 2dip [ with any? ] 2curry all? ; inline
+PRIVATE>
+
+: subset*? ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- ? )
+    pick pick [ cardinality ] bi@ > [ 3drop f ] [ (subset*?) ] if ; inline
 
 ! ____
 ! math

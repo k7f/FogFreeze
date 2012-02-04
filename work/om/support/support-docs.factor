@@ -402,15 +402,15 @@ ARTICLE: "lisp-alikes" "Lisp-alikes"
 $nl
 { $table
   { " Common Lisp construct" " Factor replacement" " Factor implementation helpers" " Common Lisp documentation" }
-  { { "keyword " { $snippet "&optional" } } { } { $links unpack1 unpack2 unpack3 } { $url "clhs.lisp.se/Body/03_dab.htm" } }
-  { { "keyword " { $snippet "&key" } } { } { $link &keys:test:key>quotation } { $url "clhs.lisp.se/Body/03_dad.htm" } }
-  { { "keyword " { $snippet "&rest" } } { } { $link &rest>sequence } { $url "clhs.lisp.se/Body/03_dac.htm" } }
-  { { "quoted list expression " { $snippet "'(...)" } } { $link POSTPONE: '( } { } { $url "clhs.lisp.se/Body/02_dc.htm" } }
-  { { "system class " { $snippet "SYMBOL" } } { $link cl-symbol } { } { $url "clhs.lisp.se/Body/t_symbol.htm" } }
-  { { "function " { $snippet "identity" } } { $link cl-identity } { } { $url "clhs.lisp.se/Body/f_identi.htm" } }
-  { { "function " { $snippet "remove-duplicates" } " with " { $snippet ":test" } " argument" } { $link members* } { } { $url "clhs.lisp.se/Body/f_rm_dup.htm" } }
-  { { "function " { $snippet "union" } " with " { $snippet ":test" } " argument" } { $link union* } { } { $url "clhs.lisp.se/Body/f_unionc.htm" } }
-  { { "function " { $snippet "floor" } } { $link cl-floor } { } { $url "clhs.lisp.se/Body/f_floorc.htm" } }
+  { { "keyword " { $snippet "&optional" } } { } { $links unpack1 unpack2 unpack3 } { $clhs-link "03_dab.htm" } }
+  { { "keyword " { $snippet "&key" } } { } { $link &keys:test:key>quotation } { $clhs-link "03_dad.htm" } }
+  { { "keyword " { $snippet "&rest" } } { } { $link &rest>sequence } { $clhs-link "03_dac.htm" } }
+  { { "quoted list expression " { $snippet "'(...)" } } { $link POSTPONE: '( } { } { $clhs-link "02_dc.htm" } }
+  { { "system class " { $snippet "SYMBOL" } } { $link cl-symbol } { } { $clhs-link "t_symbol.htm" } }
+  { { "function " { $snippet "identity" } } { $link cl-identity } { } { $clhs-link "f_identi.htm" } }
+  { { "function " { $snippet "remove-duplicates" } " with " { $snippet ":test" } " argument" } { $link members* } { } { $clhs-link "f_rm_dup.htm" } }
+  { { "function " { $snippet "union" } " with " { $snippet ":test" } " argument" } { $link union* } { } { $clhs-link "f_unionc.htm" } }
+  { { "function " { $snippet "floor" } } { $link cl-floor } { } { $clhs-link "f_floorc.htm" } }
 } ;
 
 ARTICLE: "om.support" "om.support"

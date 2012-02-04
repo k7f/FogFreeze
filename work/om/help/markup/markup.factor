@@ -1,7 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays combinators help.markup kernel sequences prettyprint ;
+USING: accessors arrays assocs combinators help.markup help.markup.private
+       kernel sequences ui.operations urls webbrowser ;
 IN: om.help.markup
 
 : $vocab-intro ( children -- )
@@ -26,3 +27,12 @@ IN: om.help.markup
 : $ad-hoc-monomorphic ( children -- )
     drop { "Ad-hoc definitions of monomorphic combinators will (hopefully) be replaced with generic macros or some other mechanism (e.g. " { $link call-effect } " with run-time stack-effect resolution)." } $warning ;
 
+<PRIVATE
+! CONSTANT: (clhs-body) "http://clhs.lisp.se/Body/"
+CONSTANT: (clhs-body) "http://www.lispworks.com/documentation/HyperSpec/Body/"
+PRIVATE>
+
+: $clhs-link ( children -- )
+    first dup (clhs-body) prepend >url [ write-link ] ($span) ;
+
+t +primary+ \ open-url props>> set-at

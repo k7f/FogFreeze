@@ -265,8 +265,10 @@ PRIVATE>
 : sum-lengths-with-atoms ( seq -- n )
     0 [ dup branch? [ length ] [ drop 1 ] if + ] reduce ; inline
 
-! _________________________
-! a variant of sets:members
+! ___________________________
+! variants of words from sets
+
+! FIXME move these to ff.sets
 
 <PRIVATE
 : (?add-member*) ( elt vec quot: ( obj1 obj2 -- ? ) -- )
@@ -281,28 +283,26 @@ PRIVATE>
 : members* ( seq quot: ( obj1 obj2 -- ? ) -- seq' )
     [ (members*) ] curry keep like ; inline
 
-! __________________________
-! a variant of sets:set-like
-
 : set-like* ( seq quot: ( obj1 obj2 -- ? ) exemplar -- seq' )
     [ members* ] dip like ; inline
-
-! _______________________
-! a variant of sets:union
 
 : union* ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- seq' )
     swap over 2dup swap [ [ members* ] 2bi@ append ] 2dip set-like* ; inline
 
-! _________________________
-! a variant of sets:subset?
-
 <PRIVATE
-: (subset*?) ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- ? )
-    dup [ members* ] curry 2dip [ with any? ] 2curry all? ; inline
+: (sequence/tester*) ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- seq' quot: ( elt -- ? ) )
+    dup [ members* ] curry 2dip [ with any? ] 2curry ; inline
 PRIVATE>
 
+: intersect* ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- seq' )
+    dup pick [
+        [ 2dup [ cardinality ] bi@ > [ swap ] when ] dip
+        (sequence/tester*) filter
+    ] 2dip set-like* ; inline
+
 : subset*? ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- ? )
-    pick pick [ cardinality ] bi@ > [ 3drop f ] [ (subset*?) ] if ; inline
+    pick pick [ cardinality ] bi@ >
+    [ 3drop f ] [ (sequence/tester*) all? ] if ; inline
 
 ! ____
 ! math

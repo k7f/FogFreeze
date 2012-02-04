@@ -351,6 +351,16 @@ HELP: union*
 { $description "Like " { $link sets:union } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." }
 { $see-also "lisp-alikes" } ;
 
+HELP: intersect*
+{ $values
+  { "seq1" sequence }
+  { "seq2" sequence }
+  { "quot" { $quotation "( obj1 obj2 -- ? )" } }
+  { "seq'" sequence }
+}
+{ $description "Like " { $link sets:intersect } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." }
+{ $see-also "lisp-alikes" } ;
+
 HELP: subset*?
 { $values
   { "seq1" sequence }
@@ -420,6 +430,7 @@ $nl
   { { "function " { $snippet "identity" } } { $link cl-identity } { } { $clhs-link "f_identi.htm" } }
   { { "function " { $snippet "remove-duplicates" } " with " { $snippet ":test" } " argument" } { $link members* } { } { $clhs-link "f_rm_dup.htm" } }
   { { "function " { $snippet "union" } " with " { $snippet ":test" } " argument" } { $link union* } { } { $clhs-link "f_unionc.htm" } }
+  { { "function " { $snippet "intersection" } " with " { $snippet ":test" } " argument" } { $link intersect* } { } { $clhs-link "f_isec_.htm" } }
   { { "function " { $snippet "subsetp" } " with " { $snippet ":test" } " argument" } { $link subset*? } { } { $clhs-link "f_subset.htm" } }
   { { "function " { $snippet "floor" } } { $link cl-floor } { } { $clhs-link "f_floorc.htm" } }
 } ;

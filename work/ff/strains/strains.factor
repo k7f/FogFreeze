@@ -1,9 +1,10 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays classes classes.parser classes.tuple classes.tuple.parser
-       combinators debugger effects ff.errors ff.tracing ff.types io kernel lexer
-       make math namespaces parser prettyprint quotations sequences strings ;
+USING: accessors arrays classes classes.parser classes.tuple
+       classes.tuple.parser combinators debugger effects ff.errors ff.tracing
+       io kernel lexer make math namespaces parser prettyprint quotations
+       sequences strings ;
 IN: ff.strains
 
 TRACING: f
@@ -13,9 +14,9 @@ GENERIC: check ( state new-value strain -- state new-value strain/f )
 
 TUPLE: strain
     { failure# fixnum }
-    { max-failures ?fixnum }
-    { push-quotation ?callable }
-    { drop-quotation ?callable } ;
+    { max-failures maybe: fixnum }
+    { push-quotation maybe: callable }
+    { drop-quotation maybe: callable } ;
 
 : new-strain ( class -- strain )
     new 0 >>failure# f >>max-failures f >>push-quotation f >>drop-quotation ;

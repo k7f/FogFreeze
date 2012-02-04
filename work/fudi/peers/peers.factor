@@ -1,11 +1,11 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors calendar concurrency.messaging continuations debugger
-       ff.types fry fudi.logging fudi.parser fudi.parser.rules fudi.state
-       fudi.types io io.encodings.ascii io.servers kernel lexer locals
-       logging math namespaces parser present prettyprint sequences
-       splitting strings threads words.symbol ;
+USING: accessors calendar concurrency.messaging continuations debugger fry
+       fudi.logging fudi.parser fudi.parser.rules fudi.state fudi.types io
+       io.encodings.ascii io.servers kernel lexer locals logging math
+       namespaces parser present prettyprint sequences splitting strings
+       threads words.symbol ;
 FROM: io.sockets => <inet4> with-client ;
 IN: fudi.peers
 

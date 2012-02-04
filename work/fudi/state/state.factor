@@ -1,14 +1,14 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors assocs classes ff.types fry fudi.logging kernel macros
-       namespaces prettyprint quotations sequences vectors ;
+USING: accessors assocs classes fry fudi.logging kernel macros namespaces
+       prettyprint quotations sequences vectors ;
 IN: fudi.state
 
 <PRIVATE
 SYMBOLS: (locals) (remotes) ;
 
-TUPLE: (cell) { value vector } { callback ?callable } ;
+TUPLE: (cell) { value vector } { callback maybe: callable } ;
 
 : (touch) ( cell -- )
     dup callback>> [
@@ -43,7 +43,7 @@ TUPLE: (cell) { value vector } { callback ?callable } ;
     [ (touch-value) ] [ value<< ] 2bi ;
 
 : (hook-replace) ( callback cell -- )
-    over ?callable instance? [ callback<< ] [
+    over maybe: callable instance? [ callback<< ] [
         drop unparse \ (hook-replace) fudi-ERROR
     ] if ;
 

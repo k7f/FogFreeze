@@ -1,7 +1,7 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors ff.types kernel strings ;
+USING: accessors kernel math strings threads ;
 IN: fudi.types
 
 ! Vanilla-style FUDI transmission is done over unidirectional channels:
@@ -11,16 +11,12 @@ IN: fudi.types
 ! requests and queries, ff obeys and responds -- the two should never act
 ! the other way.
 
-TUPLE: (fudi) { id string } { info string } { port ?fixnum } { worker ?thread } ;
+TUPLE: (fudi) { id string } { info string } { port maybe: fixnum } { worker maybe: thread } ;
 
 TUPLE: fudout < (fudi) ;
 
 : <fudout> ( id info -- fudi ) f f fudout boa ;
 
-MIXIN: ?fudout
-INSTANCE: f ?fudout
-INSTANCE: fudout ?fudout
-
-TUPLE: fudin  < (fudi) { responder ?fudout } ;
+TUPLE: fudin  < (fudi) { responder maybe: fudout } ;
 
 : <fudin> ( id info -- fudi ) f f f fudin boa ;

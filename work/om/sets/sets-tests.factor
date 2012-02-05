@@ -12,6 +12,14 @@ IN: om.sets.tests
     { 1 2 3 4 5 } { 4 5 6 7 8 } f f x-intersect
 ] unit-test
 
+[ { 1 2 3 } ] [
+    { 1 2 3 4 5 } { 4 5 6 7 8 } f f x-diff
+] unit-test
+
+[ { 1 2 3 6 7 8 } ] [
+    { 1 2 3 4 5 } { 4 5 6 7 8 } f f x-xor
+] unit-test
+
 [ f ] [
     { 1 2 3 4 5 } { 4 5 6 7 8 } f included?
 ] unit-test

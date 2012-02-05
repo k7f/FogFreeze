@@ -1,9 +1,10 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays classes combinators ff.errors fry kernel lexer locals macros
-       math math.functions math.parser parser quotations sequences
-       sequences.deep sequences.private sets strings vectors words ;
+USING: arrays bit-sets bit-sets.private classes combinators ff.errors fry
+       kernel lexer locals macros math math.functions math.parser parser
+       quotations sequences sequences.deep sequences.private sets sets.private
+       strings vectors words ;
 IN: om.support
 
 ! FIXME replace ad-hoc definitions of monomorphic combinators with generic macros
@@ -281,6 +282,7 @@ PRIVATE>
 ! variants of words from sets
 
 ! FIXME move these to ff.sets
+! FIXME handle all sets by slow-set coercion (except special-cased bit-sets)
 
 <PRIVATE
 : (?add-member*) ( elt vec quot: ( obj1 obj2 -- ? ) -- )
@@ -310,6 +312,27 @@ PRIVATE>
     dup pick [
         [ 2dup [ cardinality ] bi@ > [ swap ] when ] dip
         (sequence/tester*) filter
+    ] 2dip set-like* ; inline
+
+: diff* ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- seq' )
+    dup pick [
+        (sequence/tester*) [ not ] compose filter
+    ] 2dip set-like* ; inline
+
+GENERIC: symmetric-diff ( set1 set2 -- set' )
+
+M: bit-set symmetric-diff ( set1 set2 -- set' )
+    [ bitxor ] bit-set-op ;
+
+M: set symmetric-diff ( set1 set2 -- set' )
+    [
+        2dup swap [ sequence/tester [ not ] compose filter ] 2bi@ append
+    ] keep set-like ;
+
+: symmetric-diff* ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- seq' )
+    dup pick [
+        3dup swapd [ (sequence/tester*) [ not ] compose filter ]
+        [ 3dip ] keep call append
     ] 2dip set-like* ; inline
 
 : subset*? ( seq1 seq2 quot: ( obj1 obj2 -- ? ) -- ? )

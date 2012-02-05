@@ -368,8 +368,8 @@ HELP: members*
   { "quot" { $quotation "( obj1 obj2 -- ? )" } }
   { "seq'" sequence }
 }
-{ $description "Like " { $link sets:members } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." }
-{ $see-also "lisp-alikes" } ;
+{ $description { $set-combinator sets:members } }
+{ $see-also sets:members "lisp-alikes" } ;
 
 HELP: set-like*
 { $values
@@ -378,7 +378,7 @@ HELP: set-like*
   { "exemplar" sets:set }
   { "set" sets:set }
 }
-{ $description "Like " { $link sets:set-like } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." } ;
+{ $description { $set-combinator sets:set-like } } ;
 
 HELP: union*
 { $values
@@ -387,8 +387,8 @@ HELP: union*
   { "quot" { $quotation "( obj1 obj2 -- ? )" } }
   { "seq'" sequence }
 }
-{ $description "Like " { $link sets:union } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." }
-{ $see-also "lisp-alikes" } ;
+{ $description { $set-combinator sets:union } }
+{ $see-also sets:union "lisp-alikes" } ;
 
 HELP: intersect*
 { $values
@@ -397,8 +397,43 @@ HELP: intersect*
   { "quot" { $quotation "( obj1 obj2 -- ? )" } }
   { "seq'" sequence }
 }
-{ $description "Like " { $link sets:intersect } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." }
-{ $see-also "lisp-alikes" } ;
+{ $description { $set-combinator sets:intersect } }
+{ $see-also sets:intersect "lisp-alikes" } ;
+
+HELP: diff*
+{ $values
+  { "seq1" sequence }
+  { "seq2" sequence }
+  { "quot" { $quotation "( obj1 obj2 -- ? )" } }
+  { "seq'" sequence }
+}
+{ $description { $set-combinator sets:diff } }
+{ $see-also sets:diff "lisp-alikes" } ;
+
+HELP: symmetric-diff
+{ $values
+  { "set1" sets:set }
+  { "set2" sets:set }
+  { "set'" sets:set }
+}
+{ $description "Outputs a set consisting of elements present in exactly one of the two input sets, " { $snippet "set1" } " and " { $snippet "set2" } ", comparing elements for equality."
+$nl
+"This word has a default definition which works for all sets, but set implementations may override the default for efficiency."
+}
+{ $examples
+  { $example "USING: om.support prettyprint ;" "{ 1 2 3 } { 2 3 4 } symmetric-diff ."
+    "{ 1 4 }" }
+} ;
+
+HELP: symmetric-diff*
+{ $values
+  { "seq1" sequence }
+  { "seq2" sequence }
+  { "quot" { $quotation "( obj1 obj2 -- ? )" } }
+  { "seq'" sequence }
+}
+{ $description { $set-combinator symmetric-diff } }
+{ $see-also symmetric-diff "lisp-alikes" } ;
 
 HELP: subset*?
 { $values
@@ -407,8 +442,8 @@ HELP: subset*?
   { "quot" { $quotation "( obj1 obj2 -- ? )" } }
   { "?" boolean }
 }
-{ $description "Like " { $link sets:subset? } ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." }
-{ $see-also "lisp-alikes" } ;
+{ $description { $set-combinator sets:subset? } }
+{ $see-also sets:subset? "lisp-alikes" } ;
 
 HELP: >power-of-2
 { $values
@@ -477,7 +512,9 @@ $nl
   { { "function " { $snippet "remove-duplicates" } " with " { $snippet ":test" } " argument" } { $link members* } { } { $clhs-link "f_rm_dup.htm" } }
   { { "function " { $snippet "union" } " with " { $snippet ":test" } " argument" } { $link union* } { } { $clhs-link "f_unionc.htm" } }
   { { "function " { $snippet "intersection" } " with " { $snippet ":test" } " argument" } { $link intersect* } { } { $clhs-link "f_isec_.htm" } }
-  { { "function " { $snippet "subsetp" } " with " { $snippet ":test" } " argument" } { $link subset*? } { } { $clhs-link "f_subset.htm" } }
+  { { "function " { $snippet "set-difference" } " with " { $snippet ":test" } " argument" } { $link diff* } { } { $clhs-link "f_set_di.htm" } }
+  { { "function " { $snippet "set-exclusive-or" } " with " { $snippet ":test" } " argument" } { $link symmetric-diff* } { } { $clhs-link "f_set_ex.htm" } }
+{ { "function " { $snippet "subsetp" } " with " { $snippet ":test" } " argument" } { $link subset*? } { } { $clhs-link "f_subset.htm" } }
   { { "function " { $snippet "floor" } } { $link cl-floor } { } { $clhs-link "f_floorc.htm" } }
 } ;
 

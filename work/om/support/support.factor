@@ -5,11 +5,10 @@ USING: arrays bit-sets bit-sets.private classes combinators ff.errors fry
        kernel lexer locals macros math math.functions math.parser parser
        quotations sequences sequences.deep sequences.private sets sets.private
        strings vectors words ;
+QUALIFIED-WITH: ff.sequences.deep ff
 IN: om.support
 
 ! FIXME replace ad-hoc definitions of monomorphic combinators with generic macros
-
-M: quotation branch? drop f ;
 
 ! __________
 ! &optionals
@@ -109,35 +108,35 @@ MACRO:: om-binop-sequence ( quot: ( elt1 elt2 -- elt' ) -- )
 ! nonstandard deep combinators
 
 : fixed-deep-each ( obj quot: ( elt -- ) -- )
-    [ call( elt -- ) ] 2keep over branch?
+    [ call( elt -- ) ] 2keep over ff:branch?
     [ [ fixed-deep-each ] curry each ] [ 2drop ] if ; inline recursive
 
 : fixed-deep-filter ( obj quot: ( elt -- ? ) -- seq )
-    over [ selector [ fixed-deep-each ] dip ] dip dup branch?
+    over [ selector [ fixed-deep-each ] dip ] dip dup ff:branch?
     [ like ] [ drop ] if ; inline
 
 : deep-map-leaves ( ..a obj quot: ( ..a elt -- ..b elt' ) -- ..b newobj )
-    '[ dup branch? [ @ ] unless ] deep-map ; inline
+    '[ dup ff:branch? [ @ ] unless ] deep-map ; inline
 
 ! FIXME keep the structure
 : deep-filter-leaves ( ..a obj quot: ( ..a elt -- ..b ? ) -- ..b seq )
     over [
-        selector [ '[ dup branch? [ drop ] [ @ ] if ] deep-each ] dip
-    ] dip dup branch? [ like ] [ drop ] if ; inline
+        selector [ '[ dup ff:branch? [ drop ] [ @ ] if ] deep-each ] dip
+    ] dip dup ff:branch? [ like ] [ drop ] if ; inline
 
 ! FIXME keep the structure
 : fixed-deep-filter-leaves ( obj quot: ( elt -- ? ) -- seq )
     over [
         selector [
-            '[ dup branch? [ drop ] [ _ call( elt -- ) ] if ] deep-each
+            '[ dup ff:branch? [ drop ] [ _ call( elt -- ) ] if ] deep-each
         ] dip
-    ] dip dup branch? [ like ] [ drop ] if ; inline
+    ] dip dup ff:branch? [ like ] [ drop ] if ; inline
 
 : deep-reduce ( ..a obj identity quot: ( ..a prev elt -- ..b next ) -- ..b result )
-    swapd '[ dup branch? [ drop ] [ @ ] if ] deep-each ; inline
+    swapd '[ dup ff:branch? [ drop ] [ @ ] if ] deep-each ; inline
 
 : fixed-deep-reduce ( obj identity quot: ( prev elt -- next ) -- result )
-    swapd '[ dup branch? [ drop ] [ _ call( prev elt -- next ) ] if ] deep-each ; inline
+    swapd '[ dup ff:branch? [ drop ] [ _ call( prev elt -- next ) ] if ] deep-each ; inline
 
 ! ____________________________
 ! nonstandard flat combinators
@@ -276,7 +275,7 @@ PRIVATE>
 ! a variant of sum-lengths
 
 : sum-lengths-with-atoms ( seq -- n )
-    0 [ dup branch? [ length ] [ drop 1 ] if + ] reduce ; inline
+    0 [ dup ff:branch? [ length ] [ drop 1 ] if + ] reduce ; inline
 
 ! ___________________________
 ! variants of words from sets

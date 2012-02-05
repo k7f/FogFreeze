@@ -1,11 +1,12 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays assocs circular classes  ff.assertions ff.errors
+USING: accessors arrays assocs circular classes ff.assertions ff.errors
        grouping kernel locals make math math.functions math.order math.parser
-       om.series om.support parser prettyprint quotations sequences
-       sequences.deep strings vocabs.parser words ;
+       om.series om.support parser quotations sequences sequences.deep strings
+       vocabs.parser words ;
 QUALIFIED: sets
+QUALIFIED-WITH: ff.sequences.deep ff
 IN: om.lists
 
 ! _____________________________________
@@ -52,26 +53,26 @@ M: sequence first-n ( seq n -- seq' )
 <PRIVATE
 : (x-append-length) ( obj1 obj2 &rest-seq -- n )
     [
-        [ dup branch? [ length ] [ drop 1 ] if ] bi@ +
+        [ dup ff:branch? [ length ] [ drop 1 ] if ] bi@ +
     ] dip sum-lengths-with-atoms + ; inline
 
 : (x-append-new) ( obj1 obj2 &rest-seq -- seq )
     pick [ (x-append-length) ] dip
-    dup branch? [ drop { } ] unless new-resizable ; inline
+    dup ff:branch? [ drop { } ] unless new-resizable ; inline
 
 : (2-append!) ( seq obj -- seq )
-    dup branch? [ append! ] [ suffix! ] if ; inline
+    dup ff:branch? [ append! ] [ suffix! ] if ; inline
 
 GENERIC: (2-append) ( obj1 obj2 -- seq )
 
 M: string (2-append) ( obj1 obj2 -- seq )
-    over branch? [ suffix ] [ 2array ] if ; inline
+    over ff:branch? [ suffix ] [ 2array ] if ; inline
 
 M: sequence (2-append) ( obj seq -- seq' )
-    over branch? [ append ] [ swap prefix ] if ; inline
+    over ff:branch? [ append ] [ swap prefix ] if ; inline
 
 M: object (2-append) ( obj1 obj2 -- seq )
-    over branch? [ suffix ] [ 2array ] if ; inline
+    over ff:branch? [ suffix ] [ 2array ] if ; inline
 
 : (x-append) ( obj1 obj2 &rest-seq -- seq )
     [ (x-append-new) ] 3keep
@@ -82,7 +83,7 @@ PRIVATE>
 : x-append ( obj1 obj2 &rest -- seq )
     &rest>sequence [
         pick [ (x-append) ] dip
-        dup branch? [ drop { } ] unless like
+        dup ff:branch? [ drop { } ] unless like
     ] [ (2-append) ] if* ;
 
 ! ____
@@ -93,7 +94,7 @@ PRIVATE>
     [ sum-lengths-with-atoms ] keep new-resizable ; inline
 
 : (flat-exemplar) ( seq -- seq' )
-    first dup branch? [ drop { } ] unless ; inline
+    first dup ff:branch? [ drop { } ] unless ; inline
 
 : (flat-one) ( seq -- seq' )
     dup empty? [ clone ] [
@@ -182,7 +183,7 @@ DEFER: (expand-lst)
 
 : (expand-any) ( ndx seq elt -- count )
     dup cl-symbol? [ name>> (expand-string) ] [
-        2nip dup branch? [ (expand-lst) ] when , 1
+        2nip dup ff:branch? [ (expand-lst) ] when , 1
     ] if ;
 
 : (expand-pred) ( ndx seq -- ndx seq elt f )
@@ -192,7 +193,7 @@ DEFER: (expand-lst)
     2over [ [ (expand-any) ] dip + ] dip ; inline
 
 : (expand-lst) ( obj -- seq )
-    dup branch? [
+    dup ff:branch? [
         [ f ] [
             [ [ 0 swap [ (expand-pred) ] [ (expand-step) ] while ] curry ]
             keep make [ 3drop ] dip

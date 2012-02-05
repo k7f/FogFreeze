@@ -20,6 +20,9 @@ M: string    unpack1 ( &optionals -- arg1/f ) ; inline
 M: sequence  unpack1 ( &optionals -- arg1/f ) [ f ] [ first ] if-empty ; inline
 M: object    unpack1 ( &optionals -- arg1/f ) ; inline
 
+MACRO: unpack1* ( &optionals -- quot: ( -- arg1/f ) )
+    unpack1 1quotation ;
+
 GENERIC# unpack2 1 ( &optionals arg1-default -- arg1 arg2/f )
 
 M: quotation unpack2 ( &optionals arg1-default -- arg1 arg2/f ) drop f ; inline
@@ -31,6 +34,9 @@ M: sequence unpack2 ( &optionals arg1-default -- arg1 arg2/f )
     ] if-empty ;
 
 M: object unpack2 ( &optionals arg1-default -- arg1 arg2/f ) drop f ; inline
+
+MACRO: unpack2* ( &optionals arg1-default -- quot: ( -- arg1 arg2/f ) )
+    unpack2 2array >quotation ;
 
 GENERIC# unpack3 2 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f )
 
@@ -48,6 +54,9 @@ M: sequence unpack3 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f )
 
 M: object unpack3 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f ) nip f ; inline
 
+MACRO: unpack3* ( &optionals arg1-default arg2-default -- quot: ( -- arg1 arg2 arg3/f ) )
+    unpack3 3array >quotation ;
+
 ! _____
 ! &keys
 
@@ -61,10 +70,13 @@ PRIVATE>
         [ (>callable) ] bi@ [ bi@ ] curry prepose
     ] [ (>callable) ] if* ; inline
 
+MACRO: &keys:test:key>quotation* ( &keys -- quot: ( -- quot: ( obj1 obj2 -- ? ) ) )
+    &keys:test:key>quotation 1quotation ;
+
 ! _____
 ! &rest
 
-GENERIC: &rest>sequence ( obj -- seq/f )
+GENERIC: &rest>sequence ( &rest -- seq/f )
 
 M: quotation &rest>sequence ( str -- seq/f ) 1array ; inline
 M: string    &rest>sequence ( str -- seq/f ) 1array ; inline
@@ -313,7 +325,7 @@ PRIVATE>
 : cl-floor ( num div -- quo rem )
     2dup / floor [ * - ] [ >integer ] bi swap ;
 
-: cl-identity ( x -- x ) ;
+: cl-identity ( obj -- obj ) ;
 
 ! _________
 ! find-tail

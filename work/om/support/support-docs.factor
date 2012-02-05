@@ -12,7 +12,16 @@ HELP: unpack1
   { "arg1/f" object }
 }
 { $description "Used for unpacking a single " { $snippet "&optional" } " parameter." }
-{ $see-also unpack2 unpack3 "lisp-alikes" } ;
+{ $see-also unpack1* unpack2 unpack3 "lisp-alikes" } ;
+
+HELP: unpack1*
+{ $values
+  { "&optionals" { $optionals } }
+  { "quot"  { $quotation "( -- arg1/f )" } }
+}
+{ $description "Used for unpacking a single " { $snippet "&optional" } " parameter." }
+{ $notes { $unpacking-combinator unpack1 } }
+{ $see-also unpack1 unpack2* unpack3* "lisp-alikes" } ;
 
 HELP: unpack2
 { $values
@@ -22,7 +31,17 @@ HELP: unpack2
   { "arg2/f" object }
 }
 { $description "Used for unpacking two " { $snippet "&optional" } " parameters." }
-{ $see-also unpack1 unpack3 "lisp-alikes" } ;
+{ $see-also unpack2* unpack1 unpack3 "lisp-alikes" } ;
+
+HELP: unpack2*
+{ $values
+  { "&optionals" { $optionals } }
+  { "arg1-default" object }
+  { "quot"  { $quotation "( -- arg1 arg2/f )" } }
+}
+{ $description "Used for unpacking two " { $snippet "&optional" } " parameters." }
+{ $notes { $unpacking-combinator unpack2 } }
+{ $see-also unpack2 unpack1* unpack3* "lisp-alikes" } ;
 
 HELP: unpack3
 { $values
@@ -34,7 +53,18 @@ HELP: unpack3
   { "arg3/f" object }
 }
 { $description "Used for unpacking three " { $snippet "&optional" } " parameters." }
-{ $see-also unpack1 unpack2 "lisp-alikes" } ;
+{ $see-also unpack3* unpack1 unpack2 "lisp-alikes" } ;
+
+HELP: unpack3*
+{ $values
+  { "&optionals" { $optionals } }
+  { "arg1-default" object }
+  { "arg2-default" object }
+  { "quot"  { $quotation "( -- arg1 arg2 arg3/f )" } }
+}
+{ $description "Used for unpacking three " { $snippet "&optional" } " parameters." }
+{ $notes { $unpacking-combinator unpack3 } }
+{ $see-also unpack3 unpack1* unpack2* "lisp-alikes" } ;
 
 HELP: &keys:test:key>quotation
 { $values
@@ -42,7 +72,16 @@ HELP: &keys:test:key>quotation
   { "quot" { $quotation "( obj1 obj2 -- ? )" } }
 }
 { $description "Used for unpacking two " { $snippet "&key" } " parameters, " { $snippet ":test" } " and " { $snippet ":key" } ", and composing them into a single quotation." }
-{ $see-also "lisp-alikes" } ;
+{ $see-also &keys:test:key>quotation* "lisp-alikes" } ;
+
+HELP: &keys:test:key>quotation*
+{ $values
+  { "&keys" { $keys } }
+  { "quot" { $quotation "( -- quot: ( obj1 obj2 -- ? ) )" } }
+}
+{ $description "Used for unpacking two " { $snippet "&key" } " parameters, " { $snippet ":test" } " and " { $snippet ":key" } ", and composing them into a single quotation." }
+{ $notes { $unpacking-combinator &keys:test:key>quotation } }
+{ $see-also &keys:test:key>quotation "lisp-alikes" } ;
 
 HELP: &rest>sequence
 { $values
@@ -388,6 +427,13 @@ HELP: cl-floor
 { $description "A variant of " { $link floor } "." }
 { $see-also "lisp-alikes" } ;
 
+HELP: cl-identity
+{ $values
+  { "obj" object }
+  { "obj" object }
+}
+{ $description "Outputs its argument, unchanged." } ;
+
 HELP: find-tail
 { $values
   { "seq" sequence }
@@ -422,8 +468,8 @@ ARTICLE: "lisp-alikes" "Lisp-alikes"
 $nl
 { $table
   { " Common Lisp construct" " Factor replacement" " Factor implementation helpers" " Common Lisp documentation" }
-  { { "keyword " { $snippet "&optional" } } { } { $links unpack1 unpack2 unpack3 } { $clhs-link "03_dab.htm" } }
-  { { "keyword " { $snippet "&key" } } { } { $link &keys:test:key>quotation } { $clhs-link "03_dad.htm" } }
+  { { "keyword " { $snippet "&optional" } } { } { $links unpack1 unpack1* unpack2 unpack2* unpack3 unpack3* } { $clhs-link "03_dab.htm" } }
+  { { "keyword " { $snippet "&key" } } { } { $links &keys:test:key>quotation &keys:test:key>quotation* } { $clhs-link "03_dad.htm" } }
   { { "keyword " { $snippet "&rest" } } { } { $link &rest>sequence } { $clhs-link "03_dac.htm" } }
   { { "quoted list expression " { $snippet "'(...)" } } { $link POSTPONE: '( } { } { $clhs-link "02_dc.htm" } }
   { { "system class " { $snippet "SYMBOL" } } { $link cl-symbol } { } { $clhs-link "t_symbol.htm" } }

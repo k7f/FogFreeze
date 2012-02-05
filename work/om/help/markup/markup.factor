@@ -2,7 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors arrays assocs combinators help.markup help.markup.private
-       kernel sequences ui.operations urls webbrowser ;
+       kernel namespaces sequences ui.operations ui.tools.inspector urls
+       webbrowser ;
 IN: om.help.markup
 
 : $vocab-intro ( children -- )
@@ -30,6 +31,9 @@ IN: om.help.markup
 : $unpacking-combinator ( children -- )
     { "To be called in an " { $link POSTPONE: inline } " context.  This is a higher-order version of " } print-element $link { " suitable for unpacking quotations." } print-element ;
 
+: $set-combinator ( children -- )
+    { "Like " } print-element $link { ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." } print-element ;
+
 <PRIVATE
 ! CONSTANT: (clhs-body) "http://clhs.lisp.se/Body/"
 CONSTANT: (clhs-body) "http://www.lispworks.com/documentation/HyperSpec/Body/"
@@ -38,4 +42,12 @@ PRIVATE>
 : $clhs-link ( children -- )
     first dup (clhs-body) prepend >url [ write-link ] ($span) ;
 
-t +primary+ \ open-url props>> set-at
+<PRIVATE
+! FIXME don't remove the inspector form url's popup -- push it down, instead
+: (prioritize-url-operation) ( -- )
+    +primary+ +secondary+ [ t swap \ open-url props>> set-at ] bi@
+    operations get values [ command>> \ inspector eq? ] find nip
+    [ [ url? not ] swap predicate<< ] when* ;
+PRIVATE>
+
+(prioritize-url-operation)

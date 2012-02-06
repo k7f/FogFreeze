@@ -1,12 +1,11 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays assocs circular classes ff.assertions ff.errors
-       grouping kernel locals make math math.functions math.order math.parser
-       om.series om.support parser quotations sequences sequences.deep strings
-       vocabs.parser words ;
+USING: accessors arrays circular classes ff.assertions ff.errors
+       ff.sequences.deep grouping kernel locals make math math.functions
+       math.order math.parser om.series om.support parser quotations sequences
+       sequences.deep strings vocabs.parser words ;
 QUALIFIED: sets
-QUALIFIED-WITH: ff.sequences.deep ff
 IN: om.lists
 
 ! _____________________________________

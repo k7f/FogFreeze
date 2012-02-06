@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: kernel om.lists om.support tools.test ;
+USING: kernel om.lists om.support om.syntax tools.test ;
 IN: om.lists.tests
 
 [ 5 ] [

@@ -1,12 +1,11 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays classes combinators combinators.short-circuit ff.errors kernel
-       grouping locals math math.constants math.functions math.order
-       math.primes.factors math.ranges math.statistics math.vectors namespaces
-       om.support quotations random sequences sequences.deep sequences.private
-       words io ;
-QUALIFIED-WITH: ff.sequences.deep ff
+USING: arrays classes combinators combinators.short-circuit ff.errors
+       ff.sequences.deep grouping kernel locals math math.constants
+       math.functions math.order math.primes.factors math.ranges
+       math.statistics om.support quotations random sequences sequences.deep
+       sequences.private words ;
 IN: om.kernel
 
 ! _____________________________________

@@ -1,11 +1,10 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays bit-sets bit-sets.private classes combinators ff.errors fry
-       kernel locals macros math math.functions quotations sequences
-       sequences.deep sequences.private sets sets.private strings vectors
-       words ;
-QUALIFIED-WITH: ff.sequences.deep ff
+USING: arrays bit-sets bit-sets.private classes combinators ff.errors
+       ff.sequences.deep fry kernel locals macros math math.functions
+       quotations sequences sequences.deep sequences.private sets
+       sets.private strings vectors words ;
 IN: om.support
 
 ! FIXME replace ad-hoc definitions of monomorphic combinators with generic macros

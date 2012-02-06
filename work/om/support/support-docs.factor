@@ -2,7 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: arrays combinators help.markup help.syntax kernel math math.functions
-       om.help.markup quotations sequences sequences.deep words words.symbol ;
+       om.help.markup om.syntax quotations sequences sequences.deep words
+       words.symbol ;
 QUALIFIED: sets
 IN: om.support
 
@@ -489,13 +490,6 @@ HELP: find-tail*
 
 HELP: cl-symbol
 { $var-description "A non-executable variant of " { $link symbol } "." }
-{ $see-also "lisp-alikes" } ;
-
-HELP: '(
-{ $description "Starts a literal " { $link array } ", which has to be terminated with closing parenthesis: " { $snippet ")" } ".  This is similar to " { $link POSTPONE: { } ", but " { $link word } "s inside parens are converted to " { $link cl-symbol } "s."
-$nl
-{ $snippet "()" } "-arrays may be nested.  However, internal opening parentheses should be left unescaped: those with leading " { $snippet "'" } "s will be converted to " { $link cl-symbol } "s ." }
-{ $notes "Not converted are two parsing words: " { $link POSTPONE: " } " and " { $link POSTPONE: CHAR: } "." }
 { $see-also "lisp-alikes" } ;
 
 ARTICLE: "lisp-alikes" "Lisp-alikes"

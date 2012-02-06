@@ -23,11 +23,3 @@ IN: om.support.tests
 [ { 3 2 1 } ] [
     { 1 2 3 2 1 } { 3 2 } find-tail*
 ] unit-test
-
-[ { 123 "test" T{ cl-symbol { name "test" } } } ] [
-    '( 123 "test" test )
-] unit-test
-
-[ { 123 "test" T{ cl-symbol { name "test" } } { 123 "test" T{ cl-symbol { name "test" } } } } ] [
-    '( 123 "test" test ( 123 "test" test ) )
-] unit-test

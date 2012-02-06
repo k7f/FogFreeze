@@ -1,11 +1,11 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays classes combinators combinators.short-circuit ff.errors
-       ff.sequences.deep grouping kernel locals math math.constants
-       math.functions math.order math.primes.factors math.ranges
-       math.statistics om.support quotations random sequences sequences.deep
-       sequences.private words ;
+USING: addenda.sequences.deep arrays classes combinators
+       combinators.short-circuit ff.errors grouping kernel locals math
+       math.constants math.functions math.order math.primes.factors
+       math.ranges math.statistics om.support quotations random sequences
+       sequences.deep sequences.private words ;
 IN: om.kernel
 
 ! _____________________________________
@@ -135,13 +135,13 @@ M: sequence om-max ( obj seq -- result ) [ max ] om-binop-sequence ;
 
 <PRIVATE
 : (list-min) ( seq default -- num )
-    swap [ dup ff:branch? [ drop ] [ min ] if ] deep-each ;
+    swap [ dup ,:branch? [ drop ] [ min ] if ] deep-each ;
 PRIVATE>
 
 GENERIC: list-min ( obj -- result )
 
 M: sequence list-min ( seq -- num/f )
-    dup [ ff:branch? not ] deep-find
+    dup [ ,:branch? not ] deep-find
     [ [ min ] deep-reduce ] [ drop f ] if* ;
 
 M: object list-min ( obj -- obj ) ;
@@ -149,7 +149,7 @@ M: object list-min ( obj -- obj ) ;
 GENERIC: list-max ( obj -- result )
 
 M: sequence list-max ( seq -- num/f )
-    dup [ ff:branch? not ] deep-find
+    dup [ ,:branch? not ] deep-find
     [ [ max ] deep-reduce ] [ drop f ] if* ;
 
 M: object list-max ( obj -- obj ) ;
@@ -272,7 +272,7 @@ GENERIC: g-scaling/sum ( obj1 obj2 -- result )
 
 : (g-scaling/sum-tree) ( seq num -- flat-seq )
     over [ 2drop f ] [
-        first dup ff:branch? [
+        first dup ,:branch? [
             over g-scaling/sum
             [ [ rest ] dip g-scaling/sum ] dip prefix
         ] [ drop (g-scaling/sum-flat) ] if
@@ -282,7 +282,7 @@ PRIVATE>
 M: number g-scaling/sum ( obj num -- result )
     {
         { [ over number? ] [ (g-scaling/sum-scalar) ] }
-        { [ over ff:branch? ] [ (g-scaling/sum-tree) ] }
+        { [ over ,:branch? ] [ (g-scaling/sum-tree) ] }
         [ drop class-of invalid-input ]
     } cond ;
 
@@ -291,7 +291,7 @@ M: sequence g-scaling/sum ( obj seq -- result )
         { [ dup empty? ] [ 2drop f ] }
         {
             [ over number? ] [
-                dup first dup ff:branch? [
+                dup first dup ,:branch? [
                     [ over ] dip g-scaling/sum
                     [ rest g-scaling/sum ] dip prefix
                 ] [
@@ -300,7 +300,7 @@ M: sequence g-scaling/sum ( obj seq -- result )
             ]
         }
         {
-            [ over ff:branch? ] [
+            [ over ,:branch? ] [
                 over [ 2drop f ] [
                     over [ first ] bi@ g-scaling/sum
                     [ [ rest ] bi@ g-scaling/sum ] dip prefix

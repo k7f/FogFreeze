@@ -3,12 +3,12 @@
 
 USING: kernel math quotations sequences strings ;
 QUALIFIED-WITH: sequences.deep basis
-IN: ff.sequences.deep
+IN: addenda.sequences.deep
 
 ! FIXME find out why is quotation a basis:branch?
-GENERIC: ff:branch? ( obj -- ? )
+GENERIC: ,:branch? ( obj -- ? )
 
-M: quotation ff:branch? drop f ;
-M: string    ff:branch? drop f ;
-M: sequence  ff:branch? drop t ;
-M: object    ff:branch? drop f ;
+M: quotation ,:branch? drop f ;
+M: string    ,:branch? drop f ;
+M: sequence  ,:branch? drop t ;
+M: object    ,:branch? drop f ;

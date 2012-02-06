@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: arrays help.markup help.syntax kernel math math.constants math.order
-       om.help.markup om.support quotations sequences words words.symbol ;
+       om.help.markup quotations sequences words words.symbol ;
 IN: om.kernel
 
 HELP: om+

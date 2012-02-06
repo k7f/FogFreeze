@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays fry kernel macros om.support quotations sequences sets words ;
+USING: addenda.sets fry kernel macros om.support quotations sequences sets ;
 IN: om.sets
 
 ! ___________________________________

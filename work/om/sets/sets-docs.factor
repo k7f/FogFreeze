@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel om.help.markup quotations sequences ;
+USING: help.markup help.syntax kernel om.help.markup sequences ;
 IN: om.sets
 
 HELP: x-union

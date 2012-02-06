@@ -1,9 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays combinators help.markup help.syntax kernel math math.functions
-       om.help.markup om.syntax quotations sequences sequences.deep words
-       words.symbol ;
+USING: addenda.sets help.markup help.syntax kernel math math.functions
+       om.help.markup om.syntax quotations sequences words.symbol ;
 QUALIFIED: sets
 IN: om.support
 
@@ -106,66 +105,6 @@ HELP: om-binop-sequence
 }
 { $description "A factory yielding " { $link number } "\u{medium-white-circle}" { $link sequence } " and " { $link sequence } "\u{medium-white-circle}" { $link sequence } " binary operators." } ;
 
-HELP: deep-reduce
-{ $values
-  { "obj" object }
-  { "identity" object }
-  { "quot" { $quotation "( ..a prev elt -- ..b next )" } }
-  { "result" object }
-}
-{ $description "Traverses nested elements of an object, in preorder, combines successively visited elements using a binary operation, and outputs the final result." }
-{ $see-also reduce } ;
-
-HELP: deep-filter-leaves
-{ $values
-  { "obj" object }
-  { "quot" { $quotation "( ..a elt -- ..b ? )" } }
-  { "seq" sequence }
-}
-{ $description "Like " { $link deep-filter } ", but operates only on non-branching elements of an object." } ;
-
-HELP: deep-map-leaves
-{ $values
-  { "obj" object }
-  { "quot" { $quotation "( ..a elt -- ..b elt' )" } }
-  { "newobj" object }
-}
-{ $description "Like " { $link deep-map } ", but operates only on non-branching elements of an object." } ;
-
-HELP: filter-as-index
-{ $values
-  { "seq" sequence }
-  { "quot" { $quotation "( ..a elt ndx -- ..b ? )" } }
-  { "exemplar" object }
-  { "seq'" sequence }
-}
-{ $description "Like " { $link filter-as } ", but the quotation takes both, element " { $emphasis "and" } " its index, similarly to " { $link each-index } "." } ;
-
-HELP: filter-index
-{ $values
-  { "seq" sequence }
-  { "quot" { $quotation "( ..a elt ndx -- ..b ? )" } }
-  { "seq'" sequence }
-}
-{ $description "Like " { $link filter } ", but the quotation takes both, element " { $emphasis "and" } " its index, similarly to " { $link each-index } "." } ;
-
-HELP: filter-as/indices
-{ $values
-  { "seq" sequence }
-  { "quot" { $quotation "( ..a elt -- ..b ? )" } }
-  { "exemplar" object }
-  { "seq'" sequence }
-}
-{ $description "Like " { $link filter-as } ", but outputs a sequence of element indices, not the elements themselves." } ;
-
-HELP: filter/indices
-{ $values
-  { "seq" sequence }
-  { "quot" { $quotation "( ..a elt -- ..b ? )" } }
-  { "seq'" sequence }
-}
-{ $description "Like " { $link filter } ", but outputs a sequence of element indices, not the elements themselves." } ;
-
 HELP: accumulate-all-as
 { $values
   { "seq" sequence }
@@ -184,177 +123,6 @@ HELP: accumulate-all
   { "newseq" sequence }
 }
 { $description "Like " { $link accumulate } ", but stores all steps (including final result) in the output sequence." } ;
-
-HELP: fixed-any?
-{ $values
-  { "seq" sequence }
-  { "quot" quotation }
-  { "?" boolean }
-}
-$ad-hoc-monomorphic
-{ $see-also any? } ;
-
-HELP: fixed-deep-each
-{ $values
-  { "obj" object }
-  { "quot" quotation }    
-}
-$ad-hoc-monomorphic
-{ $see-also deep-each } ;
-
-HELP: fixed-deep-filter
-{ $values
-  { "obj" object }
-  { "quot" quotation }
-  { "seq" sequence }
-}
-$ad-hoc-monomorphic
-{ $see-also deep-filter } ;
-
-HELP: fixed-deep-filter-leaves
-{ $values
-  { "obj" object }
-  { "quot" quotation }
-  { "seq" sequence }
-}
-$ad-hoc-monomorphic
-{ $see-also deep-filter-leaves } ;
-
-HELP: fixed-deep-reduce
-{ $values
-  { "obj" object }
-  { "identity" object }
-  { "quot" quotation }
-  { "result" object }
-}
-$ad-hoc-monomorphic
-{ $see-also deep-reduce } ;
-
-HELP: fixed-filter
-{ $values
-  { "seq" sequence }
-  { "quot" quotation }
-  { "seq'" sequence }
-}
-$ad-hoc-monomorphic
-{ $see-also filter } ;
-
-HELP: fixed-filter-as
-{ $values
-  { "seq" sequence }
-  { "quot" quotation }
-  { "exemplar" object }
-  { "seq'" sequence }
-}
-$ad-hoc-monomorphic 
-{ $see-also filter-as } ;
-
-HELP: fixed-filter-as/indices
-{ $values
-  { "seq" sequence }
-  { "quot" quotation }
-  { "exemplar" object }
-  { "seq'" sequence }
-}
-$ad-hoc-monomorphic
-{ $see-also filter-as/indices } ;
-
-HELP: fixed-filter/indices
-{ $values
-  { "seq" sequence }
-  { "quot" quotation }
-  { "seq'" sequence }
-}
-$ad-hoc-monomorphic
-{ $see-also filter/indices } ;
-
-HELP: fixed-find
-{ $values
-  { "seq" sequence }
-  { "quot" quotation }
-  { "i" object }
-  { "elt" object }
-}
-$ad-hoc-monomorphic
-{ $see-also find } ;
-
-HELP: fixed1-each-integer
-{ $values
-  { "a" object }
-  { "n" object }
-  { "quot" quotation }
-  { "a'" object }
-}
-$ad-hoc-monomorphic
-{ $see-also each-integer } ;
-
-HELP: fixed1-filter-as-index
-{ $values
-  { "a" object }
-  { "seq" sequence }
-  { "quot" quotation }
-  { "exemplar" object }
-  { "b" object }
-  { "seq'" sequence }
-}
-$ad-hoc-monomorphic
-{ $see-also filter-as-index } ;
-
-HELP: fixed1-filter-index
-{ $values
-  { "a" object }
-  { "seq" sequence }
-  { "quot" quotation }
-  { "b" object }
-  { "seq'" sequence }
-}
-$ad-hoc-monomorphic
-{ $see-also filter-index } ;
-
-HELP: fixed1-times
-{ $values
-  { "a" object }
-  { "n" object }
-  { "quot" quotation }
-  { "a'" object }
-}
-$ad-hoc-monomorphic
-{ $see-also times } ;
-
-HELP: fixed2-each-integer
-{ $values
-  { "a" object }
-  { "b" object }
-  { "n" object }
-  { "quot" quotation }
-  { "a'" object }
-  { "b'" object }
-}
-$ad-hoc-monomorphic
-{ $see-also each-integer } ;
-
-HELP: fixed2-times
-{ $values
-  { "a" object }
-  { "b" object }
-  { "n" object }
-  { "quot" quotation }
-  { "a'" object }
-  { "b'" object }
-}
-$ad-hoc-monomorphic
-{ $see-also times } ;
-
-HELP: fixed3-map!
-{ $values
-  { "a" object }
-  { "b" object }
-  { "c" object }
-  { "seq" sequence }
-  { "quot" quotation }    
-}
-$ad-hoc-monomorphic
-{ $see-also map! } ;
 
 HELP: sum-lengths-with-atoms
 { $values
@@ -431,7 +199,6 @@ $nl
 
 ARTICLE: "om.support" "om.support"
 "The " { $vocab-link "om.support" } " vocabulary supplies the \"om\" tree of vocabularies with various helper words (among others, " { $link "lisp-alikes" } " \u{em-dash} replacements for Common Lisp constructs)."
-$ad-hoc-monomorphic
 { $see-also "lisp-alikes" } ;
 
 ABOUT: "om.support"

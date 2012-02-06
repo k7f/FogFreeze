@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: kernel math math.ranges om.series sequences tools.test ;
+USING: kernel math om.series sequences tools.test ;
 IN: om.series.tests
 
 [ { 700 200 } ] [

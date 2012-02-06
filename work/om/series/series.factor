@@ -1,9 +1,9 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays classes ff.errors fry kernel layouts locals macros make
-       math math.functions math.order math.primes math.primes.factors
-       math.ranges om.support prettyprint quotations sequences ;
+USING: arrays classes ff.errors fry kernel layouts locals macros make math
+       math.functions math.order math.primes math.primes.factors math.ranges
+       om.support sequences ;
 IN: om.series
 
 ! _____________________________________

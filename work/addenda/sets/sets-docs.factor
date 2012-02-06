@@ -1,8 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel om.help.markup quotations sequences
-       sets ;
+USING: addenda.help.markup help.markup help.syntax kernel sequences sets ;
 IN: addenda.sets
 
 HELP: members*
@@ -12,7 +11,7 @@ HELP: members*
   { "seq'" sequence }
 }
 { $description { $set-combinator members } }
-{ $see-also members "lisp-alikes" } ;
+{ $see-also members } ;
 
 HELP: set-like*
 { $values
@@ -31,7 +30,7 @@ HELP: union*
   { "seq'" sequence }
 }
 { $description { $set-combinator union } }
-{ $see-also union "lisp-alikes" } ;
+{ $see-also union } ;
 
 HELP: intersect*
 { $values
@@ -41,7 +40,7 @@ HELP: intersect*
   { "seq'" sequence }
 }
 { $description { $set-combinator intersect } }
-{ $see-also intersect "lisp-alikes" } ;
+{ $see-also intersect } ;
 
 HELP: diff*
 { $values
@@ -51,7 +50,7 @@ HELP: diff*
   { "seq'" sequence }
 }
 { $description { $set-combinator diff } }
-{ $see-also diff "lisp-alikes" } ;
+{ $see-also diff } ;
 
 HELP: symmetric-diff
 { $values
@@ -76,7 +75,7 @@ HELP: symmetric-diff*
   { "seq'" sequence }
 }
 { $description { $set-combinator symmetric-diff } }
-{ $see-also symmetric-diff "lisp-alikes" } ;
+{ $see-also symmetric-diff } ;
 
 HELP: subset*?
 { $values
@@ -86,7 +85,7 @@ HELP: subset*?
   { "?" boolean }
 }
 { $description { $set-combinator subset? } }
-{ $see-also subset? "lisp-alikes" } ;
+{ $see-also subset? } ;
 
 ARTICLE: "addenda.sets" "addenda.sets"
 { $vocab-link "addenda.sets" } ;

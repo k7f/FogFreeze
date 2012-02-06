@@ -1,8 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel layouts math om.help.markup om.support
-       sequences ;
+USING: help.markup help.syntax layouts math om.help.markup sequences ;
 IN: om.series
 
 HELP: x->dx

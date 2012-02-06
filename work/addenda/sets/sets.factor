@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: bit-sets bit-sets.private kernel math om.support sequences sets
-       sets.private vectors ;
+USING: addenda.sequences.mono bit-sets bit-sets.private kernel math sequences
+       sets sets.private vectors ;
 IN: addenda.sets
 
 ! FIXME handle all sets by slow-set coercion (except special-cased bit-sets)

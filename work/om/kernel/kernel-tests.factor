@@ -1,7 +1,7 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays kernel math math.ranges om.kernel sequences tools.test ;
+USING: arrays math math.ranges om.kernel sequences tools.test ;
 IN: om.kernel.tests
 
 [ 5 ] [

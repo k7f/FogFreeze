@@ -9,7 +9,7 @@ IN: om.sets
 
 <PRIVATE
 MACRO: (x-set-operator) ( &keys word* word -- quot: ( seq1 seq2 &rest -- seq' ) )
-    [ &keys:test:key>quotation* ] 2dip pick [ = ] =
+    [ unpack-test&key* ] 2dip pick [ = ] =
     [ 2nip 1quotation dup dup ]
     [ drop 1quotation curry dup dup ] if
     '[ &rest>sequence [ _ dip swap _ reduce ] _ if* ] ;

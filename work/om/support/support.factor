@@ -53,21 +53,21 @@ M: object unpack3 ( &optionals arg1-default arg2-default -- arg1 arg2 arg3/f ) n
 MACRO: unpack3* ( &optionals arg1-default arg2-default -- quot: ( -- arg1 arg2 arg3/f ) )
     unpack3 3array >quotation ;
 
-! _____
-! &keys
-
 <PRIVATE
 : (>callable) ( word/callable -- callable )
     dup word? [ 1quotation ] when ; inline
 PRIVATE>
 
-: &keys:test:key>quotation ( &keys -- quot: ( obj1 obj2 -- ? ) )
+: unpack-test&key ( &optionals -- quot: ( obj1 obj2 -- ? ) )
     [ = ] unpack2 [
         [ (>callable) ] bi@ [ bi@ ] curry prepose
     ] [ (>callable) ] if* ; inline
 
-MACRO: &keys:test:key>quotation* ( &keys -- quot: ( -- quot: ( obj1 obj2 -- ? ) ) )
-    &keys:test:key>quotation 1quotation ;
+MACRO: unpack-test&key* ( &optionals -- quot: ( -- quot: ( obj1 obj2 -- ? ) ) )
+    unpack-test&key 1quotation ;
+
+! _____
+! &keys
 
 ! _____
 ! &rest

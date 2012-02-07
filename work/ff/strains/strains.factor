@@ -1,10 +1,9 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays classes classes.parser classes.tuple
-       classes.tuple.parser combinators debugger effects ff.errors ff.tracing
-       io kernel lexer make math namespaces parser prettyprint quotations
-       sequences strings ;
+USING: accessors addenda.errors arrays classes classes.parser classes.tuple
+       classes.tuple.parser combinators debugger ff.tracing io kernel lexer
+       make math namespaces parser prettyprint quotations sequences strings ;
 IN: ff.strains
 
 TRACING: f

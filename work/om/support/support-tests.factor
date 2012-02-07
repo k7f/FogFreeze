@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays kernel math om.support tools.test ;
+USING: kernel math om.support tools.test ;
 IN: om.support.tests
 
 [ "x" ] [

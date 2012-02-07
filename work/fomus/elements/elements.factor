@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays classes ff.errors fomus.lli fomus.syntax kernel math sequences
-       strings ;
+USING: addenda.errors arrays classes fomus.lli fomus.syntax kernel math
+       sequences strings ;
 IN: fomus.elements
 
 <PRIVATE

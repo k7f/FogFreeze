@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays assocs classes combinators ff.errors kernel locals macros math
-       math.functions quotations sequences strings words ;
+USING: addenda.errors arrays assocs classes combinators kernel locals macros
+       math math.functions quotations sequences strings words ;
 IN: om.support
 
 ! __________
@@ -107,18 +107,12 @@ MACRO:: om-binop-sequence ( quot: ( elt1 elt2 -- elt' ) -- )
         } cond
     ] ;
 
-! ____
-! math
-
-: >power-of-2 ( m -- n )
-    dup 0 > [ log2 2^ ] [ drop 0 ] if ; inline
-
 ! __________
 ! cl-related
+
+TUPLE: cl-symbol { name string } ;
 
 : cl-floor ( num div -- quo rem )
     2dup / floor [ * - ] [ >integer ] bi swap ;
 
 : cl-identity ( obj -- obj ) ;
-
-TUPLE: cl-symbol { name string } ;

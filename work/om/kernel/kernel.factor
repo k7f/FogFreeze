@@ -1,9 +1,9 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.sequences.deep addenda.sequences.deep.mono
-       addenda.sequences.mono arrays classes combinators
-       combinators.short-circuit ff.errors grouping kernel locals math
+USING: addenda.errors addenda.sequences addenda.sequences.deep
+       addenda.sequences.deep.mono addenda.sequences.mono arrays classes
+       combinators combinators.short-circuit grouping kernel locals math
        math.constants math.functions math.order math.primes.factors
        math.ranges math.statistics om.support quotations random sequences
        sequences.deep sequences.private words ;

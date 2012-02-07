@@ -1,10 +1,11 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.sequences.deep addenda.sequences.mono addenda.sets accessors
-       arrays circular classes ff.assertions ff.errors grouping kernel locals
-       make math math.functions math.order math.parser om.series om.support
-       parser quotations sequences sequences.deep strings vocabs.parser words ;
+USING: accessors addenda.errors addenda.math addenda.sequences
+       addenda.sequences.mono addenda.sets arrays circular classes grouping
+       kernel locals make math math.functions math.order math.parser
+       om.series om.support parser quotations sequences sequences.deep
+       strings vocabs.parser words ;
 QUALIFIED: sets
 IN: om.lists
 

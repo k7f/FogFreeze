@@ -3,7 +3,7 @@
 
 USING: accessors classes debugger effects io kernel prettyprint stack-checker
        strings ;
-IN: ff.errors
+IN: addenda.errors
 
 <PRIVATE
 ERROR: (invalid-stack-effect) { expected effect read-only } { given effect read-only } ;

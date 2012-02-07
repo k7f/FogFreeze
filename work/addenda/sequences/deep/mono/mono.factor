@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.sequences.deep fry kernel sequences sequences.deep ;
+USING: addenda.sequences fry kernel sequences sequences.deep ;
 IN: addenda.sequences.deep.mono
 
 ! FIXME replace ad-hoc definitions of monomorphic combinators with generic macros

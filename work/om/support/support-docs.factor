@@ -106,12 +106,9 @@ HELP: om-binop-sequence
 }
 { $description "A factory yielding " { $link number } "\u{medium-white-circle}" { $link sequence } " and " { $link sequence } "\u{medium-white-circle}" { $link sequence } " binary operators." } ;
 
-HELP: >power-of-2
-{ $values
-  { "m" "a non-negative " { $link integer } }
-  { "n" integer }
-}
-{ $description "Like " { $link next-power-of-2 } ", but rounding down, not up." } ;
+HELP: cl-symbol
+{ $var-description "A non-executable variant of " { $link symbol } "." }
+{ $see-also "lisp-alikes" } ;
 
 HELP: cl-floor
 { $values
@@ -129,10 +126,6 @@ HELP: cl-identity
   { "obj" object }
 }
 { $description "Outputs its argument, unchanged." } ;
-
-HELP: cl-symbol
-{ $var-description "A non-executable variant of " { $link symbol } "." }
-{ $see-also "lisp-alikes" } ;
 
 ARTICLE: "lisp-alikes" "Lisp-alikes"
 "Factor replacements and implementation helpers used for porting Common Lisp constructs:"

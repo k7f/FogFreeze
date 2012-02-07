@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.sequences.deep arrays assocs fry kernel math math.order
-       om.support prettyprint sequences sequences.deep sorting ;
+USING: addenda.sequences assocs fry kernel math math.order om.support
+       sequences sequences.deep sorting ;
 IN: om.combinatorial
 
 ! ____________________________________________

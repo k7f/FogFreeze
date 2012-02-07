@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.sequences.deep arrays classes combinators ff.errors kernel
-       locals macros math math.functions quotations sequences
+USING: addenda.sequences.deep arrays assocs classes combinators ff.errors
+       kernel locals macros math math.functions quotations sequences
        sequences.private strings words ;
 IN: om.support
 
@@ -56,18 +56,26 @@ MACRO: unpack3* ( &optionals arg1-default arg2-default -- quot: ( -- arg1 arg2 a
 <PRIVATE
 : (>callable) ( word/callable -- callable )
     dup word? [ 1quotation ] when ; inline
+
+: (test&key>test) ( test: ( obj1 obj2 -- ? ) key: ( obj -- obj' ) -- quot: ( obj1 obj2 -- ? ) )
+    [ [ (>callable) ] bi@ [ bi@ ] curry prepose ] [ (>callable) ] if* ; inline
 PRIVATE>
 
-: unpack-test&key ( &optionals -- quot: ( obj1 obj2 -- ? ) )
-    [ = ] unpack2 [
-        [ (>callable) ] bi@ [ bi@ ] curry prepose
-    ] [ (>callable) ] if* ; inline
-
-MACRO: unpack-test&key* ( &optionals -- quot: ( -- quot: ( obj1 obj2 -- ? ) ) )
-    unpack-test&key 1quotation ;
+MACRO: unpack-test&key ( &optionals test-default: ( obj1 obj2 -- ? ) -- quot: ( -- quot: ( obj1 obj2 -- ? ) ) )
+    unpack2 (test&key>test) 1quotation ;
 
 ! _____
 ! &keys
+
+SYMBOLS: :test :key ;
+
+<PRIVATE
+: (&keys>test&key) ( &keys test-default: ( obj1 obj2 -- ? ) -- test: ( obj1 obj2 -- ? ) key: ( obj -- obj' ) )
+    swap :test :key rot [ at ] curry bi@ [ dup rot ? ] dip ; inline
+PRIVATE>
+
+MACRO: at-test&key ( &keys test-default: ( obj1 obj2 -- ? ) -- quot: ( -- quot: ( obj1 obj2 -- ? ) ) )
+    (&keys>test&key) (test&key>test) 1quotation ;
 
 ! _____
 ! &rest

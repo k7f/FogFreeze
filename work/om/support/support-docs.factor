@@ -69,18 +69,19 @@ HELP: unpack3*
 HELP: unpack-test&key
 { $values
   { "&optionals" { $optionals } }
-  { "quot" { $quotation "( obj1 obj2 -- ? )" } }
-}
-{ $description "Used for unpacking two " { $snippet "&key" } " parameters, " { $snippet ":test" } " and " { $snippet ":key" } ", and composing them into a single quotation." }
-{ $see-also unpack-test&key* "lisp-alikes" } ;
-
-HELP: unpack-test&key*
-{ $values
-  { "&optionals" { $optionals } }
+  { "test-default" { $quotation "( obj1 obj2 -- ? )" } }
   { "quot" { $quotation "( -- quot: ( obj1 obj2 -- ? ) )" } }
 }
-{ $description "Used for unpacking two " { $snippet "&key" } " parameters, " { $snippet ":test" } " and " { $snippet ":key" } ", and composing them into a single quotation." }
-{ $notes { $unpacking-combinator unpack-test&key } }
+{ $description "Used for unpacking two " { $snippet "&optional" } " parameters: a binary predicate and a unary operator, and composing them into a single quotation." }
+{ $see-also at-test&key "lisp-alikes" } ;
+
+HELP: at-test&key
+{ $values
+  { "&keys" { $keys } }
+  { "test-default" { $quotation "( obj1 obj2 -- ? )" } }
+  { "quot" { $quotation "( obj1 obj2 -- ? )" } }
+}
+{ $description "Used for unpacking two " { $snippet "&key" } " parameters: " { $link :test } " and " { $link :key } ", and composing them into a single quotation." }
 { $see-also unpack-test&key "lisp-alikes" } ;
 
 HELP: &rest>sequence
@@ -182,8 +183,8 @@ ARTICLE: "lisp-alikes" "Lisp-alikes"
 $nl
 { $table
   { " Common Lisp construct" " Factor replacement" " Factor implementation helpers" " Common Lisp documentation" }
-  { { "keyword " { $snippet "&optional" } } { } { $links unpack1 unpack1* unpack2 unpack2* unpack3 unpack3* unpack-test&key unpack-test&key* } { $clhs-link "03_dab.htm" } }
-  { { "keyword " { $snippet "&key" } } { } { $links  } { $clhs-link "03_dad.htm" } }
+  { { "keyword " { $snippet "&optional" } } { } { $links unpack1 unpack1* unpack2 unpack2* unpack3 unpack3* unpack-test&key } { $clhs-link "03_dab.htm" } }
+  { { "keyword " { $snippet "&key" } } { } { $links at-test&key } { $clhs-link "03_dad.htm" } }
   { { "keyword " { $snippet "&rest" } } { } { $link &rest>sequence } { $clhs-link "03_dac.htm" } }
   { { "quoted list expression " { $snippet "'(...)" } } { $link POSTPONE: '( } { } { $clhs-link "02_dc.htm" } }
   { { "system class " { $snippet "SYMBOL" } } { $link cl-symbol } { } { $clhs-link "t_symbol.htm" } }

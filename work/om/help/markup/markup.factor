@@ -19,7 +19,7 @@ IN: om.help.markup
     "Default values of optional arguments" $heading [ values-row ] map $table ;
 
 : $keys ( children -- )
-    drop { "an " { $link object } " providing " { $snippet "&key" } " arguments" } print-element ;
+    drop { "an " { $link assoc } " providing " { $snippet "&key" } " arguments" } print-element ;
 
 : $rest ( children -- )
     drop { "an " { $link object } " containing a variable number of arguments" } print-element ;

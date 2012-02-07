@@ -8,8 +8,10 @@ IN: om.help.markup
 : $vocab-intro ( children -- )
     { "The " } print-element dup first 1array $vocab-link
     { " vocabulary is an experimental port of the file " } print-element
-    second 1array $snippet
-    { " from the main " { $snippet "code" } " tree of OpenMusic." } print-element
+    second "code/" prepend 1array $snippet
+    { " from the main source tree of OpenMusic (downloadable from " } print-element
+    "this page" "http://repmus.ircam.fr/openmusic/sources" >url [ write-link ] ($span)
+    { ")." } print-element
     { "The text in descriptions and notes was copied verbatim from the original docstrings.  There may be little or no meaning left in it after the transfer." } $warning ;
 
 : $optionals ( children -- )

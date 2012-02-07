@@ -15,7 +15,7 @@ IN: addenda.sequences.deep.mono
     [ like ] [ drop ] if ; inline
 
 ! FIXME keep the structure
-: fixed-deep-filter-leaves ( obj quot: ( elt -- ? ) -- seq )
+: fixed-deep-filter-atoms ( obj quot: ( elt -- ? ) -- seq )
     over [
         selector [
             '[ dup ,:branch? [ drop ] [ _ call( elt -- ) ] if ] deep-each

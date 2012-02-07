@@ -21,7 +21,7 @@ HELP: deep-reduce
 { $description "Traverses nested elements of an object, in preorder, combines successively visited elements using a binary operation, and outputs the final result." }
 { $see-also reduce } ;
 
-HELP: deep-filter-leaves
+HELP: deep-filter-atoms
 { $values
   { "obj" object }
   { "quot" { $quotation "( ..a elt -- ..b ? )" } }
@@ -29,7 +29,7 @@ HELP: deep-filter-leaves
 }
 { $description "Like " { $link deep-filter } ", but operates only on non-branching elements of an object." } ;
 
-HELP: deep-map-leaves
+HELP: deep-map-atoms
 { $values
   { "obj" object }
   { "quot" { $quotation "( ..a elt -- ..b elt' )" } }

@@ -12,11 +12,11 @@ M: string    ,:branch? drop f ;
 M: sequence  ,:branch? drop t ;
 M: object    ,:branch? drop f ;
 
-: deep-map-leaves ( ..a obj quot: ( ..a elt -- ..b elt' ) -- ..b newobj )
+: deep-map-atoms ( ..a obj quot: ( ..a elt -- ..b elt' ) -- ..b newobj )
     '[ dup ,:branch? [ @ ] unless ] deep-map ; inline
 
 ! FIXME keep the structure
-: deep-filter-leaves ( ..a obj quot: ( ..a elt -- ..b ? ) -- ..b seq )
+: deep-filter-atoms ( ..a obj quot: ( ..a elt -- ..b ? ) -- ..b seq )
     over [
         selector [ '[ dup ,:branch? [ drop ] [ @ ] if ] deep-each ] dip
     ] dip dup ,:branch? [ like ] [ drop ] if ; inline

@@ -22,14 +22,14 @@ HELP: fixed-deep-filter
 $ad-hoc-monomorphic
 { $see-also deep-filter } ;
 
-HELP: fixed-deep-filter-leaves
+HELP: fixed-deep-filter-atoms
 { $values
   { "obj" object }
   { "quot" quotation }
   { "seq" sequence }
 }
 $ad-hoc-monomorphic
-{ $see-also deep-filter-leaves } ;
+{ $see-also deep-filter-atoms } ;
 
 HELP: fixed-deep-reduce
 { $values

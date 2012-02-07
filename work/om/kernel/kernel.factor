@@ -474,7 +474,7 @@ M: word list-filter ( seq sym mode -- seq' )
     [ 1quotation ] dip list-filter ;
 
 M: callable list-filter ( seq quot: ( elt -- ? ) mode -- seq' )
-    'reject eq? [ [ not ] compose ] when fixed-deep-filter-leaves ;
+    'reject eq? [ [ not ] compose ] when fixed-deep-filter-atoms ;
 
 ! ____________
 ! table-filter
@@ -529,7 +529,7 @@ M: integer posn-match ( seq position -- seq' )
     swap nth ;
 
 M: sequence posn-match ( seq positions -- seq' )
-    [ over 2dup bounds-check? [ nth ] [ 2drop f ] if ] deep-map-leaves nip ;
+    [ over 2dup bounds-check? [ nth ] [ 2drop f ] if ] deep-map-atoms nip ;
 
 ! ____
 ! pgcd

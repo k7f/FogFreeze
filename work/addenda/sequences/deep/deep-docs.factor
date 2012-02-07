@@ -1,15 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel quotations sequences sequences.deep ;
+USING: help.markup help.syntax kernel sequences sequences.deep ;
 IN: addenda.sequences.deep
-
-HELP: ,:branch?
-{ $values
-  { "obj" object }
-  { "?" boolean }
-}
-{ $description "Like " { $link branch? } ", but evaluates to " { $link POSTPONE: f } " for " { $link quotation } "s." } ;
 
 HELP: deep-reduce
 { $values

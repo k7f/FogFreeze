@@ -106,32 +106,6 @@ HELP: om-binop-sequence
 }
 { $description "A factory yielding " { $link number } "\u{medium-white-circle}" { $link sequence } " and " { $link sequence } "\u{medium-white-circle}" { $link sequence } " binary operators." } ;
 
-HELP: accumulate-all-as
-{ $values
-  { "seq" sequence }
-  { "identity" object }
-  { "quot" { $quotation "( ..a prev elt -- ..b next )" } }
-  { "exemplar" object }
-  { "newseq" sequence }
-}
-{ $description "Like " { $link accumulate-as } ", but stores all steps (including final result) in the output sequence." } ;
-
-HELP: accumulate-all
-{ $values
-  { "seq" sequence }
-  { "identity" object }
-  { "quot" { $quotation "( ..a prev elt -- ..b next )" } }
-  { "newseq" sequence }
-}
-{ $description "Like " { $link accumulate } ", but stores all steps (including final result) in the output sequence." } ;
-
-HELP: sum-lengths-with-atoms
-{ $values
-    { "seq" sequence }
-    { "n" integer }
-}
-{ $description "Like " { $link sum-lengths } ", but accepts atoms as valid elements of length 1, instead of raising an error." } ;
-
 HELP: >power-of-2
 { $values
   { "m" "a non-negative " { $link integer } }
@@ -155,24 +129,6 @@ HELP: cl-identity
   { "obj" object }
 }
 { $description "Outputs its argument, unchanged." } ;
-
-HELP: find-tail
-{ $values
-  { "seq" sequence }
-  { "candidates" sequence }
-  { "tailseq/f" "a " { $link sequence } " or an " { $link f } }
-}
-{ $description "Outputs the tail of " { $snippet "seq" } " starting from the first " { $snippet "seq" } "'s element found in " { $snippet "candidates" } "." }
-{ $see-also find-tail* } ;
-
-HELP: find-tail*
-{ $values
-  { "seq" sequence }
-  { "candidates" sequence }
-  { "tailseq/f" "a " { $link sequence } " or an " { $link f } }
-}
-{ $description "Outputs the tail of " { $snippet "seq" } " starting from the first occurence of the first such element of " { $snippet "candidates" } ", that is also contained in " { $snippet "seq" } "." }
-{ $see-also find-tail } ;
 
 HELP: cl-symbol
 { $var-description "A non-executable variant of " { $link symbol } "." }

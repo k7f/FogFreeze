@@ -1,8 +1,22 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: kernel sequences ;
+USING: kernel math quotations sequences sequences.private strings ;
 IN: addenda.sequences
+
+! FIXME find out why is quotation a branch?
+GENERIC: ,:branch? ( obj -- ? )
+
+M: quotation ,:branch? drop f ;
+M: string    ,:branch? drop f ;
+M: sequence  ,:branch? drop t ;
+M: object    ,:branch? drop f ;
+
+: sum-lengths-with-atoms ( seq -- n )
+    0 [ dup ,:branch? [ length ] [ drop 1 ] if + ] reduce ; inline
+
+! _________
+! filtering
 
 <PRIVATE
 : (push-when) ( ? elt seq -- )
@@ -21,8 +35,6 @@ IN: addenda.sequences
     [ length ] keep new-resizable [ [ (push-if/index) ] 2curry ] keep ; inline
 PRIVATE>
 
-! index-dependent variants
-
 : filter-as-index ( ..a seq quot: ( ..a elt ndx -- ..b ? ) exemplar -- ..b seq' )
     [ [ length iota ] keep ] 2dip
     dup [ (selector-for-index) [ 2each ] dip ] curry dip like ; inline
@@ -30,11 +42,42 @@ PRIVATE>
 : filter-index ( ..a seq quot: ( ..a elt ndx -- ..b ? ) -- ..b seq' )
     over filter-as-index ; inline
 
-! index-collecting variants
-
 : filter-as/indices ( ..a seq quot: ( ..a elt -- ..b ? ) exemplar -- ..b seq' )
     [ [ length iota ] keep ] 2dip
     dup [ (selector-for/index) [ 2each ] dip ] curry dip like ; inline
 
 : filter/indices ( ..a seq quot: ( ..a elt -- ..b ? ) -- ..b seq' )
     over filter-as/indices ; inline
+
+! ____________
+! accumulating
+
+<PRIVATE
+: (iterator) ( seq quot -- n quot' )
+    [ [ length ] keep ] dip
+    [ [ nth-unsafe ] dip curry keep ] 2curry ; inline
+
+: (map-integers+) ( ..a len quot: ( ..a i -- ..b elt ) exemplar -- ..b newseq )
+    [ over 1 + ] dip [ [ collect ] keep ] new-like ; inline
+PRIVATE>
+
+: accumulate-all-as ( ..a seq identity quot: ( ..a prev elt -- ..b next ) exemplar -- ..b newseq )
+    [ swapd (iterator) ] dip pick
+    [ (map-integers+) ] dip swap
+    [ set-nth-unsafe ] keep ; inline
+
+: accumulate-all ( ..a seq identity quot: ( ..a prev elt -- ..b next ) -- ..b newseq )
+    pick accumulate-all-as ; inline
+
+! _________
+! searching
+
+: find-tail ( seq candidates -- tailseq/f )
+    dupd [
+        [ eq? ] with find drop
+    ] curry find drop [ tail ] [ drop f ] if* ; inline
+
+: find-tail* ( seq candidates -- tailseq/f )
+    [ f over ] dip [
+        [ eq? ] curry find rot drop
+    ] with find drop [ tail ] [ 2drop f ] if ; inline

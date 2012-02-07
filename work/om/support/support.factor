@@ -1,9 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.sequences.deep arrays assocs classes combinators ff.errors
-       kernel locals macros math math.functions quotations sequences
-       sequences.private strings words ;
+USING: arrays assocs classes combinators ff.errors kernel locals macros math
+       math.functions quotations sequences strings words ;
 IN: om.support
 
 ! __________
@@ -108,53 +107,18 @@ MACRO:: om-binop-sequence ( quot: ( elt1 elt2 -- elt' ) -- )
         } cond
     ] ;
 
-! accumulator
-
-<PRIVATE
-: (iterator) ( seq quot -- n quot' )
-    [ [ length ] keep ] dip
-    [ [ nth-unsafe ] dip curry keep ] 2curry ; inline
-
-: (map-integers+) ( ..a len quot: ( ..a i -- ..b elt ) exemplar -- ..b newseq )
-    [ over 1 + ] dip [ [ collect ] keep ] new-like ; inline
-PRIVATE>
-
-: accumulate-all-as ( ..a seq identity quot: ( ..a prev elt -- ..b next ) exemplar -- ..b newseq )
-    [ swapd (iterator) ] dip pick
-    [ (map-integers+) ] dip swap
-    [ set-nth-unsafe ] keep ; inline
-
-: accumulate-all ( ..a seq identity quot: ( ..a prev elt -- ..b next ) -- ..b newseq )
-    pick accumulate-all-as ; inline
-
-! ________________________
-! a variant of sum-lengths
-
-: sum-lengths-with-atoms ( seq -- n )
-    0 [ dup ,:branch? [ length ] [ drop 1 ] if + ] reduce ; inline
-
 ! ____
 ! math
 
 : >power-of-2 ( m -- n )
     dup 0 > [ log2 2^ ] [ drop 0 ] if ; inline
 
+! __________
+! cl-related
+
 : cl-floor ( num div -- quo rem )
     2dup / floor [ * - ] [ >integer ] bi swap ;
 
 : cl-identity ( obj -- obj ) ;
-
-! _________
-! find-tail
-
-: find-tail ( seq candidates -- tailseq/f )
-    dupd [
-        [ eq? ] with find drop
-    ] curry find drop [ tail ] [ drop f ] if* ; inline
-
-: find-tail* ( seq candidates -- tailseq/f )
-    [ f over ] dip [
-        [ eq? ] curry find rot drop
-    ] with find drop [ tail ] [ 2drop f ] if ; inline
 
 TUPLE: cl-symbol { name string } ;

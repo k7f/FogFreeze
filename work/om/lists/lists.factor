@@ -1,11 +1,10 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors addenda.errors addenda.math addenda.sequences
-       addenda.sequences.mono addenda.sets arrays circular classes grouping
-       kernel locals make math math.functions math.order math.parser
-       om.series om.support parser quotations sequences sequences.deep
-       strings vocabs.parser words ;
+USING: accessors addenda.errors addenda.math addenda.sequences addenda.sets
+       arrays circular classes grouping kernel locals macros make math
+       math.functions math.order math.parser om.series om.support parser
+       quotations sequences sequences.deep strings vocabs.parser words ;
 QUALIFIED: sets
 IN: om.lists
 
@@ -235,13 +234,13 @@ SYMBOLS: 'linear 'circular ;
 : ((next-chunk)) ( seq size offset -- chunk )
     pick [
         pick length over - rot min swapd
-        [ [ [ nth , ] [ [ 1 + ] dip ] 2bi ] fixed2-times ]
+        [ [ [ nth , ] [ [ 1 + ] dip ] 2bi ] times ]
     ] dip make 2nip ; inline
 
 : ((next-chunk*)) ( seq size offset -- chunk )
     pick [
         swap [ circular boa ] dip
-        [ [ [ first , ] [ rotate-circular ] [ ] tri ] fixed1-times ]
+        [ [ [ first , ] [ rotate-circular ] [ ] tri ] times ]
     ] dip make nip ; inline
 
 : (next-chunk) ( seq ndx sizes offset -- seq ndx' sizes chunk )
@@ -250,20 +249,23 @@ SYMBOLS: 'linear 'circular ;
 : (next-chunk*) ( seq ndx sizes offset -- seq ndx' sizes chunk )
     [ 2dup nth [ 1 + over ] 2dip swapd ] dip ((next-chunk*)) ; inline
 
-: (group-list) ( seq sizes offsets mode -- seq' )
+: ((group-list)) ( seq sizes offsets mode -- seq' )
     [ 0 ] 3dip 'circular eq?
-    [ [ (next-chunk*) ] fixed3-map! ]
-    [ [ (next-chunk)  ] fixed3-map! ]
+    [ [ (next-chunk*) ] map! ]
+    [ [ (next-chunk)  ] map! ]
     if [ 3drop ] dip ; inline
+
+GENERIC# (group-list) 1 ( seq segmentation mode -- seq' )
+
+M: integer (group-list) ( seq size mode -- seq' )
+    [ (size>sizes) ] dip (group-list) ;
+
+M: sequence (group-list) ( seq sizes mode -- seq' )
+    [ dup length ] 2dip [ (sizes>offsets) ] keep ((group-list)) ;
 PRIVATE>
 
-GENERIC# group-list 1 ( seq segmentation mode -- seq' )
-
-M: integer group-list ( seq size mode -- seq' )
-    [ (size>sizes) ] dip group-list ;
-
-M: sequence group-list ( seq sizes mode -- seq' )
-    [ dup length ] 2dip [ (sizes>offsets) ] keep (group-list) ;
+MACRO: group-list ( mode -- quot: ( seq segmentation -- seq' ) )
+    [ (group-list) ] curry ;
 
 ! __________
 ! remove-dup

@@ -288,17 +288,22 @@ MACRO: group-list ( mode -- quot: ( seq segmentation -- seq' ) )
             1 - [ (remove-dup) ] curry map
         ] if
     ] [ drop ] if ; inline recursive
+
+GENERIC# (remove-dup-fun) 1 ( test-fun depth -- f/quot: ( obj1 obj2 -- ? ) )
+
+M: word (remove-dup-fun) ( test-sym depth -- f/quot: ( obj1 obj2 -- ? ) )
+    [ 1quotation ] dip (remove-dup-fun) ;
+
+M: callable (remove-dup-fun) ( test: ( obj1 obj2 -- ? ) depth -- f/quot: ( obj1 obj2 -- ? ) )
+    dup fixnum? [
+        drop dup [ = ] = [ drop f ] when
+    ] [ class-of invalid-input ] if ;
 PRIVATE>
 
-GENERIC# remove-dup 1 ( seq test-fun depth -- seq' )
-
-M: word remove-dup ( seq test-sym depth -- seq' )
-    [ 1quotation ] dip remove-dup ;
-
-M: callable remove-dup ( seq test: ( obj1 obj2 -- ? ) depth -- seq' )
-    dup fixnum? [
-        over [ = ] = [ nip (remove-dup) ] [ (remove-dup*) ] if
-    ] [ class-of invalid-input ] if ;
+MACRO: remove-dup ( test-fun depth -- quot: ( seq -- seq' ) )
+    [ (remove-dup-fun) ] keep swap
+    [ swap [ (remove-dup*) ] 2curry ]
+    [ [ (remove-dup) ] curry ] if* ;
 
 ! ___________
 ! list-modulo

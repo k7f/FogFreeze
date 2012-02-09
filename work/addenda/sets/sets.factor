@@ -1,15 +1,15 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.sequences.mono bit-sets bit-sets.private kernel math sequences
-       sets sets.private vectors ;
+USING: bit-sets bit-sets.private kernel math sequences sets sets.private
+       vectors ;
 IN: addenda.sets
 
 ! FIXME handle all sets by slow-set coercion (except special-cased bit-sets)
 
 <PRIVATE
 : (?add-member*) ( elt vec quot: ( obj1 obj2 -- ? ) -- )
-    [ over ] dip curry dupd fixed-any?
+    [ over ] dip curry dupd any?
     [ 2drop ] [ push ] if ; inline
 
 : (members*) ( seq quot: ( obj1 obj2 -- ? ) -- vec )

@@ -222,9 +222,10 @@ HELP: factorize
 
 HELP: reduce-tree
 { $values
-  { "obj" object }
-  { "fun" object }
+  { "fun" "a " { $link word } " or a " { $quotation "( elt1 elt2 -- elt' )" } }
   { "&optionals" { $optionals } }
+  { "quot" { $quotation "( obj -- result )" } }
+  { "obj" object }
   { "result" object }
 }
 { $optional-defaults
@@ -249,9 +250,10 @@ $nl
 
 HELP: rang-p
 { $values
-  { "seq" sequence }
   { "obj" object }
   { "&optionals" { $optionals } }
+  { "quot" { $quotation "( seq -- seq' )" } }
+  { "seq" sequence }
   { "seq'" sequence }
 }
 { $optional-defaults
@@ -275,9 +277,10 @@ HELP: list-explode
 
 HELP: list-filter
 { $values
-  { "seq" sequence }
-  { "fun" "a " { $link word } " or a " { $link callable } }
+  { "fun" "a " { $link word } " or a " { $quotation "( elt -- ? )" } }
   { "mode" symbol }
+  { "quot" { $quotation "( seq -- seq' )" } }
+  { "seq" sequence }
   { "seq'" sequence }
 }
 { $description "Filters out " { $snippet "list" } " using the predicate " { $snippet "test" } "."
@@ -292,10 +295,11 @@ $nl
 
 HELP: table-filter
 { $values
-  { "seq" sequence }
   { "numcol" integer }
-  { "fun" "a " { $link word } " or a " { $link callable } }
+  { "fun" "a " { $link word } " or a " { $quotation "( elt -- ? )" } }
   { "mode" symbol }
+  { "quot" { $quotation "( seq -- seq' )" } }
+  { "seq" sequence }
   { "seq'" sequence }
 }
 { $description "Filters out " { $snippet "list" } " (a list of lists) using the predicate " { $snippet "test" } "."
@@ -312,9 +316,10 @@ $nl
 
 HELP: band-filter
 { $values
-  { "seq" sequence }
   { "bounds" sequence }
   { "mode" symbol }
+  { "quot" { $quotation "( seq -- seq' )" } }
+  { "seq" sequence }
   { "seq'" sequence }
 }
 { $description "Filters out " { $snippet "list" } " using " { $snippet "bounds" } ". " { $snippet "bounds" } " is a pair or list of pairs " { $snippet "{ min-value max-value }" } "."
@@ -329,9 +334,10 @@ $nl
 
 HELP: range-filter
 { $values
-  { "seq" sequence }
   { "ranges" sequence }
   { "mode" symbol }
+  { "quot" { $quotation "( seq -- seq' )" } }
+  { "seq" sequence }
   { "seq'" sequence }
 }
 { $description "Select elements in " { $snippet "list" } " whose positions (couting from 0) in the list are defined by " { $snippet "posn" } "."

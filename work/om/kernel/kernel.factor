@@ -1,10 +1,9 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.errors addenda.sequences addenda.sequences.deep
-       addenda.sequences.deep.mono addenda.sequences.mono arrays classes
-       combinators combinators.short-circuit grouping kernel locals math
-       math.constants math.functions math.order math.primes.factors
+USING: addenda.errors addenda.sequences addenda.sequences.deep arrays classes
+       combinators combinators.short-circuit grouping kernel locals macros
+       math math.constants math.functions math.order math.primes.factors
        math.ranges math.statistics om.support quotations random sequences
        sequences.deep sequences.private words ;
 IN: om.kernel
@@ -333,7 +332,11 @@ M: integer factorize ( num -- seq ) group-factors ;
 ! reduce-tree
 
 <PRIVATE
-: (neutral-element) ( word -- num/f )
+ERROR: (unknown-neutral-element) quot ;
+
+GENERIC: (neutral-element) ( fun -- num/f )
+
+M: word (neutral-element) ( sym -- num/f )
     { { \ + [ 0.0 ] }
       { \ * [ 1.0 ] }
       { \ min [ largest-float ] }
@@ -341,22 +344,32 @@ M: integer factorize ( num -- seq ) group-factors ;
       [ drop f ]
     } case ;
 
-: (reduce-tree) ( obj identity quot -- result )
-    {
-        { [ pick number? ] [ call( num prev -- num' ) ] }
-        { [ pick sequence? ] [ [ swap ] prepose fixed-deep-reduce ] }
+M: callable (neutral-element) ( quot: ( elt1 elt2 -- elt' ) -- num/f )
+    { { [ + ] [ 0.0 ] }
+      { [ * ] [ 1.0 ] }
+      { [ min ] [ largest-float ] }
+      { [ max ] [ largest-float neg ] }
+      [ (unknown-neutral-element) ]
+    } case ;
+
+: (reduce-tree) ( obj quot: ( elt1 elt2 -- elt' ) identity -- result )
+    swap {
+        { [ pick number? ] [ call ] }
+        { [ pick sequence? ] [ [ swap ] prepose deep-reduce ] }
         [ 2drop class-of invalid-input ]
     } cond ; inline
+
+GENERIC# (reduce-tree-fun) 1 ( fun &optionals -- quot: ( elt1 elt2 -- elt' ) identity/f )
+
+M: word (reduce-tree-fun) ( sym &optionals -- quot: ( elt1 elt2 -- elt' ) identity/f )
+    [ dup (neutral-element) ] unless* [ 1quotation ] dip (reduce-tree-fun) ; inline
+
+M: callable (reduce-tree-fun) ( quot: ( elt1 elt2 -- elt' ) &optionals -- quot: ( elt1 elt2 -- elt' ) identity/f )
+    [ dup (neutral-element) ] unless* ; inline
 PRIVATE>
 
-GENERIC# reduce-tree 1 ( obj fun &optionals -- result )
-
-M: word reduce-tree ( obj sym &optionals -- result )
-    [ swap ] [ [ (neutral-element) ] keep ] if*
-    1quotation (reduce-tree) ; inline
-
-M: callable reduce-tree ( obj quot &optionals -- result )
-    swap (reduce-tree) ; inline
+MACRO: reduce-tree ( fun &optionals -- quot: ( obj -- result ) )
+    (reduce-tree-fun) [ (reduce-tree) ] 2curry ;
 
 ! _____________
 ! interpolation
@@ -408,22 +421,17 @@ M: sequence interpolation ( curve num-samples begin end -- seq )
 ! FIXME choose a better name and make rang-p an alias
 
 <PRIVATE
-: (scalar-filter-test)
-    ( test-elt test-quot: ( elt1 elt2 -- ? ) map-quot/f: ( elt -- elt' ) -- test: ( elt -- ? ) )
-    [ [ curry ] dip prepose ] [ curry ] if* ; inline
+GENERIC# (rang-p-curry) 1 ( obj quot: ( elt1 elt2 -- ? ) -- quot: ( elt -- ? ) )
 
-: (vector-filter-test)
-    ( test-seq test-quot: ( elt1 elt2 -- ? ) map-quot/f: ( elt -- elt' ) -- test: ( elt -- ? ) )
-    [ [ [ with any? ] 2curry ] dip prepose ] [ [ with any? ] 2curry ] if* ; inline
+M: number (rang-p-curry) ( test-elt quot: ( elt1 elt2 -- ? ) -- quot: ( elt -- ? ) )
+    curry ;
+
+M: sequence (rang-p-curry) ( test-seq quot: ( elt1 elt2 -- ? ) -- quot: ( elt -- ? ) )
+    [ with any? ] 2curry ;
 PRIVATE>
 
-GENERIC# rang-p 1 ( seq obj &optionals -- seq' )
-
-M: number rang-p ( seq test-elt &optionals -- seq' )
-    [ = ] unpack2 (scalar-filter-test) fixed-filter/indices ;
-
-M: sequence rang-p ( seq test-seq &optionals -- seq' )
-    [ = ] unpack2 (vector-filter-test) fixed-filter/indices ;
+MACRO: rang-p ( obj &optionals -- quot: ( seq -- seq' ) )
+    [ = ] unpack-test&key (rang-p-curry) [ filter/indices ] curry ;
 
 ! ____________
 ! list-explode
@@ -468,25 +476,35 @@ M: sequence list-explode ( src |dst| -- array )
 
 SYMBOLS: 'pass 'reject ;
 
-GENERIC# list-filter 1 ( seq fun mode -- seq' )
+<PRIVATE
+GENERIC# (list-filter-fun) 1 ( fun mode -- quot: ( elt -- ? ) )
 
-M: word list-filter ( seq sym mode -- seq' )
-    [ 1quotation ] dip list-filter ;
+M: word (list-filter-fun) ( sym mode -- quot: ( elt -- ? ) )
+    [ 1quotation ] dip (list-filter-fun) ;
 
-M: callable list-filter ( seq quot: ( elt -- ? ) mode -- seq' )
-    'reject eq? [ [ not ] compose ] when fixed-deep-filter-atoms ;
+M: callable (list-filter-fun) ( quot: ( elt -- ? ) mode -- quot: ( elt -- ? ) )
+    'reject eq? [ [ not ] compose ] when ;
+PRIVATE>
+
+MACRO: list-filter ( fun mode -- quot: ( seq -- seq' ) )
+    (list-filter-fun) [ deep-filter-atoms ] curry ;
 
 ! ____________
 ! table-filter
 
-GENERIC# table-filter 1 ( seq numcol fun mode -- seq' )
+<PRIVATE
+GENERIC# (table-filter-fun) 1 ( numcol fun mode -- quot: ( elt -- ? ) )
 
-M: word table-filter ( seq numcol sym mode -- seq' )
-    [ 1quotation ] dip table-filter ;
+M: word (table-filter-fun) ( numcol sym mode -- quot: ( elt -- ? ) )
+    [ 1quotation ] dip (table-filter-fun) ;
 
-M: callable table-filter ( seq numcol quot: ( elt -- ? ) mode -- seq' )
+M: callable (table-filter-fun) ( numcol quot: ( elt -- ? ) mode -- quot: ( elt -- ? ) )
     'reject eq? [ [ not ] compose ] when
-    swap [ swap nth ] curry prepose fixed-filter ;
+    swap [ swap nth ] curry prepose ;
+PRIVATE>
+
+MACRO: table-filter ( numcol fun mode -- quot: ( seq -- seq' ) )
+    (table-filter-fun) [ filter ] curry ;
 
 ! ___________
 ! band-filter
@@ -494,12 +512,15 @@ M: callable table-filter ( seq numcol quot: ( elt -- ? ) mode -- seq' )
 <PRIVATE
 : (in-range?) ( elt range -- ? )
     { [ first >= ] [ second <= ] } 2&& ; inline
+
+GENERIC: (band-filter-fun) ( bounds -- quot: ( elt -- ? ) )
+
+M: sequence (band-filter-fun) ( bounds -- quot: ( elt -- ? ) )
+    [ [ (in-range?) ] with any? ] curry ;
 PRIVATE>
 
-GENERIC# band-filter 1 ( seq bounds mode -- seq' )
-
-M: sequence band-filter ( seq bounds mode -- seq' )
-    [ [ [ (in-range?) ] with any? ] curry ] dip list-filter ;
+MACRO: band-filter ( bounds mode -- quot: ( seq -- seq' ) )
+    [ (band-filter-fun) ] dip [ list-filter ] 2curry ;
 
 ! ____________
 ! range-filter
@@ -512,13 +533,15 @@ M: sequence band-filter ( seq bounds mode -- seq' )
     [ nip swap ] dip dup length pick > [
         [ nth (in-range?) ] 3keep (next-range) swap
     ] [ drop nip f ] if ; inline
+
+GENERIC# (range-filter-fun) 1 ( ranges mode -- quot: ( ndx elt ndx -- ndx' ? ) )
+
+M: sequence (range-filter-fun) ( ranges mode -- quot: ( ndx elt ndx -- ndx' ? ) )
+    'reject eq? [ [ (range-test) not ] ] [ [ (range-test) ] ] if curry ;
 PRIVATE>
 
-GENERIC# range-filter 1 ( seq ranges mode -- seq' )
-
-M: sequence range-filter ( seq ranges mode -- seq' )
-    'reject eq? [ [ (range-test) not ] ] [ [ (range-test) ] ] if curry
-    [ 0 ] 2dip fixed1-filter-index nip ;
+MACRO: range-filter ( ranges mode -- quot: ( seq -- seq' ) )
+    (range-filter-fun) [ [ 0 ] 2dip filter-index nip ] curry ;
 
 ! __________
 ! posn-match

@@ -240,6 +240,10 @@ IN: om.kernel.tests
     6 [1,b] \ * f reduce-tree
 ] unit-test
 
+[ 720.0 ] [
+    6 [1,b] [ * ] f reduce-tree
+] unit-test
+
 [ { 2.5 } ] [
     0 1 2 3 interpolation
 ] unit-test

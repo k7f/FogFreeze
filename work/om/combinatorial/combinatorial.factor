@@ -1,9 +1,9 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.sequences addenda.sequences.mono arrays assocs circular fry
-       kernel macros math math.combinatorics math.order om.support quotations
-       random sequences sequences.deep sorting words ;
+USING: addenda.sequences arrays assocs circular fry kernel macros math
+       math.combinatorics math.order om.support quotations random sequences
+       sequences.deep sorting words ;
 IN: om.combinatorial
 
 ! ____________________________________________

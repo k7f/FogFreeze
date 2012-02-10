@@ -5,12 +5,12 @@ USING: help.markup help.syntax kernel math quotations sequences
        sequences.deep ;
 IN: addenda.sequences
 
-HELP: ,:branch?
+HELP: atom?
 { $values
   { "obj" object }
   { "?" boolean }
 }
-{ $description "Like " { $link branch? } ", but evaluates to " { $link POSTPONE: f } " for " { $link quotation } "s." } ;
+{ $description "Like " { $link branch? } ", negated, but evaluates to " { $link POSTPONE: t } " for " { $link quotation } "s." } ;
 
 HELP: sum-lengths-with-atoms
 { $values

@@ -135,13 +135,13 @@ M: sequence om-max ( obj seq -- result ) [ max ] om-binop-sequence ;
 
 <PRIVATE
 : (list-min) ( seq default -- num )
-    swap [ dup ,:branch? [ drop ] [ min ] if ] deep-each ;
+    swap [ dup atom? [ min ] [ drop ] if ] deep-each ;
 PRIVATE>
 
 GENERIC: list-min ( obj -- result )
 
 M: sequence list-min ( seq -- num/f )
-    dup [ ,:branch? not ] deep-find
+    dup [ atom? ] deep-find
     [ [ min ] deep-reduce ] [ drop f ] if* ;
 
 M: object list-min ( obj -- obj ) ;
@@ -149,7 +149,7 @@ M: object list-min ( obj -- obj ) ;
 GENERIC: list-max ( obj -- result )
 
 M: sequence list-max ( seq -- num/f )
-    dup [ ,:branch? not ] deep-find
+    dup [ atom? ] deep-find
     [ [ max ] deep-reduce ] [ drop f ] if* ;
 
 M: object list-max ( obj -- obj ) ;
@@ -272,18 +272,18 @@ GENERIC: g-scaling/sum ( obj1 obj2 -- result )
 
 : (g-scaling/sum-tree) ( seq num -- flat-seq )
     over [ 2drop f ] [
-        first dup ,:branch? [
+        first dup atom? [ drop (g-scaling/sum-flat) ] [
             over g-scaling/sum
             [ [ rest ] dip g-scaling/sum ] dip prefix
-        ] [ drop (g-scaling/sum-flat) ] if
+        ] if
     ] if-empty ; inline recursive
 PRIVATE>
 
 M: number g-scaling/sum ( obj num -- result )
     {
         { [ over number? ] [ (g-scaling/sum-scalar) ] }
-        { [ over ,:branch? ] [ (g-scaling/sum-tree) ] }
-        [ drop class-of invalid-input ]
+        { [ over atom? ]   [ drop class-of invalid-input ] }
+        [ (g-scaling/sum-tree) ]
     } cond ;
 
 M: sequence g-scaling/sum ( obj seq -- result )
@@ -291,23 +291,21 @@ M: sequence g-scaling/sum ( obj seq -- result )
         { [ dup empty? ] [ 2drop f ] }
         {
             [ over number? ] [
-                dup first dup ,:branch? [
+                dup first dup atom? [
+                    [ drop 1array ] dip (g-scaling/sum-flat)
+                ] [
                     [ over ] dip g-scaling/sum
                     [ rest g-scaling/sum ] dip prefix
-                ] [
-                    [ drop 1array ] dip (g-scaling/sum-flat)
                 ] if
             ]
         }
-        {
-            [ over ,:branch? ] [
-                over [ 2drop f ] [
-                    over [ first ] bi@ g-scaling/sum
-                    [ [ rest ] bi@ g-scaling/sum ] dip prefix
-                ] if-empty
-            ]
-        }
-        [ drop class-of invalid-input ]
+        { [ over atom? ] [ drop class-of invalid-input ] }
+        [
+            over [ 2drop f ] [
+                over [ first ] bi@ g-scaling/sum
+                [ [ rest ] bi@ g-scaling/sum ] dip prefix
+            ] if-empty
+        ]
     } cond ; recursive
 
 ! ____________

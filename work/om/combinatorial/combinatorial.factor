@@ -21,7 +21,7 @@ M: callable (less>compare) ( quot: ( obj1 obj2 -- ? ) -- quot: ( obj1 obj2 -- <=
     dup '[ 2dup @ [ 2drop +lt+ ] [ swap @ +gt+ +eq+ ? ] if ] ; inline
 
 : (rec-map) ( ..a obj quot: ( ..a elt -- ..b elt' ) -- ..b newobj )
-    '[ dup ,:branch? [ dup first ,:branch? [ @ ] unless ] when ] deep-map ; inline
+    '[ dup atom? [ dup first atom? [ @ ] when ] unless ] deep-map ; inline
 PRIVATE>
 
 : sort-list ( seq &keys -- seq' )

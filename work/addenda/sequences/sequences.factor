@@ -5,15 +5,18 @@ USING: kernel math quotations sequences sequences.private strings ;
 IN: addenda.sequences
 
 ! FIXME find out why is quotation a branch?
-GENERIC: ,:branch? ( obj -- ? )
 
-M: quotation ,:branch? drop f ;
-M: string    ,:branch? drop f ;
-M: sequence  ,:branch? drop t ;
-M: object    ,:branch? drop f ;
+GENERIC: atom? ( obj -- ? )
+
+M: quotation atom? drop t ;
+M: string    atom? drop t ;
+M: sequence  atom? drop f ;
+M: object    atom? drop t ;
+
+PREDICATE: proper-sequence < sequence atom? not ;
 
 : sum-lengths-with-atoms ( seq -- n )
-    0 [ dup ,:branch? [ length ] [ drop 1 ] if + ] reduce ; inline
+    0 [ dup atom? [ drop 1 ] [ length ] if + ] reduce ; inline
 
 ! _________
 ! filtering

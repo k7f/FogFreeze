@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: kernel locals math ;
+USING: kernel locals math om.functions.auxiliary ;
 IN: om.functions
 
 ! ________________________________________

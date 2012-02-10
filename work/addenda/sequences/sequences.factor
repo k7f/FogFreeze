@@ -49,6 +49,20 @@ PRIVATE>
 : filter/indices ( ..a seq quot: ( ..a elt -- ..b ? ) -- ..b seq' )
     over filter-as/indices ; inline
 
+<PRIVATE
+: (filter-integers) ( ..a len quot: ( ..a i -- ..b elt ? ) accum -- ..b )
+    [ swap [ push ] [ 2drop ] if ] curry compose each-integer ; inline
+PRIVATE>
+
+: filter-integers ( ..a len quot: ( ..a i -- ..b elt ? ) exemplar -- ..b newseq )
+    [ over ] dip [ new-resizable [ (filter-integers) ] keep ] keep like ; inline
+
+: 2filter-as ( ..a seq1 seq2 quot: ( ..a elt1 elt2 -- ..b newelt ? ) exemplar -- ..b newseq )
+    [ (2each) ] dip filter-integers ; inline
+
+: 2filter ( ..a seq1 seq2 quot: ( ..a elt1 elt2 -- ..b newelt ? ) -- ..b newseq )
+    pick 2filter-as ; inline
+
 ! ____________
 ! accumulating
 

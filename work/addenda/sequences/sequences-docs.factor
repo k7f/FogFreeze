@@ -58,6 +58,27 @@ HELP: filter/indices
 { $description "Index-collecting variant of " { $link filter } ", which outputs a sequence of element indices, not the elements themselves." }
 { $see-also filter-as/indices filter } ;
 
+HELP: 2filter-as
+{ $values
+  { "seq1" sequence }
+  { "seq2" sequence }
+  { "quot" { $quotation "( ..a elt1 elt2 -- ..b newelt ? )" } }
+  { "exemplar" sequence }
+  { "newseq" sequence }
+}
+{ $description "Applies the quotation to each pair of elements in turn, and outputs a new sequence of the same type as " { $snippet "exemplar" } ".  The quotation yields a new element and a boolean.  The new sequence contains those new elements returned by the quotation, for which the returned boolean is true." }
+{ $see-also 2filter filter-as 2map-as } ;
+
+HELP: 2filter
+{ $values
+  { "seq1" sequence }
+  { "seq2" sequence }
+  { "quot" { $quotation "( ..a elt1 elt2 -- ..b newelt ? )" } }
+  { "newseq" sequence }
+}
+{ $description "Applies the quotation to each pair of elements in turn, and outputs a new sequence having the same class as " { $snippet "seq1" } ".  The quotation yields a new element and a boolean.  The new sequence contains those new elements returned by the quotation, for which the returned boolean is true." }
+{ $see-also 2filter-as filter 2map } ;
+
 HELP: accumulate-all-as
 { $values
   { "seq" sequence }

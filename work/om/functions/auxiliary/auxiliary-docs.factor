@@ -7,23 +7,23 @@ IN: om.functions.auxiliary
 HELP: x-around
 { $values
   { "x" number }
-  { "pairs" "a " { $link sequence } " of pairs of " { $link number } "s" }
-  { "result" "a two-element " { $link sequence } " of the same " { $link class } " as " { $snippet "pairs" } }
+  { "points" "a " { $link sequence } " of pairs of " { $link number } "s" }
+  { "result" "a two-element " { $link sequence } " of the same " { $link class } " as " { $snippet "points" } }
 }
-{ $description "If for all (xi yi) in " { $snippet "pairs" } " xi < x then outputs two copies of the last pair."
+{ $description "If for all (xi yi) in " { $snippet "points" } " xi < x then outputs two copies of the last point."
 $nl
-"Otherwise, if for all (xi yi) in " { $snippet "pairs" } " xi >= x then outputs two copies of the first pair."
+"Otherwise, if for all (xi yi) in " { $snippet "points" } " xi >= x then outputs two copies of the first point."
 $nl
-"Otherwise, outputs two elements of " { $snippet "pairs" } ", (xi yi) and (xj yj), such that j = i + 1 and xi < x <= xj." }
-{ $notes "For any two elements of " { $snippet "pairs" } ", (xi yi) and (xj yj), it is assumed that if i < j then xi < xj." } ;
+"Otherwise, outputs two elements of " { $snippet "points" } ", (xi yi) and (xj yj), such that j = i + 1 and xi < x <= xj." }
+{ $notes "For any two elements of " { $snippet "points" } ", (xi yi) and (xj yj), it is assumed that if i < j then xi < xj." } ;
 
 HELP: y-around
 { $values
   { "y" number }
-  { "pairs" "a " { $link sequence } " of pairs of " { $link number } "s" }
+  { "points" "a " { $link sequence } " of pairs of " { $link number } "s" }
   { "result" "a " { $link sequence } " of two-element " { $link sequence } "s of pairs of " { $link number } "s" }
 }
-{ $description "Outputs a sequence of all two-element subsequences of " { $snippet "pairs" } ", ((xi yi) (xj yj)), such that j = i + 1 and either yi <= y <= yj, or yi >= y >= yj." } ;
+{ $description "Outputs a sequence of all two-element subsequences of " { $snippet "points" } ", ((xi yi) (xj yj)), such that j = i + 1 and either yi <= y <= yj, or yi >= y >= yj." } ;
 
 HELP: linear-interpol
 { $values
@@ -34,7 +34,40 @@ HELP: linear-interpol
   { "x" number }
   { "y" number }
 }
-{ $description "Given an argument x, evaluates a linear function passing through the points (x1 y1) and (x2 y2)." } ;
+{ $description "Given an argument x, evaluates a linear function passing through the points (x1 y1) and (x2 y2)." }
+{ $see-also linear-interpol* } ;
+
+HELP: linear-interpol*
+{ $values
+  { "points" "a " { $link sequence } " of pairs of " { $link number } "s" }
+  { "x" number }
+  { "y" number }
+}
+{ $description "Given an argument x, evaluates a piecewise linear function passing through the " { $snippet "points" } "." }
+{ $notes "Unlike " { $link linear-interpol } ", the function domain is limited to the range between x-coordinate of the first point, and the maximum of all x-coordinates.  For an argument from outside of the function domain, the output is 0." }
+{ $see-also linear-interpol } ;
+
+HELP: interpolate
+{ $values
+  { "xs" "a " { $link sequence } " of " { $link number } "s" }
+  { "ys" "a " { $link sequence } " of " { $link number } "s" }
+  { "step" number }
+  { "result" number }
+}
+{ $description "" }
+{ $see-also interpole } ;
+
+HELP: interpole
+{ $values
+  { "xs" "a " { $link sequence } " of " { $link number } "s" }
+  { "ys" "a " { $link sequence } " of " { $link number } "s" }
+  { "x-min" number }
+  { "x-max" number }
+  { "n" "a non-negative " { $link integer } }
+  { "result" number }
+}
+{ $description "" }
+{ $see-also interpolate } ;
 
 ARTICLE: "om.functions.auxiliary" "om.functions.auxiliary"
 { $aux-vocab-intro "om.functions" } ;

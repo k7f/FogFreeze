@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: om.functions.auxiliary tools.test ;
+USING: om.functions.auxiliary om.kernel tools.test ;
 IN: om.functions.auxiliary.tests
 
 [ { { 69 5 } { 100 8 } } ] [
@@ -22,4 +22,20 @@ IN: om.functions.auxiliary.tests
 
 [ -1 ] [
     0 2 2 0 3 linear-interpol
+] unit-test
+
+[ 1 ] [
+    { { 0 2 } { 2 0 } } 1 linear-interpol*
+] unit-test
+
+[ { 0 75/82 1+34/41 2+61/82 6 5+13/38 5+18/31 6+49/62 8 } ] [
+    { 0 41 50 69 100 } { 0 3 6 5 8 } 12+1/2 interpolate
+] unit-test
+
+[ 6 ] [
+    { 0 41 50 69 100 } { 0 3 6 5 8 } 0 100 1 interpole
+] unit-test
+
+[ { 0 1.83 6.0 5.58 8.0 } ] [
+    { 0 41 50 69 100 } { 0 3 6 5 8 } 0 100 5 interpole 2 om-round
 ] unit-test

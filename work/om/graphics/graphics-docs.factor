@@ -15,6 +15,14 @@ HELP: <om-point>
 }
 { $description "" } ;
 
+HELP: >om-point<
+{ $values
+  { "pt" om-point }
+  { "x" number }
+  { "y" number }
+}
+{ $description "" } ;
+
 HELP: om-add-points
 { $values
   { "pt1" om-point }
@@ -91,6 +99,16 @@ HELP: <om-rect>
   { "right" number }
   { "bottom" number }
   { "rect" om-rect }
+}
+{ $description "" } ;
+
+HELP: >om-rect<
+{ $values
+  { "rect" om-rect }
+  { "left" number }
+  { "top" number }
+  { "right" number }
+  { "bottom" number }
 }
 { $description "" } ;
 

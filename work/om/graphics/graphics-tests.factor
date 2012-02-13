@@ -8,6 +8,10 @@ IN: om.graphics.tests
     1 2 <om-point>
 ] unit-test
 
+[ 1 2 ] [
+    1 2 <om-point> >om-point<
+] unit-test
+
 [ T{ om-point f 2 4 } ] [
     1 2 <om-point> dup om-add-points
 ] unit-test
@@ -46,6 +50,10 @@ IN: om.graphics.tests
 
 [ T{ om-rect f 1 2 2 2 } ] [
     1 2 3 4 <om-rect>
+] unit-test
+
+[ 1 2 3 4 ] [
+    1 2 3 4 <om-rect> >om-rect<
 ] unit-test
 
 [ T{ om-rect f 1 2 2 4 } ] [

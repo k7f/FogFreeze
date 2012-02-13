@@ -17,6 +17,9 @@ TUPLE: om-point { x number initial: 0 } { y number initial: 0 } ;
 
 ALIAS: om-make-point <om-point>
 
+: >om-point< ( pt -- x y )
+    [ x>> ] [ y>> ] bi ; inline
+
 : om-add-points ( pt1 pt2 -- newpt )
     [ [ x>> ] bi@ + ] [ [ y>> ] bi@ + ] 2bi <om-point> ;
 
@@ -35,15 +38,12 @@ PRIVATE>
     [ [ x>> ] bi@ * ] [ [ y>> ] bi@ * ] 2bi + ;
 
 <PRIVATE
-: (coords) ( pt -- x y )
-    [ x>> ] [ y>> ] bi ; inline
-
 : (norm-2D) ( x y -- result )
     [ dup * ] bi@ + sqrt ; inline
 PRIVATE>
 
 : norm-2D ( pt -- result )
-    (coords) (norm-2D) ;
+    >om-point< (norm-2D) ;
 
 : dist2D ( pt1 pt2 -- result )
     (om-subtract-points) (norm-2D) ;
@@ -59,8 +59,8 @@ PRIVATE>
         vec dup dot-prod-2D :> cos2
         cos2 cos1 <= [ pt lpt2 dist2D ] [
             cos1 cos2 / vec [ x>> * ] [ y>> * ] 2bi  ! FIXME why the rounding in OM?
-            [ lpt1 (coords) ] 2dip swapd [ + ] 2bi@
-            [ pt (coords) ] 2dip swapd [ - ] 2bi@ (norm-2D)
+            [ lpt1 >om-point< ] 2dip swapd [ + ] 2bi@
+            [ pt >om-point< ] 2dip swapd [ - ] 2bi@ (norm-2D)
         ] if
     ] if ;
 
@@ -76,19 +76,22 @@ TUPLE: om-rect
     { rw number initial: 0 }
     { rh number initial: 0 } ;
 
+<< "right" "bottom" [ define-reader-generic ] bi@ >>
+
+M: om-rect right>>  ( rect -- num ) [ rx>> ] [ rw>> ] bi + ; inline
+M: om-rect bottom>> ( rect -- num ) [ ry>> ] [ rh>> ] bi + ; inline
+
 : <om-rect> ( left top right bottom -- rect )
     [ pick - ] bi@ om-rect boa ;
 
 ALIAS: om-make-rect <om-rect>
 
+: >om-rect< ( rect -- left top right bottom )
+    [ [ rx>> ] [ ry>> ] bi ] [ [ right>> ] [ bottom>> ] bi ] bi ; inline
+
 : om-pts-to-rect ( pt1 pt2 -- rect )
     [ [ [ x>> ] bi@ min ] [ [ y>> ] bi@ min ] 2bi ]
     [ [ [ x>> ] bi@ max ] [ [ y>> ] bi@ max ] 2bi ] 2bi <om-rect> ;
-
-<< "right" "bottom" [ define-reader-generic ] bi@ >>
-
-M: om-rect right>>  ( rect -- num ) [ rx>> ] [ rw>> ] bi + ; inline
-M: om-rect bottom>> ( rect -- num ) [ ry>> ] [ rh>> ] bi + ; inline
 
 : om-rect-top    ( rect -- num ) ry>> ; inline
 : om-rect-bottom ( rect -- num ) bottom>> ; inline

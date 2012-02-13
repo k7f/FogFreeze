@@ -1,8 +1,9 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: kernel locals math om.functions.auxiliary om.kernel om.support
-       sequences ;
+USING: addenda.errors classes combinators fry kernel locals macros math
+       math.order om.bpf om.functions.auxiliary om.kernel om.series
+       om.support quotations sequences words ;
 IN: om.functions
 
 ! ________________________________________
@@ -24,14 +25,14 @@ IN: om.functions
 GENERIC# y-transfer 2 ( obj y &optionals -- x-values )
 
 <PRIVATE
-: (y-transfer) ( pairs y -- x-values )
+: (y-transfer) ( points y -- x-values )
     [ swap y-around ] keep [
         [ first2 [ first2 swap ] bi@ swapd ] dip linear-interpol
-        ! OM now rounds to an integer, which is most likely a bug...
+        ! FIXME OM now rounds to an integer, which is most likely a bug...
     ] curry map ; inline
 PRIVATE>
 
-M: sequence y-transfer ( pairs y &optionals -- x-values )
+M: sequence y-transfer ( points y &optionals -- x-values )
     [ (y-transfer) ] dip unpack1 [ om-round ] when* ;
 
 ! FIXME define M: bpf y-transfer in om.bpf.tools
@@ -42,15 +43,39 @@ M: sequence y-transfer ( pairs y &optionals -- x-values )
 GENERIC# x-transfer 2 ( obj x-values &optionals -- y-values )
 
 <PRIVATE
-: ((x-transfer)) ( pairs x -- y )
-    [ swap x-around first2 [ first2 ] bi@ swapd ] keep linear-interpol ; inline
-
-GENERIC:    (x-transfer) ( pairs xs -- ys )
-M: number   (x-transfer) ( pairs x  -- y  )   ((x-transfer)) ;
-M: sequence (x-transfer) ( pairs xs -- ys ) [ ((x-transfer)) ] with map ;
+GENERIC:    (x-transfer) ( points xs -- ys )
+M: number   (x-transfer) ( points x  -- y  )   linear-interpol* ;
+M: sequence (x-transfer) ( points xs -- ys ) [ linear-interpol* ] with map ;
 PRIVATE>
 
-M: sequence x-transfer ( pairs x-values &optionals -- y-values )
+M: sequence x-transfer ( points x-values &optionals -- y-values )
     [ (x-transfer) ] dip unpack1 [ om-round ] when* ;
 
 ! FIXME define M: bpf x-transfer in om.bpf.tools
+
+! _________
+! om-sample
+
+<PRIVATE
+GENERIC: ((om-sample)) ( obj -- quot: ( count/step &optionals -- bpf xs ys ) )
+
+M: word ((om-sample)) ( sym -- quot: ( count/step &optionals -- bpf xs ys ) )
+    1quotation ((om-sample)) ;
+
+M: callable ((om-sample)) ( quot: ( x -- y ) -- quot: ( count/step &optionals -- bpf xs ys ) )
+    '[
+        0.0 1.0 unpack3 drop  ! FIXME decimal
+        rot {
+            ! FIXME OM excludes upper boundary in by-count mode (off-by-one bug?)
+            { [ dup integer? ] [ 2over swap - over 1 max / >float swap ] }
+            { [ dup float?   ] [ f ] }
+            [ class-of invalid-input ]
+        } cond arithm-ser dup _ map [ f simple-bpf-from-list ] 2keep
+    ] ;
+
+MACRO: (om-sample) ( obj -- quot: ( count/step &optionals -- bpf xs ys ) )
+    ((om-sample)) ;
+PRIVATE>
+
+: om-sample ( obj count/step &optionals -- bpf xs ys )
+    rot (om-sample) ; inline

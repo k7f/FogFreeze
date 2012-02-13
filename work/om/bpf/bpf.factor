@@ -44,6 +44,7 @@ M: sequence (simple-xs-ys)  (simple-seq-ys) ;
 M: real     (simple-xs-ys)  (simple-num-ys) ;
 
 ! FIXME padding by extrapolation
+! FIXME decimal
 M: sequence (simple-seq-ys) ( xs ys dec bpf -- )
     nip [ [ <om-point> ] 2map ] dip cons-bpf ;
 

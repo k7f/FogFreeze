@@ -12,12 +12,20 @@ IN: om.functions.tests
     { { 0 0 } { 41 3 } { 50 6 } { 69 5 } { 100 8 } } 5+1/2 3 y-transfer
 ] unit-test
 
+[ { 48+1/2 59+1/2 74+167/1000 } ] [
+    { 0 41 50 69 100 } { 0 3 6 5 8 } f simple-bpf-from-list 5+1/2 3 y-transfer
+] unit-test
+
 [ 5+97/1000 ] [
     { { 0 0 } { 41 3 } { 50 6 } { 69 5 } { 100 8 } } 70 3 x-transfer
 ] unit-test
 
 [ { 21/41 5 } ] [
     { { 0 0 } { 41 3 } { 50 6 } { 69 5 } { 100 8 } } { 7 47 } f x-transfer
+] unit-test
+
+[ { 21/41 5 } ] [
+    { 0 41 50 69 100 } { 0 3 6 5 8 } f simple-bpf-from-list { 7 47 } f x-transfer
 ] unit-test
 
 [ T{ bpf f V{ T{ om-point f 0. 0. } T{ om-point f .5 1. } } f f } { 0. .5 } { 0. 1. } ] [

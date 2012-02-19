@@ -60,9 +60,6 @@ PRIVATE>
 ! _________
 ! interpole
 
-! FIXME handle the left ray (half line) more compatibly
-! FIXME consider defining a more reasonable interpole*
-
 <PRIVATE
 : (bounds>range) ( x-min x-max n -- range )
     2over swap - swap >float 1 - / <range> ; inline

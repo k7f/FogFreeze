@@ -73,7 +73,8 @@ $nl
 $nl
 { $snippet "xmin" } " and " { $snippet "xmax" } " allow to specify the x-range to resample."
 $nl
-{ $snippet "dec" } " (decimals) is the precision of the result" } ;
+{ $snippet "dec" } " (decimals) is the precision of the result" }
+{ $warning "This version, compatibly, excludes upper boundary in by-count mode \u{em-dash} which might be just an off-by-one bug." } ;
 
 ARTICLE: "om.functions" "om.functions"
 { $vocab-intro "om.functions" "projects/01-basicproject/functions/functions.lisp" } ;

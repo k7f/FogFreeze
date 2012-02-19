@@ -35,7 +35,8 @@ PRIVATE>
 M: sequence y-transfer ( points y &optionals -- x-values )
     [ (y-transfer) ] dip unpack1 [ om-round ] when* ;
 
-! FIXME define M: bpf y-transfer in om.bpf.tools
+M: bpf y-transfer ( bpf y &optionals -- x-values )
+    [ point-pairs ] 2dip y-transfer ;
 
 ! __________
 ! x-transfer
@@ -51,7 +52,8 @@ PRIVATE>
 M: sequence x-transfer ( points x-values &optionals -- y-values )
     [ (x-transfer) ] dip unpack1 [ om-round ] when* ;
 
-! FIXME define M: bpf x-transfer in om.bpf.tools
+M: bpf x-transfer ( bpf x-values &optionals -- y-values )
+    [ point-pairs ] 2dip x-transfer ;
 
 ! _________
 ! om-sample
@@ -66,7 +68,6 @@ M: callable ((om-sample)) ( quot: ( x -- y ) -- quot: ( count/step &optionals --
     '[
         0.0 1.0 unpack3 drop  ! FIXME decimal
         rot {
-            ! FIXME OM excludes upper boundary in by-count mode (off-by-one bug?)
             { [ dup integer? ] [ 2over swap - over 1 max / >float swap ] }
             { [ dup float?   ] [ f ] }
             [ class-of invalid-input ]

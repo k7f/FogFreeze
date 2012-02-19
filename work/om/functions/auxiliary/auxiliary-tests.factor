@@ -39,3 +39,11 @@ IN: om.functions.auxiliary.tests
 [ { 0 1.83 6.0 5.58 8.0 } ] [
     { 0 41 50 69 100 } { 0 3 6 5 8 } 0 100 5 interpole 2 om-round
 ] unit-test
+
+[ { 4 5.0 } ] [
+    { 1 2 3 } { 4 5 6 } 0 2 3 interpole
+] unit-test
+
+[ { 5.0 6.0 } ] [
+    { 1 2 3 } { 4 5 6 } 2 4 3 interpole
+] unit-test

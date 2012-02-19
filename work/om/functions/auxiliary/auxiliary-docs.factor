@@ -67,7 +67,10 @@ HELP: interpole
   { "result" number }
 }
 { $description "" }
-{ $see-also interpolate } ;
+{ $see-also interpolate }
+{ $warning "This version handles the left ray (half line) in the right way, i.e. in the same way as the right ray \u{em-dash} incompatibly."
+
+} ;
 
 ARTICLE: "om.functions.auxiliary" "om.functions.auxiliary"
 { $aux-vocab-intro "om.functions" } ;

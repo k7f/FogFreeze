@@ -24,6 +24,10 @@ IN: om.bpf.tests
     3 <bpf> points>> underlying>>
 ] unit-test
 
+[ { { 0 0 } { 100 100 } } ] [
+    3 <bpf> point-pairs
+] unit-test
+
 [ { T{ om-point f 2 1 } T{ om-point f 4 3 } } ] [
     4 3 2 1 [ <om-point> ] 2bi@ 2array
     2 <bpf> [ cons-bpf ] keep points>> underlying>>

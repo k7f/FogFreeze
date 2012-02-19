@@ -25,6 +25,9 @@ TUPLE: bpf < internal-bpf { xs maybe: array } { ys maybe: array } ;
 
 : <bpf> ( n -- bpf ) (new-points) f f bpf boa ;
 
+: point-pairs ( bpf -- pairs )
+    points>> [ [ x>> ] [ y>> ] bi 2array ] { } map-as ;
+
 <PRIVATE
 : (bpf\) ( bpf -- bpf ) f >>xs f >>ys ; inline
 PRIVATE>

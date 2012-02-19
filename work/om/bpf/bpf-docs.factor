@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.help.markup help.markup help.syntax kernel math om.graphics
-       om.help.markup sequences ;
+USING: addenda.help.markup arrays help.markup help.syntax kernel math
+       om.graphics om.help.markup sequences ;
 IN: om.bpf
 
 HELP: internal-bpf
@@ -24,6 +24,13 @@ HELP: <bpf>
   { "bpf" bpf }
 }
 { $description "" } ;
+
+HELP: point-pairs
+{ $values
+  { "bpf" bpf }
+  { "pairs" "an " { $link array } " of pairs of " { $link number } "s" }
+}
+{ $description "Returns the list of points in " { $snippet "self" } " as a list ((x1 y1) (x2 y2) ...)." } ;
 
 HELP: cons-bpf
 { $values

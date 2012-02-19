@@ -33,10 +33,30 @@ IN: om.bpf.tests
     { 1 2 } 3 f simple-bpf-from-list points>> underlying>>
 ] unit-test
 
-[ { T{ om-point f 1 2 } T{ om-point f 1 3 } } ] [
+[ { T{ om-point f 0 2 } T{ om-point f 1 3 } } ] [
     1 { 2 3 } f simple-bpf-from-list points>> underlying>>
+] unit-test
+
+[ { } ] [
+    f { 3 4 } f simple-bpf-from-list points>> underlying>>
 ] unit-test
 
 [ { T{ om-point f 1 3 } T{ om-point f 2 4 } } ] [
     { 1 2 } { 3 4 } f simple-bpf-from-list points>> underlying>>
+] unit-test
+
+[ { T{ om-point f 1 4 }
+    T{ om-point f 2 5 }
+    T{ om-point f 3 6 }
+    T{ om-point f 4 7 }
+    T{ om-point f 5 8 } } ] [
+    { 1 2 3 } { 4 5 6 7 8 } f simple-bpf-from-list points>> underlying>>
+] unit-test
+
+[ { T{ om-point f 1 6 }
+    T{ om-point f 2 7 }
+    T{ om-point f 3 8 }
+    T{ om-point f 4 9 }
+    T{ om-point f 5 10 } } ] [
+    { 1 2 3 4 5 } { 6 7 8 } f simple-bpf-from-list points>> underlying>>
 ] unit-test

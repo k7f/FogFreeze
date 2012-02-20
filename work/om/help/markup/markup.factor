@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays assocs help.markup help.markup.private kernel
-       namespaces sequences ui.operations ui.tools.inspector urls webbrowser ;
+USING: addenda.help.markup arrays assocs help.markup help.markup.private
+       kernel sequences urls ;
 IN: om.help.markup
 
 : $vocab-intro ( children -- )
@@ -42,12 +42,4 @@ PRIVATE>
 : $clhs-link ( children -- )
     first dup (clhs-body) prepend >url [ write-link ] ($span) ;
 
-<PRIVATE
-! FIXME don't remove the inspector form url's popup -- push it down, instead
-: (prioritize-url-operation) ( -- )
-    +primary+ +secondary+ [ t swap \ open-url props>> set-at ] bi@
-    operations get values [ command>> \ inspector eq? ] find nip
-    [ [ url? not ] swap predicate<< ] when* ;
-PRIVATE>
-
-(prioritize-url-operation)
+prioritize-url-operation

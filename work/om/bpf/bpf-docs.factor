@@ -25,6 +25,16 @@ HELP: <bpf>
 }
 { $description "" } ;
 
+HELP: bpf-lib
+{ $var-description "" } ;
+
+HELP: <bpf-lib>
+{ $values
+  { "n" "a non-negative " { $link integer } }
+  { "bpf-lib" bpf-lib }
+}
+{ $description "" } ;
+
 HELP: point-pairs
 { $values
   { "bpf" bpf }

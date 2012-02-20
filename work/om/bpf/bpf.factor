@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays combinators kernel math math.order om.graphics
-       om.support sequences sorting vectors ;
+USING: accessors arrays combinators kernel math om.graphics om.support
+       sequences sorting vectors ;
 IN: om.bpf
 
 ! ________________________________
@@ -24,6 +24,15 @@ TUPLE: internal-bpf { points vector } ;
 TUPLE: bpf < internal-bpf { xs maybe: array } { ys maybe: array } ;
 
 : <bpf> ( n -- bpf ) (new-points) f f bpf boa ;
+
+TUPLE: bpf-lib { bpfs vector } ;
+
+: <bpf-lib> ( n -- bpf-lib )
+    {
+        { [ dup 1 < ] [ drop 0 <vector> ] }
+        { [ dup 2 < ] [ drop 2 <bpf> 1vector ] }
+        [ <vector> 2 <bpf> over push ]
+    } cond bpf-lib boa ;
 
 : point-pairs ( bpf -- pairs )
     points>> [ [ x>> ] [ y>> ] bi 2array ] { } map-as ;

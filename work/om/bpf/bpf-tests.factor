@@ -24,6 +24,14 @@ IN: om.bpf.tests
     3 <bpf> points>> underlying>>
 ] unit-test
 
+[ { } ] [
+    0 <bpf-lib> bpfs>> underlying>>
+] unit-test
+
+[ { T{ bpf f V{ T{ om-point f 0 0 } T{ om-point f 100 100 } } f f } } ] [
+    1 <bpf-lib> bpfs>> underlying>>
+] unit-test
+
 [ { { 0 0 } { 100 100 } } ] [
     3 <bpf> point-pairs
 ] unit-test

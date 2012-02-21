@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel math om.bpf om.help.markup quotations
-       sequences ;
+USING: addenda.help.markup help.markup help.syntax kernel math om.bpf
+       om.help.markup quotations sequences ;
 IN: om.functions
 
 HELP: linear-fun
@@ -74,7 +74,12 @@ $nl
 { $snippet "xmin" } " and " { $snippet "xmax" } " allow to specify the x-range to resample."
 $nl
 { $snippet "dec" } " (decimals) is the precision of the result" }
-{ $warning "This version, compatibly, excludes upper boundary in by-count mode \u{em-dash} which might be just an off-by-one bug." } ;
+{ $moving-target
+  { $list
+    { "The optional argument " { $snippet "dec" } " is ignored." }
+    { "This version, compatibly, excludes upper boundary when " { $snippet "xmax" } " is specified in by-count mode \u{em-dash} which might be just an off-by-one bug..." }
+  }
+} ;
 
 ARTICLE: "om.functions" "om.functions"
 { $vocab-intro "om.functions" "projects/01-basicproject/functions/functions.lisp" } ;

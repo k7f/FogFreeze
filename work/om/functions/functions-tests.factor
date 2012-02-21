@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: om.bpf om.graphics om.functions sequences tools.test ;
+USING: om.bpf om.functions om.graphics sequences tools.test ;
 IN: om.functions.tests
 
 [ { 2 1 0 -1 -2 } ] [
@@ -44,4 +44,32 @@ IN: om.functions.tests
     { 1. 1.5 2. } { 2. 3. 4. }
 ] [
     0 0 1 2 linear-fun .5 { 1 2 } om-sample
+] unit-test
+
+[ T{ bpf f V{ T{ om-point f 0 1 } T{ om-point f 1 2. } } f f } { 0 1 } { 1 2. } ] [
+    { 1 2 } 2 f om-sample
+] unit-test
+
+[ T{ bpf f V{ T{ om-point f 0 1 } T{ om-point f 1 2 } } f f } { 0 1 } { 1 2 } ] [
+    { 1 2 } 1. f om-sample
+] unit-test
+
+[ T{ bpf f V{ T{ om-point f 0 1 } } f f } { 0 } { 1 } ] [
+    { 1 2 } 2 { 0 2 } om-sample
+] unit-test
+
+[ T{ bpf f V{ T{ om-point f 0 1 } T{ om-point f 1 2 } } f f } { 0 1 } { 1 2 } ] [
+    { 1 2 } 1. { 0 2 } om-sample
+] unit-test
+
+[ T{ bpf f V{ T{ om-point f 0. 1. } T{ om-point f 1. 2. } } f f } { 0. 1. } { 1. 2. } ] [
+    { 0 1 } { 1 2 } f simple-bpf-from-list 2 f om-sample
+] unit-test
+
+[ T{ bpf f V{ T{ om-point f .5 1.5 } } f f } { .5 } { 1.5 } ] [
+    { 0 1 } { 1 2 } f simple-bpf-from-list 1 f om-sample
+] unit-test
+
+[ T{ bpf f V{ T{ om-point f 0. 1. } T{ om-point f 1. 2. } } f f } { 0. 1. } { 1. 2. } ] [
+    { 0 1 } { 1 2 } f simple-bpf-from-list 1. f om-sample
 ] unit-test

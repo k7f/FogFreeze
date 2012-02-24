@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays assocs help.markup help.markup.private
-       kernel sequences urls ;
+       kernel present sequences urls words ;
 IN: om.help.markup
 
 : $vocab-intro ( children -- )
@@ -22,8 +22,14 @@ IN: om.help.markup
 : $optionals ( children -- )
     drop { "an " { $link object } " providing " { $snippet "&optional" } " arguments" } print-element ;
 
+<PRIVATE
+: (&optional-row) ( seq -- seq )
+    unclip \ $snippet swap present 2array swap dup first word?
+    [ \ $link prefix ] when 2array ;
+PRIVATE>
+
 : $optional-defaults ( element -- )
-    "Default values of optional arguments" $heading [ values-row ] map $table ;
+    "Default values of optional arguments" $heading [ (&optional-row) ] map $table ;
 
 : $keys ( children -- )
     drop { "an " { $link assoc } " providing " { $snippet "&key" } " arguments" } print-element ;

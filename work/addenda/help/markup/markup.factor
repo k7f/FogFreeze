@@ -16,10 +16,9 @@ IN: addenda.help.markup
 : $set-combinator ( children -- )
     { "Like " } print-element $link { ", but equality test may be arbitrary, instead of the hard-coded " { $link = } " operator." } print-element ;
 
-! FIXME don't remove the inspector from url's popup -- push it down, instead
 : prioritize-url-operation ( -- )
     +primary+ +secondary+ [ t swap \ open-url props>> set-at ] bi@
-    operations get values [ command>> \ inspector eq? ] find nip
-    [ [ url? not ] swap predicate<< ] when* ;
+    ! reinsert the open-url operation, so that it overrides inspector as the top +primary+
+    { open-url [ url? ] } dup operations get rename-at ;
 
 prioritize-url-operation

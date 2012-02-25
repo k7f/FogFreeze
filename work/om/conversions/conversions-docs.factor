@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax math om.help.markup sequences ;
+USING: help.markup help.syntax math om.help.markup sequences strings ;
 IN: om.conversions
 
 HELP: approx-m
@@ -57,6 +57,20 @@ HELP: f->mc
   "Floating values are allowed for " { $snippet "approx" } "."
   $nl
   { $snippet "ref-midic" } " is a midicent that is subtracted from " { $snippet "midic" } " before computation: the computation can then be carried on an interval rather than an absolute pitch." } ;
+
+HELP: +ascii-note-scales+
+{ $var-description "The scales used by the functions " { $link mc->n } " and " { $link n->mc } "." } ;
+
+HELP: mc->n1
+{ $values
+  { "midic" number }
+  { "&optionals" { $optionals } }
+  { "name" string }
+}
+{ $optional-defaults
+  { "ascii-note-scale" "first element of " { $link +ascii-note-scales+ } }
+}
+{ $description "Converts " { $snippet "midic" } " to a string representing a symbolic ascii note." } ;
 
 HELP: beats->ms
 { $values

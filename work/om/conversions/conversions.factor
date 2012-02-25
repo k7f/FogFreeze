@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: combinators kernel layouts math math.constants math.functions
-       math.order namespaces om.support sequences ;
+USING: assocs arrays combinators kernel layouts locals math math.constants
+       math.functions math.order namespaces om.support present sequences ;
 IN: om.conversions
 
 ! __________________________________________
@@ -65,6 +65,67 @@ M: sequence f->mc ( freqs &optionals -- midics )
         { [ dup ] [ [ swap [ [ (f->mf) ] dip - ] dip (approx-m) ] 2curry map ] }
         [ drop [ (approx-m) ] curry [ (f->mf) ] prepose map ]
     } cond ;
+
+! ______
+! scales
+
+SYMBOLS: :n :s :f :q :-q :qs :f-q ;
+
+SYMBOL: +ascii-note-C-scale+ {
+    { "C" :n } { "C" :q  } { "C" :s } { "D" :-q } { "D" :n } { "D" :q  }
+    { "E" :f } { "E" :-q } { "E" :n } { "E" :q  } { "F" :n } { "F" :q  }
+    { "F" :s } { "G" :-q } { "G" :n } { "G" :q  } { "G" :s } { "A" :-q }
+    { "A" :n } { "A" :q  } { "B" :f } { "B" :-q } { "B" :n } { "B" :q  }
+} +ascii-note-C-scale+ set
+
+SYMBOL: +ascii-note-do-scale+ {
+    { "do" :n } { "do"  :q  } { "do"  :s } { "re"  :-q } { "re"  :n } { "re" :q  }
+    { "mi" :f } { "mi"  :-q } { "mi"  :n } { "mi"  :q  } { "fa"  :n } { "fa" :q  }
+    { "fa" :s } { "sol" :-q } { "sol" :n } { "sol" :q  } { "sol" :s } { "la" :-q }
+    { "la" :n } { "la"  :q  } { "si"  :f } { "si"  :-q } { "si"  :n } { "si" :q  }
+} +ascii-note-do-scale+ set
+
+SYMBOL: +ascii-note-alterations+ {
+    { :s  { "#" 100 } } { :f   { "b" -100  } }
+    { :q  { "+" 50  } } { :qs  { "#+" 150  } }
+    { :-q { "_" -50 } } { :f-q { "b-" -150 } }
+    { :s  { "d" 100 } }
+} +ascii-note-alterations+ set
+
+SYMBOL: +ascii-note-scales+
++ascii-note-C-scale+ +ascii-note-do-scale+ [ get ] bi@ 2array
++ascii-note-scales+ set
+
+! ______
+! mc->n1
+
+<PRIVATE
+: (mc->n1-present) ( step scale oct+2 cents -- name )
+    [ nth first2 +ascii-note-alterations+ get at [ first ] [ "" ] if* append ]
+    [ 2 - present append ]
+    [ [ 0 > "+" "" ? ] [ [ "" ] [ present ] if-zero ] bi 3append ]
+    tri* ; inline
+
+:: (mc->n1) ( midic scale -- name )
+    1200 scale length / :> dmidic
+    midic dmidic cl-round :> ( midic/50 cents )
+    midic/50 dmidic * 1200 cl-floor :> ( oct+2 midic<1200 )
+    midic<1200 dmidic / scale oct+2 cents (mc->n1-present) ; inline
+PRIVATE>
+
+: mc->n1 ( midic &optionals -- name )
+    unpack1 [ +ascii-note-scales+ get first ] unless* (mc->n1) ;
+
+SYMBOL: +ascii-intervals+ {
+    "1" "2m" "2M" "3m" "3M" "4" "4A" "5" "6m" "6M" "7m" "7M"
+} +ascii-intervals+ set
+
+! ___________
+! mc->n n->mc
+
+GENERIC: mc->n ( midic -- name )
+
+GENERIC: n->mc ( name -- midic )
 
 ! _________
 ! beats->ms

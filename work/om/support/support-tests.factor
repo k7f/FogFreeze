@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: kernel math om.support tools.test ;
+USING: arrays kernel math om.support sequences tools.test ;
 IN: om.support.tests
 
 [ "x" ] [
@@ -62,4 +62,20 @@ IN: om.support.tests
 
 [ f ] [
     1 2 { { :key [ neg ] } } [ < ] at-test&key call
+] unit-test
+
+[ { { { 2 2 } { -3 -1 } } { { -4 2 } { 3 -1 } } } ] [
+    { 8 -10 } { 3 -3 } [ cl-floor 2array ] cartesian-map
+] unit-test
+
+[ { { { 3 -1 } { -3 -1 } } { { -3 -1 } { 3 -1 } } } ] [
+    { 8 -10 } { 3 -3 } [ cl-round 2array ] cartesian-map
+] unit-test
+
+[ { { { 3 -1 } { -2 2 } } { { -3 -1 } { 4 2 } } } ] [
+    { 8 -10 } { 3 -3 } [ cl-ceiling 2array ] cartesian-map
+] unit-test
+
+[ { { { 2 2 } { -2 2 } } { { -3 -1 } { 3 -1 } } } ] [
+    { 8 -10 } { 3 -3 } [ cl-truncate 2array ] cartesian-map
 ] unit-test

@@ -120,6 +120,36 @@ HELP: cl-floor
 { $description "A variant of " { $link floor } "." }
 { $see-also "lisp-alikes" } ;
 
+HELP: cl-round
+{ $values
+  { "num" real }
+  { "div" real }
+  { "quo" integer }
+  { "rem" real }
+}
+{ $description "A variant of " { $link round } "." }
+{ $see-also "lisp-alikes" } ;
+
+HELP: cl-ceiling
+{ $values
+  { "num" real }
+  { "div" real }
+  { "quo" integer }
+  { "rem" real }
+}
+{ $description "A variant of " { $link ceiling } "." }
+{ $see-also "lisp-alikes" } ;
+
+HELP: cl-truncate
+{ $values
+  { "num" real }
+  { "div" real }
+  { "quo" integer }
+  { "rem" real }
+}
+{ $description "A variant of " { $link truncate } "." }
+{ $see-also "lisp-alikes" } ;
+
 HELP: cl-identity
 { $values
   { "obj" object }

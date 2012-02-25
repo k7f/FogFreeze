@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.errors arrays assocs classes combinators kernel locals macros
-       math math.functions quotations sequences strings words ;
+USING: addenda.errors arrays assocs classes combinators kernel macros math
+       math.functions quotations sequences strings words ;
 IN: om.support
 
 ! __________
@@ -89,30 +89,35 @@ M: object    &rest>sequence ( obj -- seq/f ) 1array ; inline
 ! ________________
 ! binop generators
 
-MACRO:: om-binop-number ( quot: ( elt1 elt2 -- elt' ) -- )
+MACRO: om-binop-number ( quot: ( elt1 elt2 -- elt' ) -- quot': ( obj num -- obj' ) )
     [
         {
-            { [ over number? ] quot }
-            { [ over sequence? ] [ quot curry map ] }
-            [ drop class-of invalid-input ]
+            { [ pick number?   ] [ call      ] }
+            { [ pick sequence? ] [ curry map ] }
+            [ 2drop class-of invalid-input ]
         } cond
-    ] ;
+    ] curry  ;
 
-MACRO:: om-binop-sequence ( quot: ( elt1 elt2 -- elt' ) -- )
+MACRO: om-binop-sequence ( quot: ( elt1 elt2 -- elt' ) -- quot': ( obj seq -- seq' ) )
     [
         {
-            { [ over number? ] [ quot with map ] }
-            { [ over sequence? ] [ quot 2map ] }
+            { [ pick number?   ] [ with map ] }
+            { [ pick sequence? ] [ 2map     ] }
             [ drop class-of invalid-input ]
         } cond
-    ] ;
+    ] curry ;
 
 ! __________
 ! cl-related
 
 TUPLE: cl-symbol { name string } ;
 
-: cl-floor ( num div -- quo rem )
-    2dup / floor [ * - ] [ >integer ] bi swap ;
+MACRO: (cl-rounding) ( quot: ( num -- num' ) -- quot': ( num div -- quo rem ) )
+    [ [ 2dup / ] dip call [ * - ] [ >integer ] bi swap ] curry ;
+
+: cl-floor    ( num div -- quo rem ) [ floor    ] (cl-rounding) ;
+: cl-round    ( num div -- quo rem ) [ round    ] (cl-rounding) ;
+: cl-ceiling  ( num div -- quo rem ) [ ceiling  ] (cl-rounding) ;
+: cl-truncate ( num div -- quo rem ) [ truncate ] (cl-rounding) ;
 
 : cl-identity ( obj -- obj ) ;

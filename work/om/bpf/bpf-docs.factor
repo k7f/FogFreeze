@@ -44,15 +44,15 @@ HELP: point-pairs
 
 HELP: cons-bpf
 { $values
-  { "points" "a " { $link sequence } " of " { $link om-point } "s" }
+  { "points" { $sequence-of om-point } }
   { "obj" object }
 }
 { $description "" } ;
 
 HELP: simple-bpf-from-list
 { $values
-  { "xs" "a " { $link real } " or a " { $link sequence } " of " { $link real } "s" }
-  { "ys" "a " { $link real } " or a " { $link sequence } " of " { $link real } "s" }
+  { "xs" { $class/sequence-of real } }
+  { "ys" { $class/sequence-of real } }
   { "&optionals" { $optionals } }
   { "bpf" bpf }
 }

@@ -1,9 +1,25 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors assocs colors help.markup help.stylesheet io.styles kernel
-       namespaces sequences ui.operations ui.tools.inspector urls webbrowser ;
+USING: accessors assocs classes colors help.markup help.stylesheet io.styles
+       kernel namespaces quotations sequences ui.operations ui.tools.inspector
+       urls webbrowser words ;
 IN: addenda.help.markup
+
+: $sequence-of ( element -- )
+    first dup class? [
+        { "a " { $link sequence } " of " } print-element ($link) { "s" } print-element
+    ] [ $link ] if ;
+
+: $class/sequence-of ( element -- )
+    first dup class? [
+        dup ($instance) { " or a " { $link sequence }  " of " } print-element
+        ($link) { "s" } print-element
+    ] [ $link ] if ;
+
+: $word/callable ( element -- )
+    { "a " { $link word } " or a " { $link callable } " with stack effect " }
+    print-element $snippet ;
 
 : $moving-target ( element -- )
     [

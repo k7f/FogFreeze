@@ -13,10 +13,10 @@ HELP: x-union
   { "seq'" sequence }
 }
 { $description "Merges lists (" { $snippet "l1" } " and " { $snippet "l2" } " and possibly more) into a single list with no repetitions."
-$nl
-{ $snippet "test" } " is a function or function name for a binary comparison."
-$nl
-{ $snippet "key" } " is a name or function name to apply to the elements before comparison." } ;
+  $nl
+  { $snippet "test" } " is a function or function name for a binary comparison."
+  $nl
+  { $snippet "key" } " is a name or function name to apply to the elements before comparison." } ;
 
 HELP: x-intersect
 { $values
@@ -27,10 +27,10 @@ HELP: x-intersect
   { "seq'" sequence }
 }
 { $description "Returns the intersection (i.e. common elements) from lists (" { $snippet "l1" } " and " { $snippet "l2" } " and possibly more) into a single list."
-$nl
-{ $snippet "test" } " is a function or function name for a binary comparison."
-$nl
-{ $snippet "key" } " is a name or function name to apply to the elements before comparison." } ;
+  $nl
+  { $snippet "test" } " is a function or function name for a binary comparison."
+  $nl
+  { $snippet "key" } " is a name or function name to apply to the elements before comparison." } ;
 
 HELP: x-diff
 { $values
@@ -41,10 +41,10 @@ HELP: x-diff
   { "seq'" sequence }
 }
 { $description "Returns the list of elements present in " { $snippet "l1" } " but not in " { $snippet "l2" } "."
-$nl
-{ $snippet "test" } " is a function or function name for a binary comparison."
-$nl
-{ $snippet "key" } " is a name or function name to apply to the elements before comparison." } ;
+  $nl
+  { $snippet "test" } " is a function or function name for a binary comparison."
+  $nl
+  { $snippet "key" } " is a name or function name to apply to the elements before comparison." } ;
 
 HELP: x-xor
 { $values
@@ -55,10 +55,10 @@ HELP: x-xor
   { "seq'" sequence }
 }
 { $description "XOR's lists (" { $snippet "l1" } " and " { $snippet "l2" } " and possibly more) into a single list.  XOR keeps only the elements present in one list and not in the other one(s)."
-$nl
-{ $snippet "test" } " is a function or function name for a binary comparison."
-$nl
-{ $snippet "key" } " is a name or function name to apply to the elements before comparison." } ;
+  $nl
+  { $snippet "test" } " is a function or function name for a binary comparison."
+  $nl
+  { $snippet "key" } " is a name or function name to apply to the elements before comparison." } ;
 
 HELP: included?
 { $values
@@ -68,8 +68,8 @@ HELP: included?
   { "?" boolean }
 }
 { $description "Tests if " { $snippet "lst1" } " is included in " { $snippet "lst" } "."
-$nl
-{ $snippet "test" } " is a function or function name for a binary comparison." } ;
+  $nl
+  { $snippet "test" } " is a function or function name for a binary comparison." } ;
 
 ARTICLE: "om.sets" "om.sets"
 { $vocab-intro "om.sets" "projects/01-basicproject/functions/sets.lisp" } ;

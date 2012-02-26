@@ -1,7 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: classes help.markup help.syntax math om.help.markup sequences ;
+USING: addenda.help.markup classes help.markup help.syntax math om.help.markup
+       sequences ;
 IN: om.functions.auxiliary
 
 HELP: x-around
@@ -11,10 +12,11 @@ HELP: x-around
   { "result" "a two-element " { $link sequence } " of the same " { $link class } " as " { $snippet "points" } }
 }
 { $description "If for all (xi yi) in " { $snippet "points" } " xi < x then outputs two copies of the last point."
-$nl
-"Otherwise, if for all (xi yi) in " { $snippet "points" } " xi >= x then outputs two copies of the first point."
-$nl
-"Otherwise, outputs two elements of " { $snippet "points" } ", (xi yi) and (xj yj), such that j = i + 1 and xi < x <= xj." }
+  $nl
+  "Otherwise, if for all (xi yi) in " { $snippet "points" } " xi >= x then outputs two copies of the first point."
+  $nl
+  "Otherwise, outputs two elements of " { $snippet "points" } ", (xi yi) and (xj yj), such that j = i + 1 and xi < x <= xj."
+}
 { $notes "For any two elements of " { $snippet "points" } ", (xi yi) and (xj yj), it is assumed that if i < j then xi < xj." } ;
 
 HELP: y-around
@@ -49,8 +51,8 @@ HELP: linear-interpol*
 
 HELP: interpolate
 { $values
-  { "xs" "a " { $link sequence } " of " { $link number } "s" }
-  { "ys" "a " { $link sequence } " of " { $link number } "s" }
+  { "xs" { $sequence-of number } }
+  { "ys" { $sequence-of number } }
   { "step" number }
   { "result" number }
 }
@@ -59,8 +61,8 @@ HELP: interpolate
 
 HELP: interpole
 { $values
-  { "xs" "a " { $link sequence } " of " { $link number } "s" }
-  { "ys" "a " { $link sequence } " of " { $link number } "s" }
+  { "xs" { $sequence-of number } }
+  { "ys" { $sequence-of number } }
   { "x-min" number }
   { "x-max" number }
   { "n" "a non-negative " { $link integer } }
@@ -68,9 +70,7 @@ HELP: interpole
 }
 { $description "" }
 { $see-also interpolate }
-{ $warning "This version handles the left ray (half line) in the right way, i.e. in the same way as the right ray \u{em-dash} incompatibly."
-
-} ;
+{ $warning "This version handles the left ray (half line) in the right way, i.e. in the same way as the right ray \u{em-dash} incompatibly." } ;
 
 ARTICLE: "om.functions.auxiliary" "om.functions.auxiliary"
 { $aux-vocab-intro "om.functions" } ;

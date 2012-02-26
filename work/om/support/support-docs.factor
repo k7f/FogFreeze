@@ -120,16 +120,6 @@ HELP: cl-floor
 { $description "A variant of " { $link floor } "." }
 { $see-also "lisp-alikes" } ;
 
-HELP: cl-round
-{ $values
-  { "num" real }
-  { "div" real }
-  { "quo" integer }
-  { "rem" real }
-}
-{ $description "A variant of " { $link round } "." }
-{ $see-also "lisp-alikes" } ;
-
 HELP: cl-ceiling
 { $values
   { "num" real }
@@ -148,6 +138,16 @@ HELP: cl-truncate
   { "rem" real }
 }
 { $description "A variant of " { $link truncate } "." }
+{ $see-also "lisp-alikes" } ;
+
+HELP: cl-round
+{ $values
+  { "num" real }
+  { "div" real }
+  { "quo" integer }
+  { "rem" real }
+}
+{ $description "A variant of " { $link round } "." }
 { $see-also "lisp-alikes" } ;
 
 HELP: cl-identity
@@ -175,6 +175,9 @@ $nl
   { { "function " { $snippet "set-exclusive-or" } " with " { $snippet ":test" } " argument" } { $link symmetric-diff* } { } { $clhs-link "f_set_ex.htm" } }
 { { "function " { $snippet "subsetp" } " with " { $snippet ":test" } " argument" } { $link subset*? } { } { $clhs-link "f_subset.htm" } }
   { { "function " { $snippet "floor" } } { $link cl-floor } { } { $clhs-link "f_floorc.htm" } }
+  { { "function " { $snippet "ceiling" } } { $link cl-ceiling } { } { $clhs-link "f_floorc.htm" } }
+  { { "function " { $snippet "truncate" } } { $link cl-truncate } { } { $clhs-link "f_floorc.htm" } }
+  { { "function " { $snippet "round" } } { $link cl-round } { } { $clhs-link "f_floorc.htm" } }
 } ;
 
 ARTICLE: "om.support" "om.support"

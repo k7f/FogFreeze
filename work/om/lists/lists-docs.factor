@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays help.markup help.syntax kernel math om.help.markup quotations
-       sequences words words.symbol ;
+USING: addenda.help.markup arrays help.markup help.syntax kernel math
+       om.help.markup sequences words.symbol ;
 IN: om.lists
 
 HELP: last-elem
@@ -48,9 +48,9 @@ HELP: flat
   { "level" { $link f } }
 }
 { $description "Transforms a tree-list (i.e. a list of lists) into a flat list."
-$nl
-"If " { $snippet "level" } " is 1 (resp n) remove 1 (resp. n) level(s) of list imbrication."
-$nl        
+  $nl
+  "If " { $snippet "level" } " is 1 (resp n) remove 1 (resp. n) level(s) of list imbrication."
+  $nl
   "If " { $snippet "level" } " is NIL (default) remove all levels of imbrication, down to a purely flat list." } ;
 
 HELP: create-list
@@ -67,8 +67,8 @@ HELP: mat-trans
   { "mat'" sequence }
 }
 { $description "Matrix transposition."
-$nl
-"The matrix is represented by a list of rows. Each row is a list of items. Rows and columns are interchanged." } ;
+  $nl
+  "The matrix is represented by a list of rows. Each row is a list of items. Rows and columns are interchanged." } ;
 
 HELP: expand-lst
 { $values
@@ -76,12 +76,12 @@ HELP: expand-lst
   { "seq" sequence }
 }
 { $description "Expands a list following repetition patterns."
-$nl
-"1. <number>* (x1\u{horizontal-ellipsis}x2)\n"
-"repeats the pattern x1\u{horizontal-ellipsis}x2 <number> times."
-$nl
-"2. <n>_<m>s<k>\n"
-"appends an arithmetic series counting from <n> to <m> by step <k>.\n"
+  $nl
+  "1. <number>* (x1\u{horizontal-ellipsis}x2)\n"
+  "repeats the pattern x1\u{horizontal-ellipsis}x2 <number> times."
+  $nl
+  "2. <n>_<m>s<k>\n"
+  "appends an arithmetic series counting from <n> to <m> by step <k>.\n"
 "s<k> can be omitted (k=1)." } ;
 
 HELP: group-list
@@ -97,13 +97,13 @@ HELP: group-list
 HELP: remove-dup
 { $values
   { "seq" sequence }
-  { "test-fun" "a " { $link word } " or a " { $link callable }  " with stack effect " { $snippet "( obj1 obj2 -- ? )" } }
+  { "test-fun" { $word/callable "( obj1 obj2 -- ? )" } }
   { "depth" fixnum }
   { "seq'" sequence }
 }
 { $description "Removes duplicates elements from " { $snippet "list" } "."
-$nl
-"If " { $snippet "depth" } " is more than 1 duplicates are removed from sublists of level " { $snippet "depth" } "." } ;
+  $nl
+  "If " { $snippet "depth" } " is more than 1 duplicates are removed from sublists of level " { $snippet "depth" } "." } ;
 
 HELP: list-modulo
 { $values

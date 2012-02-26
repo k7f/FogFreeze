@@ -1,8 +1,8 @@
 ! Copyright (C) 2011 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays help.markup help.syntax kernel math math.constants math.order
-       om.help.markup quotations sequences words words.symbol ;
+USING: addenda.help.markup arrays help.markup help.syntax kernel math
+       math.constants math.order om.help.markup sequences words.symbol ;
 IN: om.kernel
 
 HELP: om+
@@ -64,8 +64,8 @@ HELP: om-log
 }
 { $description "Logarithm function.  (The logarithm of a number to the base is the power to which the base must be raised in order to produce the number.)" }
 { $notes "The " { $snippet "base" } " argument is optional.  By default, " { $snippet "base" } " is equal to the number " { $emphasis "e" } ", so " { $snippet "om-log" } " computes the " { $emphasis "natural" } " logarithm of " { $snippet "n" } "."
-$nl
-"This function can be applied on numbers or lists." } ;
+  $nl
+  "This function can be applied on numbers or lists." } ;
 
 HELP: om-round
 { $values
@@ -222,7 +222,7 @@ HELP: factorize
 
 HELP: reduce-tree
 { $values
-  { "fun" "a " { $link word } " or a " { $quotation "( elt1 elt2 -- elt' )" } }
+  { "fun" { $word/callable "( elt1 elt2 -- elt' )" } }
   { "&optionals" { $optionals } }
   { "quot" { $quotation "( obj -- result )" } }
   { "obj" object }
@@ -232,9 +232,9 @@ HELP: reduce-tree
   { "accum" { $link f } }
 }
 { $description "Applies the commutative binary " { $snippet "function" } " recursively throughout the list " { $snippet "self" } ".  (Applies to the first elements, then the result to the next one, and so forth until the list is exhausted.)"
-$nl
+  $nl
   "Function " { $snippet "+" } ", for instance, makes " { $snippet "reduce-tree" } " computing the sum of all elements in the list." }
-  { $notes "Optional " { $snippet "accum" } " should be the neutral element for the " { $snippet "function" } " considered (i.e. initial result value).  If " { $snippet "accum" } " is " { $link f } ", figures out what the neutral can be (works for " { $link + } ", " { $link * } ", " { $link min } ", " { $link max } ")." } ;
+{ $notes "Optional " { $snippet "accum" } " should be the neutral element for the " { $snippet "function" } " considered (i.e. initial result value).  If " { $snippet "accum" } " is " { $link f } ", figures out what the neutral can be (works for " { $link + } ", " { $link * } ", " { $link min } ", " { $link max } ")." } ;
 
 HELP: interpolation
 { $values
@@ -245,8 +245,8 @@ HELP: interpolation
   { "seq" sequence }
 }
 { $description "Interpolates 2 numbers or lists (from " { $snippet "begin" } " to " { $snippet "end" } ") through " { $snippet "samples" } " steps."
-$nl
-{ $snippet "curve" } " is an exponential factor interpolation (0 = linear)."} ;
+  $nl
+  { $snippet "curve" } " is an exponential factor interpolation (0 = linear)."} ;
 
 HELP: rang-p
 { $values
@@ -261,10 +261,10 @@ HELP: rang-p
   { "key" { $link f } }
 }
 { $description "Returns the position(s) of " { $snippet "elem" } " in " { $snippet "liste" } "."
-$nl
-{ $snippet "test" } " is a function or function name used to test if the elements of the list are equal to " { $snippet "elem" } "."
-$nl
-{ $snippet "key" } " is a function or function name that will be applied to elements before the test." } ;
+  $nl
+  { $snippet "test" } " is a function or function name used to test if the elements of the list are equal to " { $snippet "elem" } "."
+  $nl
+  { $snippet "key" } " is a function or function name that will be applied to elements before the test." } ;
 
 HELP: list-explode
 { $values
@@ -277,42 +277,42 @@ HELP: list-explode
 
 HELP: list-filter
 { $values
-  { "fun" "a " { $link word } " or a " { $quotation "( elt -- ? )" } }
+  { "fun" { $word/callable "( elt -- ? )" } }
   { "mode" symbol }
   { "quot" { $quotation "( seq -- seq' )" } }
   { "seq" sequence }
   { "seq'" sequence }
 }
 { $description "Filters out " { $snippet "list" } " using the predicate " { $snippet "test" } "."
-$nl
-{ $snippet "test" } " may be a function name (a symbol) or it may be a visual function or patch in 'lambda' mode."
-$nl
-"If " { $snippet "list" } " is a list of lists, the filter is applied recursively in the sub-lists."
-$nl
-{ $snippet "mode" } " " { $link 'reject } " means reject elements that verify " { $snippet "test" } "."
-$nl
-{ $snippet "mode" } " " { $link 'pass } " means retain only elements that verify " { $snippet "test" } "." } ;
+  $nl
+  { $snippet "test" } " may be a function name (a symbol) or it may be a visual function or patch in 'lambda' mode."
+  $nl
+  "If " { $snippet "list" } " is a list of lists, the filter is applied recursively in the sub-lists."
+  $nl
+  { $snippet "mode" } " " { $link 'reject } " means reject elements that verify " { $snippet "test" } "."
+  $nl
+  { $snippet "mode" } " " { $link 'pass } " means retain only elements that verify " { $snippet "test" } "." } ;
 
 HELP: table-filter
 { $values
   { "numcol" integer }
-  { "fun" "a " { $link word } " or a " { $quotation "( elt -- ? )" } }
+  { "fun" { $word/callable "( elt -- ? )" } }
   { "mode" symbol }
   { "quot" { $quotation "( seq -- seq' )" } }
   { "seq" sequence }
   { "seq'" sequence }
 }
 { $description "Filters out " { $snippet "list" } " (a list of lists) using the predicate " { $snippet "test" } "."
-$nl
-{ $snippet "test" } " may be a function name (a symbol) or it may be a visual function or patch in 'lambda' mode."
-$nl
+  $nl
+  { $snippet "test" } " may be a function name (a symbol) or it may be a visual function or patch in 'lambda' mode."
+  $nl
   "The predicate " { $snippet "test" } " is applied to the element of rank " { $snippet "numcol" } " in every sublist in " { $snippet "list" } " and filters the whole sublists."
-$nl
-{ $snippet "numcol" } " counts from 0."
-$nl
-{ $snippet "mode" } " " { $link 'reject } " means reject elements whose " { $snippet "numcol" } "th element verifies " { $snippet "test" } "."
-$nl
-{ $snippet "mode" } " " { $link 'pass } " means retain only elements whose " { $snippet "numcol" } "th element verifies " { $snippet "test" } "." } ;
+  $nl
+  { $snippet "numcol" } " counts from 0."
+  $nl
+  { $snippet "mode" } " " { $link 'reject } " means reject elements whose " { $snippet "numcol" } "th element verifies " { $snippet "test" } "."
+  $nl
+  { $snippet "mode" } " " { $link 'pass } " means retain only elements whose " { $snippet "numcol" } "th element verifies " { $snippet "test" } "." } ;
 
 HELP: band-filter
 { $values
@@ -323,14 +323,14 @@ HELP: band-filter
   { "seq'" sequence }
 }
 { $description "Filters out " { $snippet "list" } " using " { $snippet "bounds" } ". " { $snippet "bounds" } " is a pair or list of pairs " { $snippet "{ min-value max-value }" } "."
-$nl
-"If " { $snippet "list" } " is a list of lists, the filter is applied recursively in the sub-lists."
-$nl
+  $nl
+  "If " { $snippet "list" } " is a list of lists, the filter is applied recursively in the sub-lists."
+  $nl
   "If " { $snippet "bounds" } " is a list of pairs, each pair is applied to each successive element in " { $snippet "list" } "."
-$nl
-{ $snippet "mode" } " " { $link 'reject } " means reject elements between the bounds."
-$nl
-{ $snippet "mode" } " " { $link 'pass } " means retain only elements between the bounds." } ;
+  $nl
+  { $snippet "mode" } " " { $link 'reject } " means reject elements between the bounds."
+  $nl
+  { $snippet "mode" } " " { $link 'pass } " means retain only elements between the bounds." } ;
 
 HELP: range-filter
 { $values
@@ -341,12 +341,12 @@ HELP: range-filter
   { "seq'" sequence }
 }
 { $description "Select elements in " { $snippet "list" } " whose positions (couting from 0) in the list are defined by " { $snippet "posn" } "."
-$nl
-{ $snippet "posn" } " is a list of pairs " { $snippet "{ min-pos max-pos }" } " in increasing order with no everlap."
-$nl
-{ $snippet "mode" } " " { $link 'reject } " means reject the selected elements."
-$nl
-{ $snippet "mode" } " " { $link 'pass } " means retain only the selected elements." } ;
+  $nl
+  { $snippet "posn" } " is a list of pairs " { $snippet "{ min-pos max-pos }" } " in increasing order with no everlap."
+  $nl
+  { $snippet "mode" } " " { $link 'reject } " means reject the selected elements."
+  $nl
+  { $snippet "mode" } " " { $link 'pass } " means retain only the selected elements." } ;
 
 HELP: posn-match
 { $values

@@ -10,8 +10,8 @@ HELP: x->dx
   { "seq'" sequence }
 }
 { $description "Computes a list of intervals from a list of points."
-$nl
-"x->dx can be used for instance to get intervals from absolute pitches or to get a list of durations from time onsets." } ;
+  $nl
+  "x->dx can be used for instance to get intervals from absolute pitches or to get a list of durations from time onsets." } ;
 
 HELP: dx->x
 { $values
@@ -20,8 +20,8 @@ HELP: dx->x
   { "seq'" sequence }
 }
 { $description "Computes a list of points from a list of intervals and a initial point (" { $snippet "start" } ")."
-$nl
-"dx->x can be used for instance to get absolute pitches from intervals or to get onsets from durations." } ;
+  $nl
+  "dx->x can be used for instance to get absolute pitches from intervals or to get onsets from durations." } ;
 
 HELP: arithm-ser
 { $values
@@ -50,14 +50,14 @@ HELP: fibo-ser
   { "end" { $link most-positive-fixnum } }
 }
 { $description "Fibonacci series: f(i) = f(i-1) + f(i-2)."
-$nl
-{ $snippet "seed1" } " = f(0) the first element of the series."
-$nl
-{ $snippet "seed2" } " = f(1) the second element of the series."
-$nl
-{ $snippet "limit" } " is the limit of this list."
-$nl
-{ $snippet "begin" } " and " { $snippet "end" } " can be used to limit the calculation of the series." } ;
+  $nl
+  { $snippet "seed1" } " = f(0) the first element of the series."
+  $nl
+  { $snippet "seed2" } " = f(1) the second element of the series."
+  $nl
+  { $snippet "limit" } " is the limit of this list."
+  $nl
+  { $snippet "begin" } " and " { $snippet "end" } " can be used to limit the calculation of the series." } ;
 
 HELP: geometric-ser
 { $values
@@ -73,12 +73,12 @@ HELP: geometric-ser
   { "end" { $link most-positive-fixnum } }
 }
 { $description "Geometric series: starts from " { $snippet "seed" } " and returns a list with f(i) = factor * f(i-1)."
-$nl
-{ $snippet "limit" } " is the limit of returned list list."
-$nl
-{ $snippet "begin" } " and " { $snippet "end" } " allow to delimit the series."
-$nl
-{ $snippet "nummax" } " allows to limit the number of elements." } ;
+  $nl
+  { $snippet "limit" } " is the limit of returned list list."
+  $nl
+  { $snippet "begin" } " and " { $snippet "end" } " allow to delimit the series."
+  $nl
+  { $snippet "nummax" } " allows to limit the number of elements." } ;
 
 HELP: prime-ser
 { $values
@@ -90,8 +90,8 @@ HELP: prime-ser
   { "numelem" { $link f } }
 }
 { $description "Prime numbers series: returns the set of prime-numbers ranging from 0 upto " { $snippet "max" } "."
-$nl
-"The optional parametre " { $snippet "numelem" } " limits the number of elements." } ;
+  $nl
+  "The optional parametre " { $snippet "numelem" } " limits the number of elements." } ;
 
 HELP: prime-factors
 { $values

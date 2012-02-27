@@ -1,15 +1,16 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax math om.help.markup sequences strings ;
+USING: addenda.help.markup help.markup help.syntax math om.help.markup
+       sequences strings ;
 IN: om.conversions
 
 HELP: approx-m
 { $values
-  { "midic" "a " { $link number } " or a " { $link sequence } " of " { $link number } "s" }
+  { "cents" { $class/sequence-of number } }
   { "approx" real }
   { "&optionals" { $optionals } }
-  { "midic'" "a " { $link number } " or a " { $link sequence } " of " { $link number } "s" }
+  { "cents'" { $class/sequence-of number } }
 }
 { $optional-defaults
   { "ref-midic" "0" }
@@ -27,18 +28,18 @@ HELP: approx-m
   $nl
   { $snippet "ref-midic" } " is a midicent that is subtracted from " { $snippet "midic" } " before computation: the computation can then be carried on an interval rather than an absolute pitch." } ;
 
-HELP: mc->f
+HELP: midicents>hz
 { $values
-  { "midic" "a " { $link number } " or a " { $link sequence } " of " { $link number } "s" }
-  { "midic'" "a " { $link number } " or a " { $link sequence } " of " { $link number } "s" }
+  { "cents" { $class/sequence-of number } }
+  { "hz" { $class/sequence-of number } }
 }
 { $description "Converts a (list of) midicent pitch(es) " { $snippet "midics" } " to frequencies (Hz)." } ;
 
-HELP: f->mc
+HELP: hz>midicents
 { $values
-  { "freq" "a " { $link number } " or a " { $link sequence } " of " { $link number } "s" }
+  { "hz" { $class/sequence-of number } }
   { "&optionals" { $optionals } }
-  { "midic" "a " { $link number } " or a " { $link sequence } " of " { $link number } "s" }
+  { "cents" { $class/sequence-of number } }
 }
 { $optional-defaults
   { "approx" "2" }
@@ -59,20 +60,121 @@ HELP: f->mc
   { $snippet "ref-midic" } " is a midicent that is subtracted from " { $snippet "midic" } " before computation: the computation can then be carried on an interval rather than an absolute pitch." } ;
 
 HELP: +ascii-note-scales+
-{ $var-description "The scales used by the functions " { $link mc->n } " and " { $link n->mc } "." } ;
+{ $var-description "The scales used by the functions " { $link midicents>string } " and " { $link string>midicents } "." } ;
 
-HELP: mc->n1
+HELP: midicents>string
 { $values
-  { "midic" number }
+  { "cents" number }
   { "&optionals" { $optionals } }
   { "name" string }
 }
 { $optional-defaults
   { "ascii-note-scale" "first element of " { $link +ascii-note-scales+ } }
 }
-{ $description "Converts " { $snippet "midic" } " to a string representing a symbolic ascii note." } ;
+{ $description "Converts " { $snippet "midic" } " to a string representing a symbolic ascii note." }
+{ $see-also midicents>string* } ;
 
-HELP: beats->ms
+HELP: midicents>string*
+{ $values
+  { "cents" { $class/sequence-of number } }
+  { "names" { $class/sequence-of string } }
+}
+{ $description "Converts " { $snippet "midics" } " to symbolic (ASCII) note names."
+  $nl
+  { $list
+    "Symbolic note names follow standard notation with middle c (midicent 6000) being C3."
+    "Semitones are labeled with a '#' or a 'b.'"
+    "Quartertone flats are labeled with a '_', and quartertone sharps with a '+' (ex. C3 a quartertone sharp (midi-cent 6050), would be labeled 'C+3'."
+    "Gradations smaller than a quartertone are expressed as the closest  quartertone + or - the remaining cent value (ex. midi-cent 8176 would be expressed as Bb4-24)."
+  }
+} ;
+
+HELP: string>midicents
+{ $values
+  { "name" string }
+  { "&optionals" { $optionals } }
+  { "cents/f" { $maybe number } }
+}
+{ $optional-defaults
+  { "ascii-note-scale" "first element of " { $link +ascii-note-scales+ } }
+}
+{ $description "Converts a string representing a symbolic ascii note to midicents." }
+{ $see-also string>midicents* } ;
+
+HELP: string>midicents*
+{ $values
+  { "names" { $class/sequence-of string } }
+  { "cents" { $class/sequence-of number } }
+}
+{ $description "Converts " { $snippet "strs" } " to pitch values in midicents."
+  $nl
+  { $list
+    "Symbolic note names follow standard notation with middle c (midicent 6000) being C3."
+    "Semitones are labeled with a '#' or a 'b.'"
+    "Quartertone flats are labeled with a '_', and quartertone sharps with a '+' (ex. C3 a quartertone sharp (midi-cent 6050), would be labeled 'C+3'."
+    "Gradations smaller than a quartertone are expressed as the closest  quartertone + or - the remaining cent value (ex. midi-cent 8176 would be expressed as Bb4-24)."
+  }
+} ;
+
+HELP: interval>string
+{ $values
+  { "cents" real }
+  { "name" string }
+}
+{ $description "Converts a midicent interval to a symbolic interval." }
+{ $see-also interval>string* } ;
+
+HELP: interval>string*
+{ $values
+  { "cents" { $class/sequence-of real } }
+  { "names" { $class/sequence-of string } }
+}
+{ $description { $link interval>string* } " takes an interval expressed in midi-cents, and returns a symbolic interval name."
+  $nl
+  "Intervals are labeled as follows:"
+  $nl
+  { $table
+    { "1 = unison" "2m = minor second" }
+    { "2M = major second" "3m = minor third" }
+    { "3M = major third" "4 = perfect fourth" }
+    { "4A = tritone" "5 = perfect fifth" }
+    { "6m = minor sixth" "6M = major sixth" }
+    { "7m = minor seventh" "7M = major seventh" }
+  }
+  $nl
+  "All intervals larger than an octave are expressed by adding or subtracting an octave displacement after the simple interval name; for example, a major tenth becomes 3M+1, etc."
+}
+{ $notes "For the time being, the program has a strange way of expressing downward intervals: it labels the interval as its inversion, and then transposes downwards as necessary.  Thus, a major third down (-400 in midicents), returns 6m-1." } ;
+
+HELP: string>interval
+{ $values
+  { "name" string }
+  { "cents" real }
+}
+{ $description "Converts a symbolic interval to a midicent interval." }
+{ $see-also string>interval* } ;
+
+HELP: string>interval*
+{ $values
+  { "names" { $class/sequence-of string } }
+  { "cents" { $class/sequence-of real } }
+}
+{ $description { $link string>interval* } " takes a symbolic interval name, and returns an interval expressed in midi-cents.  Intervals are labeled as follows:"
+  $nl
+  { $table
+    { "1 = unison" "2m = minor second" }
+    { "2M = major second" "3m = minor third" }
+    { "3M = major third" "4 = perfect fourth" }
+    { "4A = tritone" "5 = perfect fifth" }
+    { "6m = minor sixth" "6M = major sixth" }
+    { "7m = minor seventh" "7M = major seventh" }
+  }
+  $nl
+  "All intervals larger than an octave are expressed by adding or subtracting an octave displacement after the simple interval name; for example, a major tenth becomes 3M+1, etc."
+}
+{ $notes "For the time being, Patchwork has a strange way of expressing downward intervals: it labels the interval as its inversion, and then transposes downwards as necessary.  Thus, a major third down 6m-1, returns -400 in midicents." } ;
+
+HELP: beats>ms
 { $values
   { "nbeats" real }
   { "tempo" real }

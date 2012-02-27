@@ -64,6 +64,18 @@ IN: om.conversions.tests
     { { -1600 600 } 1600 } interval>string*
 ] unit-test
 
+[ { -1600 600 1600 } ] [
+    { "6m-2" "4A" "3M+1" } [ string>interval ] map
+] unit-test
+
+[ { -1600 { 600 1600 } } ] [
+    { "6m-2" { "4A" "3M+1" } } string>interval*
+] unit-test
+
+[ { 0 100 200 300 400 500 600 700 800 900 1000 1100 } ] [
+    { "1" "2m" "2M" "3m" "3M" "4" "4A" "5" "6m" "6M" "7m" "7M" } string>interval*
+] unit-test
+
 [ 1000 ] [
     1 60 beats>ms
 ] unit-test

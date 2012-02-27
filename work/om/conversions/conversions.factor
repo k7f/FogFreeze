@@ -1,9 +1,9 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.sequences.deep arrays assocs combinators kernel layouts locals
-       math math.constants math.functions math.order math.parser namespaces
-       om.support sequences ;
+USING: addenda.errors addenda.sequences.deep arrays assocs combinators kernel
+       layouts locals math math.constants math.functions math.order
+       math.parser namespaces om.support sequences strings ;
 IN: om.conversions
 
 ! __________________________________________
@@ -192,7 +192,13 @@ PRIVATE>
 ! string>interval
 
 : string>interval ( name -- cents )
-    ;  ! FIXME
+    dup CHAR: + over index [ CHAR: - over index ] unless*
+    [
+        cut-slice string>number [ drop invalid-input ] unless*
+    ] [ 0 ] if*
+    [
+        >string +ascii-intervals+ get index [ invalid-input ] unless*
+    ] [ 12 * ] bi* + 100 * nip ;
 
 : string>interval* ( names -- cents )
     [ string>interval ] deep-map-atoms ;

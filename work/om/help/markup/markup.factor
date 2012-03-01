@@ -15,9 +15,11 @@ IN: om.help.markup
     { "The text in descriptions and notes was copied verbatim from the original docstrings.  There may be little or no meaning left in it after the transfer." } $warning ;
 
 : $aux-vocab-intro ( children -- )
-    { "The " } print-element first dup ".auxiliary" append 1array $vocab-link
+    { "The " } print-element [ first ] [ ?second ] bi
+    [ swap ] [ dup ".auxiliary" append ] if* 1array $vocab-link
     { " vocabulary extends the " { $emphasis "official" } " " } print-element
-    1array $vocab-link { " API with implementation helpers expected to fit in another context some day." } print-element ;
+    1array $vocab-link
+    { " API with implementation helpers expected to fit in another context some day." } print-element ;
 
 : $optionals ( children -- )
     drop { "an " { $link object } " providing " { $snippet "&optional" } " arguments" } print-element ;

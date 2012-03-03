@@ -20,6 +20,13 @@ HELP: sum-lengths-with-atoms
 { $description "Like " { $link sum-lengths } ", but accepts atoms as valid elements of length 1, instead of raising an error." }
 { $see-also sum-lengths } ;
 
+HELP: ?length
+{ $values
+  { "obj" object }
+  { "n/f" { $maybe integer } }
+}
+{ $description "If " { $snippet "obj" } " is a sequence, then the output is its " { $link length } "; otherwise, the output is " { $link POSTPONE: f } "." } ;
+
 HELP: filter-as-index
 { $values
   { "seq" sequence }
@@ -104,7 +111,7 @@ HELP: find-tail
 { $values
   { "seq" sequence }
   { "candidates" sequence }
-  { "tailseq/f" "a " { $link sequence } " or an " { $link f } }
+  { "tailseq/f" { $maybe sequence } }
 }
 { $description "Outputs the tail of " { $snippet "seq" } " starting from the first " { $snippet "seq" } "'s element found in " { $snippet "candidates" } "." }
 { $see-also find-tail* } ;
@@ -113,10 +120,20 @@ HELP: find-tail*
 { $values
   { "seq" sequence }
   { "candidates" sequence }
-  { "tailseq/f" "a " { $link sequence } " or an " { $link f } }
+  { "tailseq/f" { $maybe sequence } }
 }
 { $description "Outputs the tail of " { $snippet "seq" } " starting from the first occurence of the first such element of " { $snippet "candidates" } ", that is also in " { $snippet "seq" } "." }
 { $see-also find-tail } ;
+
+HELP: trim-range-slice
+{ $values
+  { "seq" sequence }
+  { "low" object }
+  { "high" object }
+  { "slice/f" { $maybe slice } }
+}
+{ $description "Removes elements of a sequence if they are before " { $snippet "low" } " or after " { $snippet "high" } " using an intrinsic total order." }
+{ $notes "The elements of " { $snippet "seq" } " aren't assumed to be sorted (the implementation uses a simple linear algorithm).  The output is the minimal " { $link slice } " of the sequence such that no in-range element is left outside (unless there are no in-range elements, in which case the output is " { $link POSTPONE: f } ")." } ;
 
 ARTICLE: "addenda.sequences" "addenda.sequences"
 { $vocab-link "addenda.sequences" } ;

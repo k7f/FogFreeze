@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: kernel math quotations sequences sequences.private strings ;
+USING: kernel math math.order quotations sequences sequences.private strings ;
 IN: addenda.sequences
 
 ! FIXME find out why is quotation a branch?
@@ -17,6 +17,9 @@ PREDICATE: proper-sequence < sequence atom? not ;
 
 : sum-lengths-with-atoms ( seq -- n )
     0 [ dup atom? [ drop 1 ] [ length ] if + ] reduce ; inline
+
+: ?length ( obj -- n/f )
+    dup sequence? [ length ] [ drop f ] if ; inline
 
 ! _________
 ! filtering
@@ -98,3 +101,15 @@ PRIVATE>
     [ f over ] dip [
         [ eq? ] curry find rot drop
     ] with find drop [ tail ] [ 2drop f ] if ; inline
+
+! ________
+! trimming
+
+: trim-range-slice ( seq low high -- slice/f )
+    [
+        over [ before=? ] with find drop
+        [ tail-slice ] [ drop f ] if*
+    ] [
+        over [ after=? ] with find-last drop
+        [ 1 + head-slice ] [ drop f ] if*
+    ] bi* ;

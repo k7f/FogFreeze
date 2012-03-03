@@ -1,20 +1,32 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: kernel math om.series sequences ;
+USING: kernel math math.functions om.series sequences ;
 IN: om.trees.onsets
+
+! ______________________
+! make-proportional-cell
+
+: ratios>integers ( durations -- durations' )
+    dup [ denominator ] [ lcm ] map-reduce abs [ * ] curry map ; inline
+
+: ratios>integers! ( durations -- durations )
+    dup [ denominator ] [ lcm ] map-reduce abs [ * ] curry map! ; inline
 
 ! _____________
 ! x-dx-pause-ok
 
-: onsets>increments ( onsets -- increments )
+: onsets>durations ( onsets -- durations )
     [ [ abs ] map x->dx ] keep
     [ 0 > [ neg ] unless ] 2map ;
+
+: onsets>durations* ( onsets -- durations )
+    onsets>durations ratios>integers ;
 
 ! _____________
 ! dx-x-pause-ok
 
-: increments>onsets ( start increments -- onsets )
+: durations>onsets ( start durations -- onsets )
     [ [ abs ] map dx->x ] keep 1 suffix
     [ 0 > [ neg ] unless ] 2map ;
 

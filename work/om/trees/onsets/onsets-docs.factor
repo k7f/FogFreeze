@@ -5,22 +5,46 @@ USING: addenda.help.markup help.markup help.syntax kernel math om.help.markup
        sequences ;
 IN: om.trees.onsets
 
-HELP: onsets>increments
+HELP: ratios>integers
 { $values
-  { "onsets" { $sequence-of number } }
-  { "increments" { $sequence-of number } }
+  { "durations" { $sequence-of rational } }
+  { "durations" { $sequence-of integer } }
 }
 { $description "" }
-{ $see-also increments>onsets } ;
+{ $see-also ratios>integers! } ;
 
-HELP: increments>onsets
+HELP: ratios>integers!
+{ $values
+  { "durations" { $sequence-of rational } }
+  { "durations" { $sequence-of integer } }
+}
+{ $description "" }
+{ $see-also ratios>integers } ;
+
+HELP: onsets>durations
+{ $values
+  { "onsets" { $sequence-of number } }
+  { "durations" { $sequence-of number } }
+}
+{ $description "" }
+{ $see-also onsets>durations* durations>onsets } ;
+
+HELP: onsets>durations*
+{ $values
+  { "onsets" { $sequence-of rational } }
+  { "durations" { $sequence-of integer } }
+}
+{ $description "" }
+{ $see-also onsets>durations durations>onsets } ;
+
+HELP: durations>onsets
 { $values
   { "start" number }
-  { "increments" { $sequence-of number } }
+  { "durations" { $sequence-of number } }
   { "onsets" { $sequence-of number } }
 }
 { $description "" }
-{ $see-also onsets>increments } ;
+{ $see-also onsets>durations } ;
 
 HELP: global>local
 { $values

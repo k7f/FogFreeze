@@ -4,12 +4,24 @@
 USING: arrays kernel math om.trees.onsets sequences tools.test ;
 IN: om.trees.onsets.tests
 
+[ { 3 2 3 } ] [
+    { 2/4 1/3 4/8 } ratios>integers
+] unit-test
+
+[ { 3 2 3 } ] [
+    { 2/4 1/3 4/8 } ratios>integers!
+] unit-test
+
 [ { 1 -2 } ] [
-    { 4 -5 7 } onsets>increments
+    { 4 -5 7 } onsets>durations
+] unit-test
+
+[ { 7 -3 } ] [
+    { 1/3 -2/5 3/7 } onsets>durations*
 ] unit-test
 
 [ { 4 -5 7 } ] [
-    4 { 1 -2 } increments>onsets
+    4 { 1 -2 } durations>onsets
 ] unit-test
 
 [ { { 8 -9 11 } { 5 -6 8 } { 2 -3 5 } { -1 0 2 } } ] [

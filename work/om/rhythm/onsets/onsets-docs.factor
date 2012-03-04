@@ -1,9 +1,9 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.help.markup help.markup help.syntax kernel math om.help.markup
+USING: addenda.help.markup help.markup help.syntax math om.help.markup
        sequences ;
-IN: om.trees.onsets
+IN: om.rhythm.onsets
 
 HELP: ratios>integers
 { $values
@@ -94,7 +94,7 @@ HELP: trim-between*
 ARTICLE: "note-or-rest-ambiguity" "note-or-rest ambiguity"
 "Sign bit is used as the note-or-rest flag.  Therefore, in order to avoid the ambiguity, the lowest absolute value of a valid onset is 1." ;
 
-ARTICLE: "om.trees.onsets" "om.trees.onsets"
-{ $aux-vocab-intro "om.trees.onsets" "om.trees" } ;
+ARTICLE: "om.rhythm.onsets" "om.rhythm.onsets"
+{ $aux-vocab-intro "om.rhythm.onsets" "om.trees" } ;
 
-ABOUT: "om.trees.onsets"
+ABOUT: "om.rhythm.onsets"

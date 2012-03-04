@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: arrays kernel math om.trees.onsets sequences tools.test ;
-IN: om.trees.onsets.tests
+USING: arrays kernel math om.rhythm.onsets sequences tools.test ;
+IN: om.rhythm.onsets.tests
 
 [ { 3 2 3 } ] [
     { 2/4 1/3 4/8 } ratios>integers

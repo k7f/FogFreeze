@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: kernel math math.functions om.series sequences ;
-IN: om.trees.onsets
+IN: om.rhythm.onsets
 
 ! ______________________
 ! make-proportional-cell

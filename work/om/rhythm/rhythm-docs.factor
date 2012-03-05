@@ -1,7 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.help.markup help.markup help.syntax math om.help.markup ;
+USING: addenda.help.markup arrays help.markup help.syntax math
+       om.help.markup ;
 IN: om.rhythm
 
 HELP: rhythm-element
@@ -54,6 +55,14 @@ HELP: <measure>
   { "measure" measure }
 }
 { $description "Outputs a single " { $link measure } ", after having taken a sequence of absolute onset times followed by time signature's numerator and denominator.  The whole note is used as the time unit.  The measure starts at time " { $snippet "1" } ", ends at time " { $snippet "1+num/den" } "." } ;
+
+HELP: zip-measures
+{ $values
+  { "durs" { $sequence-of number } }
+  { "tsigs" { $sequence-of pair } }
+  { "rhm" rhythm }
+}
+{ $description "Takes a sequence of durations followed by a sequence of time signatures, and outputs a corresponding " { $link rhythm } ", which contains a sequence of " { $link measure } "s in the " { $snippet "division" } " slot." } ;
 
 ARTICLE: "om.rhythm" "om.rhythm"
 { $aux-vocab-intro "om.rhythm" "om.trees" } ;

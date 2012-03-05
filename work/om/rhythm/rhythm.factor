@@ -147,3 +147,27 @@ PRIVATE>
 
 : <measure> ( onsets num den -- measure )
     [ meter boa nip ] [ (create-beats) (create-measure) ] 3bi rhythm boa ;
+
+! ____________
+! simple->tree
+
+<PRIVATE
+: (durs>onsets) ( durs -- onsets )
+    1 swap -100 suffix durations>onsets ; inline
+
+: (tsigs>bars) ( tsigs -- bars )
+    [ unclip-slice [ / ] reduce ] map 1 swap dx->x ; inline
+
+: (trim-onsets) ( measure-ndx onsets bars -- onsets' )
+    [ swap dup 1 + ] dip [ nth ] curry bi@ trim-between* ; inline
+
+: (zip-measure) ( tsig measure-ndx onsets bars -- measure )
+    [ (trim-onsets) ] 3keep nip nth global>local
+    swap [ first ] [ second ] bi <measure> ; inline
+PRIVATE>
+
+: zip-measures ( durs tsigs -- rhm )
+    [ swap (durs>onsets) ]
+    [ nip (tsigs>bars) ] 2bi
+    [ (zip-measure) ] 2curry map-index
+    f swap rhythm boa ;

@@ -1,13 +1,16 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors addenda.sequences arrays combinators kernel math
-       om.rhythm.onsets sequences ;
+USING: accessors addenda.sequences arrays combinators fry kernel math
+       math.functions om.rhythm.onsets sequences ;
 IN: om.rhythm
 
+MIXIN: rhythm-duration
 MIXIN: rhythm-element
 
-TUPLE: rhythm { duration number } { division sequence } ;
+TUPLE: rhythm { duration maybe: rhythm-duration } { division sequence } ;
+
+INSTANCE: number rhythm-duration
 
 INSTANCE: number rhythm-element
 INSTANCE: rhythm rhythm-element
@@ -19,6 +22,9 @@ INSTANCE: rhythm rhythm-element
         { [ 2dup = ] [ 2drop ] }
         [ nip suffix ]
     } cond ; inline
+
+! _________________________
+! better-predefined-subdiv?
 
 : (?split-heuristically) ( dvn -- dvn'/f )
     [ [ 0 < -1 1 ? ] map ]
@@ -77,3 +83,37 @@ PRIVATE>
 
 : <rhythm-element> ( onsets total -- relt )
     <rhythm> (?unbox) ;
+
+! ________________________________________
+! fuse-pauses-and-tied-notes-between-beats
+
+<PRIVATE
+: (fuse-more-rest?) ( beat -- ? )
+    dup number? [
+        dup float? [ drop t ] [ 0 < ] if
+    ] [ drop f ] if ; inline
+
+: (fuse-next-rest) ( ndx relts beat -- ndx' newelt )
+    swap '[
+        [ 1 + ] dip over _ ?nth dup (fuse-more-rest?) [
+            abs truncate >integer - t
+        ] [ drop f ] if
+    ] loop ; inline
+
+: (fuse-next-note) ( ndx relts beat -- ndx' newelt )
+    swap '[
+        [ 1 + ] dip over _ ?nth dup float? [
+            truncate >integer + t
+        ] [ drop f ] if
+    ] loop ; inline
+
+: (fuse-next) ( ndx relts -- ndx' newelt )
+    2dup ?nth dup number? [
+        dup 0 < [ (fuse-next-rest) ] [ (fuse-next-note) ] if
+    ] [ nip [ 1 + ] dip ] if ; inline
+PRIVATE>
+
+: fuse-rests-and-ties ( relts -- relts' )
+    0 swap [ length [ over > ] curry ]
+    [ [ (fuse-next) ] curry ]
+    [ ] tri produce-as nip ;

@@ -71,3 +71,15 @@ IN: om.rhythm.tests
 [ 4 ] [
     { 1 } 4 <rhythm-element>
 ] unit-test
+
+[ f ] [
+    f fuse-rests-and-ties
+] unit-test
+
+[ { 1 -2 } ] [
+    { 1 -1 1. } fuse-rests-and-ties
+] unit-test
+
+[ { 2 -1 } ] [
+    { 1 1. -1 } fuse-rests-and-ties
+] unit-test

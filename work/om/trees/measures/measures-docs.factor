@@ -1,13 +1,21 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel om.help.markup sequences ;
+USING: addenda.help.markup help.markup help.syntax math om.help.markup ;
 IN: om.trees.measures
 
-HELP: fuse-rests-and-ties
+HELP: meter
+{ $var-description "" } ;
+
+HELP: measure
+{ $var-description "" } ;
+
+HELP: <measure>
 { $values
-  { "measure" sequence }
-  { "measure'" sequence }
+  { "onsets" { $sequence-of number } }
+  { "num" number }
+  { "den" number }
+  { "measure" measure }
 }
 { $description "" } ;
 

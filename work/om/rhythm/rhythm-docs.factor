@@ -33,6 +33,13 @@ HELP: <rhythm-element>
 }
 { $description "" } ;
 
+HELP: fuse-rests-and-ties
+{ $values
+  { "relts" { $sequence-of rhythm-element } }
+  { "relts'" { $sequence-of rhythm-element } }
+}
+{ $description "" } ;
+
 ARTICLE: "om.rhythm" "om.rhythm"
 { $aux-vocab-intro "om.rhythm" "om.trees" } ;
 

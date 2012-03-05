@@ -1,17 +1,21 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: om.trees.measures tools.test ;
+USING: om.rhythm om.trees.measures tools.test ;
 IN: om.trees.measures.tests
 
-[ f ] [
-    f fuse-rests-and-ties
+[ t ] [
+    { 1 } 4 4 <measure> measure?
 ] unit-test
 
-[ { 1 -2 } ] [
-    { 1 -1 1. } fuse-rests-and-ties
+[ T{ rhythm f T{ meter f 4 4 } { 4 } } ] [
+    { 1 } 4 4 <measure>
 ] unit-test
 
-[ { 2 -1 } ] [
-    { 1 1. -1 } fuse-rests-and-ties
+[ T{ rhythm f T{ meter f 4 4 } { 1 1 1 1 } } ] [
+    { 1 1+1/4 1+2/4 1+3/4 } 4 4 <measure>
+] unit-test
+
+[ T{ rhythm f T{ meter f 4 4 } { 1. 2 1 } } ] [
+    { 1+1/4 1+3/4 } 4 4 <measure>
 ] unit-test

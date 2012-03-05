@@ -58,7 +58,7 @@ HELP: <measure>
 
 HELP: zip-measures
 { $values
-  { "durs" { $sequence-of number } }
+  { "durs" { $sequence-of rational } }
   { "tsigs" { $sequence-of pair } }
   { "rhm" rhythm }
 }

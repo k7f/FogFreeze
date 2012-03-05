@@ -40,6 +40,21 @@ HELP: fuse-rests-and-ties
 }
 { $description "" } ;
 
+HELP: meter
+{ $var-description "This is a special kind of " { $link rhythm-duration } " serving as time signature of " { $link measure } "s." } ;
+
+HELP: measure
+{ $var-description "This is a special kind of " { $link rhythm } ", whose " { $snippet "duration" } " slot holds a " { $link meter } "." } ;
+
+HELP: <measure>
+{ $values
+  { "onsets" { $sequence-of number } }
+  { "num" number }
+  { "den" number }
+  { "measure" measure }
+}
+{ $description "Outputs a single " { $link measure } ", after having taken a sequence of absolute onset times followed by time signature's numerator and denominator.  The whole note is used as the time unit.  The measure starts at time " { $snippet "1" } ", ends at time " { $snippet "1+num/den" } "." } ;
+
 ARTICLE: "om.rhythm" "om.rhythm"
 { $aux-vocab-intro "om.rhythm" "om.trees" } ;
 

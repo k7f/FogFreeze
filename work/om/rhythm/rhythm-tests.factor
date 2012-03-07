@@ -1,8 +1,24 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: om.rhythm tools.test ;
+USING: om.rhythm om.rhythm.meter tools.test ;
 IN: om.rhythm.tests
+
+[ T{ rhythm f 1 { 1/4 1/4 1/4 1/4 } } ] [
+    f { 1/4 1/4 1/4 1/4 } <rhythm>
+] unit-test
+
+[ T{ rhythm f 3/4 { 1/4 1/4 1/4 } } ] [
+    f { 1/4 1/4 1/4 } <rhythm>
+] unit-test
+
+[ T{ rhythm f 1 { 1 1 1 1 } } ] [
+    1 { 1 1 1 1 } <rhythm>
+] unit-test
+
+[ T{ rhythm f T{ meter f 4 4 } { 1 1 1 1 } } ] [
+    { 4 4 } { 1 1 1 1 } <rhythm>
+] unit-test
 
 [ T{ rhythm f 1 { 1 1 1 1 } } ] [
     { 1 2 3 4 5 } onsets>rhythm
@@ -57,19 +73,19 @@ IN: om.rhythm.tests
 ] unit-test
 
 [ T{ rhythm f 1 { 1 1 1 1 } } ] [
-    { 1 2 3 4 } 4 <rhythm>
+    { 1 2 3 4 } 4 absolute-rhythm
 ] unit-test
 
 [ T{ rhythm f 1 { 1. 1 1 } } ] [
-    { 2 3 } 3 <rhythm>
+    { 2 3 } 3 absolute-rhythm
 ] unit-test
 
 [ T{ rhythm f 1 { 1. 2 1 } } ] [
-    { 1+1/4 1+3/4 } 1 <rhythm>
+    { 1+1/4 1+3/4 } 1 absolute-rhythm
 ] unit-test
 
 [ 4 ] [
-    { 1 } 4 <rhythm-element>
+    { 1 } 4 absolute-rhythm-element
 ] unit-test
 
 [ f ] [

@@ -1,8 +1,9 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors addenda.sequences arrays combinators fry grouping kernel
-       locals math math.functions om.rhythm.onsets om.series sequences ;
+USING: accessors addenda.errors addenda.sequences arrays classes combinators
+       fry grouping kernel locals math math.functions om.rhythm.meter
+       om.rhythm.onsets om.series sequences ;
 IN: om.rhythm
 
 MIXIN: rhythm-duration
@@ -11,9 +12,47 @@ MIXIN: rhythm-element
 TUPLE: rhythm { duration maybe: rhythm-duration } { division sequence } ;
 
 INSTANCE: number rhythm-duration
+INSTANCE: meter  rhythm-duration
 
 INSTANCE: number rhythm-element
 INSTANCE: rhythm rhythm-element
+
+: >rhythm-duration ( obj -- dur )
+    dup number? [ >meter ] unless ;
+
+GENERIC: >rhythm-element ( obj -- relt )
+
+<PRIVATE
+GENERIC: fullratio ( obj -- rat )
+
+M: rational fullratio ( n   -- rat ) ;
+M: float    fullratio ( n   -- rat ) round >integer ;
+M: sequence fullratio ( seq -- rat ) first2 / ;
+M: meter    fullratio ( mtr -- dur ) [ num>> ] [ den>> ] bi / ; inline
+
+GENERIC: (subtree-extent) ( obj -- dur )
+
+M: rational (subtree-extent) ( n   -- dur ) abs ; inline
+M: float    (subtree-extent) ( n   -- dur ) abs round >integer ; inline
+M: sequence (subtree-extent) ( seq -- dur ) first fullratio abs ; inline
+M: rhythm   (subtree-extent) ( rtm -- dur ) duration>> fullratio ; inline
+
+: (create-rhythm) ( dur dvn -- relt )
+    [ >rhythm-element ] map over [
+        [ >rhythm-duration ] dip
+    ] [
+        nip [ 0 [ (subtree-extent) + ] reduce ] keep
+    ] if rhythm boa ; inline
+PRIVATE>
+
+: <rhythm> ( dur dvn -- relt )
+    dup sequence? [ (create-rhythm) ] [ nip class-of invalid-input ] if ;
+
+! _________
+! resolve-?
+
+M: rhythm-element  >rhythm-element ( relt -- relt ) ;
+M: proper-sequence >rhythm-element ( seq -- relt ) first2 <rhythm> ;
 
 <PRIVATE
 : (?attach-endpoint) ( onsets total -- onsets' )
@@ -78,11 +117,11 @@ PRIVATE>
     ] if [ (?split-heuristically) dup ] keep ?
     1 swap rhythm boa ;
 
-: <rhythm> ( onsets total -- rhm )
+: absolute-rhythm ( onsets total -- rhm )
     (?attach-endpoint) onsets>rhythm ;
 
-: <rhythm-element> ( onsets total -- relt )
-    <rhythm> (?unbox) ;
+: absolute-rhythm-element ( onsets total -- relt )
+    absolute-rhythm (?unbox) ;
 
 ! ________________________________________
 ! fuse-pauses-and-tied-notes-between-beats
@@ -121,10 +160,6 @@ PRIVATE>
 ! _______
 ! measure
 
-TUPLE: meter { num number } { den number } ;
-
-INSTANCE: meter rhythm-duration
-
 PREDICATE: measure < rhythm duration>> meter? ;
 
 ! _________________
@@ -133,7 +168,7 @@ PREDICATE: measure < rhythm duration>> meter? ;
 <PRIVATE
 :: (create-measure-element) ( onsets start duration -- relt )
     onsets [ duration 1 + 1array ] [ start global>local ] if-empty
-    duration <rhythm-element> ; inline
+    duration absolute-rhythm-element ; inline
 
 :: (create-measure) ( onsets beats duration -- relts )
     beats 2 <clumps> [
@@ -146,7 +181,7 @@ PREDICATE: measure < rhythm duration>> meter? ;
 PRIVATE>
 
 : <measure> ( onsets num den -- measure )
-    [ meter boa nip ] [ (create-beats) (create-measure) ] 3bi rhythm boa ;
+    [ <meter> nip ] [ (create-beats) (create-measure) ] 3bi rhythm boa ;
 
 ! ____________
 ! simple->tree

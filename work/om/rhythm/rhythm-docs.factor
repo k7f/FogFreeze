@@ -1,15 +1,40 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.help.markup arrays help.markup help.syntax math
-       om.help.markup ;
+USING: addenda.help.markup arrays help.markup help.syntax kernel math
+       om.help.markup om.rhythm.meter sequences ;
 IN: om.rhythm
+
+HELP: rhythm-duration
+{ $var-description "" } ;
 
 HELP: rhythm-element
 { $var-description "" } ;
 
 HELP: rhythm
 { $var-description "The slot " { $snippet "division" } " holds " { $sequence-of rhythm-element } "." } ;
+
+HELP: >rhythm-duration
+{ $values
+  { "obj" object }
+  { "dur" rhythm-duration }
+}
+{ $description "" } ;
+
+HELP: >rhythm-element
+{ $values
+  { "obj" object }
+  { "relt" rhythm-element }
+}
+{ $description "" } ;
+
+HELP: <rhythm>
+{ $values
+  { "dur" object }
+  { "dvn" sequence }
+  { "rtm" rhythm }
+}
+{ $description "" } ;
 
 HELP: onsets>rhythm
 { $values
@@ -18,7 +43,7 @@ HELP: onsets>rhythm
 }
 { $description "" } ;
 
-HELP: <rhythm>
+HELP: absolute-rhythm
 { $values
   { "onsets" { $sequence-of number } }
   { "total" number }
@@ -26,7 +51,7 @@ HELP: <rhythm>
 }
 { $description "" } ;
 
-HELP: <rhythm-element>
+HELP: absolute-rhythm-element
 { $values
   { "onsets" { $sequence-of number } }
   { "total" number }
@@ -40,9 +65,6 @@ HELP: fuse-rests-and-ties
   { "relts'" { $sequence-of rhythm-element } }
 }
 { $description "" } ;
-
-HELP: meter
-{ $var-description "This is a special kind of " { $link rhythm-duration } " serving as time signature of " { $link measure } "s." } ;
 
 HELP: measure
 { $var-description "This is a special kind of " { $link rhythm } ", whose " { $snippet "duration" } " slot holds a " { $link meter } "." } ;

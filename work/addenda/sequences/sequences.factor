@@ -113,3 +113,26 @@ PRIVATE>
         over [ after=? ] with find-last drop
         [ 1 + head-slice ] [ drop f ] if*
     ] bi* ;
+
+! _________________
+! partial reduction
+
+<PRIVATE
+: (reduce-head) ( seq identity pred quot -- seq n result )
+    [ swap [ (trim-head) 2dup head-slice ] dip ] dip reduce ; inline
+
+: (reduce-tail) ( seq identity pred quot -- seq n result )
+    [ swap [ (trim-tail) 2dup tail-slice ] dip ] dip reduce ; inline
+PRIVATE>
+
+: reduce-head ( ... seq identity pred: ( ... elt -- ... ? ) quot: ( ... prev elt -- ... next )  -- ... newseq result )
+    (reduce-head) [ tail ] dip ; inline
+
+: reduce-head-slice ( ..a seq identity pred: ( ..a elt -- ..b ? ) quot: ( ... prev elt -- ... next ) -- ..b slice result )
+    (reduce-head) [ tail-slice ] dip ; inline
+
+: reduce-tail ( ... seq identity pred: ( ... elt -- ... ? ) quot: ( ... prev elt -- ... next )  -- ... newseq result )
+    (reduce-tail) [ head ] dip ; inline
+
+: reduce-tail-slice ( ..a seq identity pred: ( ..a elt -- ..b ? ) quot: ( ... prev elt -- ... next ) -- ..b slice result )
+    (reduce-tail) [ head-slice ] dip ; inline

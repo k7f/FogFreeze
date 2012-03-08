@@ -135,6 +135,54 @@ HELP: trim-range-slice
 { $description "Removes elements of a sequence if they are before " { $snippet "low" } " or after " { $snippet "high" } " using an intrinsic total order." }
 { $notes "The elements of " { $snippet "seq" } " aren't assumed to be sorted (the implementation uses a simple linear algorithm).  The output is the minimal " { $link slice } " of the sequence such that no in-range element is left outside (unless there are no in-range elements, in which case the output is " { $link POSTPONE: f } ")." } ;
 
+HELP: reduce-head
+{ $values
+  { "seq" sequence }
+  { "identity" object }
+  { "pred" { $quotation "( ... elt -- ... ? )" } }
+  { "quot" { $quotation "( ... prev elt -- ... next )" } }
+  { "newseq" sequence }
+  { "result" object }
+}
+{ $description { $link trim-head } " and " { $link reduce } " combined.  Splits a sequence in two, beginning the second part at the first element which doesn't satisfy a predicate " { $snippet "pred" } ".  Outputs the second part followed by a reduction of the first part.  Uses a binary operation " { $snippet "quot" } " to perform the reduction." }
+{ $see-also reduce-head-slice reduce-tail reduce-tail-slice } ;
+
+HELP: reduce-head-slice
+{ $values
+  { "seq" sequence }
+  { "identity" object }
+  { "pred" { $quotation "( ... elt -- ... ? )" } }
+  { "quot" { $quotation "( ... prev elt -- ... next )" } }
+  { "slice" slice }
+  { "result" object }
+}
+{ $description { $link trim-head-slice } " and " { $link reduce } " combined.  Splits a sequence in two, beginning the second part at the first element which doesn't satisfy a predicate " { $snippet "pred" } ".  Outputs a slice containing the second part followed by a reduction of the first part.  Uses a binary operation " { $snippet "quot" } " to perform the reduction." }
+{ $see-also reduce-head reduce-tail reduce-tail-slice } ;
+
+HELP: reduce-tail
+{ $values
+  { "seq" sequence }
+  { "identity" object }
+  { "pred" { $quotation "( ... elt -- ... ? )" } }
+  { "quot" { $quotation "( ... prev elt -- ... next )" } }
+  { "newseq" sequence }
+  { "result" object }
+}
+{ $description { $link trim-tail } " and " { $link reduce } " combined.  Splits a sequence in two, ending the first part at the last element which doesn't satisfy a predicate " { $snippet "pred" } ".  Outputs the first part followed by a reduction of the second part.  Uses a binary operation " { $snippet "quot" } " to perform the reduction." }
+{ $see-also reduce-tail-slice reduce-head reduce-head-slice } ;
+
+HELP: reduce-tail-slice
+{ $values
+  { "seq" sequence }
+  { "identity" object }
+  { "pred" { $quotation "( ... elt -- ... ? )" } }
+  { "quot" { $quotation "( ... prev elt -- ... next )" } }
+  { "slice" slice }
+  { "result" object }
+}
+{ $description { $link trim-tail-slice } " and " { $link reduce } " combined.  Splits a sequence in two, ending the first part at the last element which doesn't satisfy a predicate " { $snippet "pred" } ".  Outputs a slice containing the first part followed by a reduction of the second part.  Uses a binary operation " { $snippet "quot" } " to perform the reduction." }
+{ $see-also reduce-tail reduce-head reduce-head-slice } ;
+
 ARTICLE: "addenda.sequences" "addenda.sequences"
 { $vocab-link "addenda.sequences" } ;
 

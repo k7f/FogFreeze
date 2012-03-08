@@ -31,3 +31,11 @@ IN: addenda.sequences.tests
 [ f ] [
     10 iota 10 11 trim-range-slice
 ] unit-test
+
+[ { { { 1 2 3 } 0 } { { 2 3 } 1 } { { 3 } 3 } { { } 6 } } ] [
+    { 1 2 3 4 } [ { 1 2 3 } 0 rot [ < ] curry [ + ] reduce-head 2array ] map
+] unit-test
+
+[ { { { } 6 } { { 1 } 5 } { { 1 2 } 3 } { { 1 2 3 } 0 } } ] [
+    { 1 2 3 4 } [ { 1 2 3 } 0 rot [ >= ] curry [ + ] reduce-tail 2array ] map
+] unit-test

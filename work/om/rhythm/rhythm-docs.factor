@@ -64,7 +64,21 @@ HELP: fuse-rests-and-ties
   { "relts" { $sequence-of rhythm-element } }
   { "relts'" { $sequence-of rhythm-element } }
 }
-{ $description "" } ;
+{ $description "fuse-pauses-and-tied-notes-between-beats" } ;
+
+HELP: fuse-notes-deep
+{ $values
+  { "relts" { $sequence-of rhythm-element } }
+  { "relts'" { $sequence-of rhythm-element } }
+}
+{ $description "grouper1" } ;
+
+HELP: fuse-rests-deep
+{ $values
+  { "relts" { $sequence-of rhythm-element } }
+  { "relts'" { $sequence-of rhythm-element } }
+}
+{ $description "grouper2" } ;
 
 HELP: measure
 { $var-description "This is a special kind of " { $link rhythm } ", whose " { $snippet "duration" } " slot holds a " { $link meter } "." } ;

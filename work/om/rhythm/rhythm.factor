@@ -123,8 +123,8 @@ PRIVATE>
 : absolute-rhythm-element ( onsets total -- relt )
     absolute-rhythm (?unbox) ;
 
-! ________________________________________
-! fuse-pauses-and-tied-notes-between-beats
+! ___________________
+! fuse-rests-and-ties
 
 <PRIVATE
 : (fuse-more-rest?) ( beat -- ? )
@@ -156,6 +156,32 @@ PRIVATE>
     0 swap [ length [ over > ] curry ]
     [ [ (fuse-next) ] curry ]
     [ ] tri produce-as nip ;
+
+! _______________
+! fuse-notes-deep
+
+: fuse-notes-deep ( relts -- relts' )
+    dup empty? [
+        unclip-slice {
+            { [ dup rhythm? ] [ [ fuse-notes-deep ] change-division ] }
+            { [ dup 0 < ] [ ] }
+            [ [ float? ] [ truncate >integer + ] reduce-head ]
+        } cond
+        [ fuse-notes-deep ] dip prefix
+    ] unless ;
+
+! _______________
+! fuse-rests-deep
+
+: fuse-rests-deep ( relts -- relts' )
+    dup empty? [
+        unclip-slice {
+            { [ dup rhythm? ] [ [ fuse-rests-deep ] change-division ] }
+            { [ dup 0 > ] [ ] }
+            [ [ dup integer? [ 0 < ] [ drop f ] if ] [ + ] reduce-head ]
+        } cond
+        [ fuse-rests-deep ] dip prefix
+    ] unless ;
 
 ! _______
 ! measure

@@ -100,6 +100,14 @@ IN: om.rhythm.tests
     { 1 1. -1 } fuse-rests-and-ties
 ] unit-test
 
+[ { 1 T{ rhythm f 1 { 1 T{ rhythm f 1 { 4 1 } } 3 } } 2 } ] [
+    { 1 T{ rhythm f 1 { 1 T{ rhythm f 1 { 1 2. 1. 1 } } 1 1. 1. } } 1 1. } fuse-notes-deep
+] unit-test
+
+[ { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -3 1 } } -3 } } } ] [
+    { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -2 -1 1 } } -1 -1 -1 } } } fuse-rests-deep
+] unit-test
+
 [ t ] [
     { 1 } 4 4 <measure> measure?
 ] unit-test

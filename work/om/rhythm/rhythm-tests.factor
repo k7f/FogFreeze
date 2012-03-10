@@ -108,6 +108,10 @@ IN: om.rhythm.tests
     { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -2 -1 1 } } -1 -1 -1 } } } fuse-rests-deep
 ] unit-test
 
+[ { T{ rhythm f 1 { -2 -1 -1 } } } ] [
+    { T{ rhythm f 1 { -1 -1 T{ rhythm f 1 { -2 -1 } } -1 } } } fuse-rests-deep
+] unit-test
+
 [ t ] [
     { 1 } 4 4 <measure> measure?
 ] unit-test

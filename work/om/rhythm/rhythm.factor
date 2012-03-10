@@ -105,7 +105,7 @@ M: proper-sequence >rhythm-element ( seq -- relt ) first2 <rhythm> ;
         [ 2drop f ]
     } cond ; inline
 
-: (?unbox) ( rhm -- rhm/num )
+: (?unbox-note) ( rhm -- rhm/num )
     dup division>> dup ?length 1 =
     [ nip first ] [ drop ] if ; inline
 PRIVATE>
@@ -121,7 +121,7 @@ PRIVATE>
     (?attach-endpoint) onsets>rhythm ;
 
 : absolute-rhythm-element ( onsets total -- relt )
-    absolute-rhythm (?unbox) ;
+    absolute-rhythm (?unbox-note) ;
 
 ! ___________________
 ! fuse-rests-and-ties
@@ -173,15 +173,39 @@ PRIVATE>
 ! _______________
 ! fuse-rests-deep
 
-: fuse-rests-deep ( relts -- relts' )
+<PRIVATE
+: (rest?) ( relt -- ? )
+    dup number? [ 0 < ] [ drop f ] if ; inline
+
+: (?unbox-rest) ( rhm -- rhm' ? )
+    dup duration>> dup number? [
+        over division>> dup ?length 1 = [
+            first (rest?) [ neg nip f ] [ drop t ] if
+        ] [ 2drop t ] if
+    ] [ drop t ] if ; inline
+
+: (unbox-rests-deep) ( relts -- relts' )
+    [
+        dup rhythm? [
+            (?unbox-rest) [
+                [ (unbox-rests-deep) ] change-division
+            ] when
+        ] when
+    ] map ;
+
+: (fuse-rests-deep) ( relts -- relts' )
     dup empty? [
         unclip-slice {
-            { [ dup rhythm? ] [ [ fuse-rests-deep ] change-division ] }
+            { [ dup rhythm? ] [ [ (fuse-rests-deep) ] change-division ] }
             { [ dup 0 > ] [ ] }
             [ [ dup integer? [ 0 < ] [ drop f ] if ] [ + ] reduce-head ]
         } cond
-        [ fuse-rests-deep ] dip prefix
+        [ (fuse-rests-deep) ] dip prefix
     ] unless ;
+PRIVATE>
+
+: fuse-rests-deep ( relts -- relts' )
+    (fuse-rests-deep) (unbox-rests-deep) ;
 
 ! _______
 ! measure

@@ -33,6 +33,13 @@ HELP: pulsemaker
 }
 { $description "Constructs a tree starting from a (list of) measure(s) numerator(s) " { $snippet "measures-num" } " and a (list of) denominator(s) " { $snippet "beat-unit" } " filling these measures with " { $snippet "npulses" } "." } ;
 
+HELP: tietree
+{ $values
+  { "relt" rhythm-element }
+  { "relt'" rhythm-element }
+}
+{ $description "Converts all rests in " { $snippet "tree" } " (a rhytm tree, VOICE or POLY object) into ties (i.e. float values in the RT)." } ;
+
 ARTICLE: "om.trees" "om.trees"
 { $vocab-intro "om.trees" "projects/02-musicproject/functions/trees.lisp" } ;
 

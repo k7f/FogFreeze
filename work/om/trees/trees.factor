@@ -56,3 +56,14 @@ PRIVATE>
             over number? [ swap <repetition> ] [ drop ] if
         ] curry bi@
     ] keep (pulsemaker) ;
+
+! _______
+! tietree
+
+GENERIC: tietree ( relt -- relt' )
+
+M: number tietree ( num -- num' )
+    dup 0 < [ neg >float ] when ;
+
+M: rhythm tietree ( rhm -- rhm' )
+    [ [ tietree ] map ] change-division ;

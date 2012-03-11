@@ -17,6 +17,22 @@ HELP: mktree
   $nl
   "The output rhythm tree is intended for the " { $snippet "tree" } " input of a 'voice' factory box." } ;
 
+HELP: reducetree
+{ $values
+  { "rhm" rhythm }
+  { "rhm'" rhythm }
+}
+{ $description "Reduces and simplifies a tree by concatenating consecutive rests and floats." } ;
+
+HELP: pulsemaker
+{ $values
+  { "nums" { $class/sequence-of number } }
+  { "dens" { $class/sequence-of number } }
+  { "pulses" { $sequence-of number } }
+  { "rhm" rhythm }
+}
+{ $description "Constructs a tree starting from a (list of) measure(s) numerator(s) " { $snippet "measures-num" } " and a (list of) denominator(s) " { $snippet "beat-unit" } " filling these measures with " { $snippet "npulses" } "." } ;
+
 ARTICLE: "om.trees" "om.trees"
 { $vocab-intro "om.trees" "projects/02-musicproject/functions/trees.lisp" } ;
 

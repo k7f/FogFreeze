@@ -11,6 +11,10 @@ MIXIN: rhythm-element
 
 TUPLE: rhythm { duration maybe: rhythm-duration } { division sequence } ;
 
+: ?change-division ( ... object quot: ( ... value -- ... value' ? ) -- ... object ? )
+    over [ [ division>> ] dip call ] dip swap
+    [ swap >>division t ] [ nip f ] if ; inline
+
 INSTANCE: number rhythm-duration
 INSTANCE: meter  rhythm-duration
 
@@ -160,15 +164,22 @@ PRIVATE>
 ! _______________
 ! fuse-notes-deep
 
-: fuse-notes-deep ( relts -- relts' )
-    dup empty? [
+: ?fuse-notes-deep ( relts -- relts' ? )
+    dup empty? [ f ] [
         unclip-slice {
-            { [ dup rhythm? ] [ [ fuse-notes-deep ] change-division ] }
-            { [ dup 0 < ] [ ] }
-            [ [ float? ] [ truncate >integer + ] reduce-head ]
+            { [ dup rhythm? ] [ [ ?fuse-notes-deep ] ?change-division ] }
+            { [ dup 0 < ] [ f ] }
+            [
+                [
+                    [ float? ] [ truncate >integer + ] reduce-head dup
+                ] keep = not
+            ]
         } cond
-        [ fuse-notes-deep ] dip prefix
-    ] unless ;
+        [ [ ?fuse-notes-deep swap ] dip prefix swap ] dip or
+    ] if ;
+
+: fuse-notes-deep ( relts -- relts' )
+    ?fuse-notes-deep drop ;
 
 ! _______________
 ! fuse-rests-deep
@@ -180,32 +191,40 @@ PRIVATE>
 : (?unbox-rest) ( rhm -- rhm' ? )
     dup duration>> dup number? [
         over division>> dup ?length 1 = [
-            first (rest?) [ neg nip f ] [ drop t ] if
-        ] [ 2drop t ] if
-    ] [ drop t ] if ; inline
+            first (rest?) [ neg nip t ] [ drop f ] if
+        ] [ 2drop f ] if
+    ] [ drop f ] if ; inline
 
-: (unbox-rests-deep) ( relts -- relts' )
-    [
+: (?unbox-rests-deep) ( relts -- relts' ? )
+    f swap [
         dup rhythm? [
             (?unbox-rest) [
-                [ (unbox-rests-deep) ] change-division
-            ] when
+                [ (?unbox-rests-deep) ] ?change-division
+            ] unless* swap [ or ] dip
         ] when
-    ] map ;
+    ] map swap ;
 
-: (fuse-rests-deep) ( relts -- relts' )
-    dup empty? [
+: (?fuse-rests-deep) ( relts -- relts' ? )
+    dup empty? [ f ] [
         unclip-slice {
-            { [ dup rhythm? ] [ [ (fuse-rests-deep) ] change-division ] }
-            { [ dup 0 > ] [ ] }
-            [ [ dup integer? [ 0 < ] [ drop f ] if ] [ + ] reduce-head ]
+            { [ dup rhythm? ] [ [ (?fuse-rests-deep) ] ?change-division ] }
+            { [ dup 0 > ] [ f ] }
+            [
+                [
+                    [ dup integer? [ 0 < ] [ drop f ] if ]
+                    [ + ] reduce-head dup
+                ] keep = not
+            ]
         } cond
-        [ (fuse-rests-deep) ] dip prefix
-    ] unless ;
+        [ [ (?fuse-rests-deep) swap ] dip prefix swap ] dip or
+    ] if ;
 PRIVATE>
 
+: ?fuse-rests-deep ( relts -- relts' ? )
+    (?fuse-rests-deep) [ (?unbox-rests-deep) ] dip or ;
+
 : fuse-rests-deep ( relts -- relts' )
-    (fuse-rests-deep) (unbox-rests-deep) ;
+    ?fuse-rests-deep drop ;
 
 ! _______
 ! measure

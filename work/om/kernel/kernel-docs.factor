@@ -5,59 +5,61 @@ USING: addenda.help.markup arrays help.markup help.syntax kernel math
        math.constants math.order om.help.markup sequences words.symbol ;
 IN: om.kernel
 
+[!use-om-reference]
+
 HELP: om+
 { $values
-  { "obj1" object }
-  { "obj2" object }
-  { "result" null }
+  { "obj1" { $class/sequence-of number } }
+  { "obj2" { $class/sequence-of number } }
+  { "result" { $class/sequence-of number } }
 }
 { $description "Sum of two numbers or lists." } ;
 
 HELP: om*
 { $values
-  { "obj1" object }
-  { "obj2" object }
-  { "result" null }
+  { "obj1" { $class/sequence-of number } }
+  { "obj2" { $class/sequence-of number } }
+  { "result" { $class/sequence-of number } }
 }
 { $description "Product of two numbers or lists." } ;
 
 HELP: om-
 { $values
-  { "obj1" object }
-  { "obj2" object }
-  { "result" null }
+  { "obj1" { $class/sequence-of number } }
+  { "obj2" { $class/sequence-of number } }
+  { "result" { $class/sequence-of number } }
 }
 { $description "Difference of two numbers or lists." } ;
 
 HELP: om/
 { $values
-  { "obj1" object }
-  { "obj2" object }
-  { "result" null }
+  { "obj1" { $class/sequence-of number } }
+  { "obj2" { $class/sequence-of number } }
+  { "result" { $class/sequence-of number } }
 }
 { $description "Division of two  numbers or lists." } ;
 
 HELP: om^
 { $values
-  { "obj1" object }
-  { "obj2" object }
-  { "result" null }
+  { "obj1" { $class/sequence-of number } }
+  { "obj2" { $class/sequence-of number } }
+  { "result" { $class/sequence-of number } }
 }
 { $description "Exponentiation of base a and exponent b." } ;
 
 HELP: om-e
 { $values
-  { "obj" object }
-  { "result" null }
+  { "obj" { $class/sequence-of number } }
+  { "result" { $class/sequence-of number } }
 }
 { $description "Exponential function." }
 { $notes "This function can be applied on numbers or lists." } ;
 
 HELP: om-log
 { $values
-  { "obj" object }
+  { "obj" { $class/sequence-of number } }
   { "&optionals" { $optionals } }
-  { "result" null }
+  { "result" { $class/sequence-of number } }
 }
 { $optional-defaults
   { "base" "the number " { $link e } }

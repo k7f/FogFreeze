@@ -5,6 +5,8 @@ USING: addenda.help.markup help.markup help.syntax math om.help.markup
        sequences ;
 IN: om.rhythm.onsets
 
+[!use-om-reference]
+
 HELP: ratios>integers
 { $values
   { "durations" { $sequence-of rational } }

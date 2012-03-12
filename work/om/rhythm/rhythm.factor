@@ -52,11 +52,14 @@ PRIVATE>
 : <rhythm> ( dur dvn -- relt )
     dup sequence? [ (create-rhythm) ] [ nip class-of invalid-input ] if ;
 
-! _________
-! resolve-?
+! _______________
+! >rhythm-element
 
 M: rhythm-element  >rhythm-element ( relt -- relt ) ;
 M: proper-sequence >rhythm-element ( seq -- relt ) first2 <rhythm> ;
+
+! _____________
+! onsets>rhythm
 
 <PRIVATE
 : (?attach-endpoint) ( onsets total -- onsets' )
@@ -65,9 +68,6 @@ M: proper-sequence >rhythm-element ( seq -- relt ) first2 <rhythm> ;
         { [ 2dup = ] [ 2drop ] }
         [ nip suffix ]
     } cond ; inline
-
-! _________________________
-! better-predefined-subdiv?
 
 : (?split-heuristically) ( dvn -- dvn'/f )
     [ [ 0 < -1 1 ? ] map ]
@@ -120,6 +120,9 @@ PRIVATE>
         dup [ first >float ] keep set-first
     ] if [ (?split-heuristically) dup ] keep ?
     1 swap rhythm boa ;
+
+! _______________
+! absolute-rhythm
 
 : absolute-rhythm ( onsets total -- rhm )
     (?attach-endpoint) onsets>rhythm ;
@@ -226,13 +229,10 @@ PRIVATE>
 : fuse-rests-deep ( relts -- relts' )
     ?fuse-rests-deep drop ;
 
-! _______
-! measure
+! _________
+! <measure>
 
 PREDICATE: measure < rhythm duration>> meter? ;
-
-! _________________
-! build-one-measure
 
 <PRIVATE
 :: (create-measure-element) ( onsets start duration -- relt )
@@ -253,7 +253,7 @@ PRIVATE>
     [ <meter> nip ] [ (create-beats) (create-measure) ] 3bi rhythm boa ;
 
 ! ____________
-! simple->tree
+! zip-measures
 
 <PRIVATE
 : (durs>onsets) ( durs -- onsets )

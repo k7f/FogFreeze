@@ -5,6 +5,8 @@ USING: addenda.help.markup arrays help.markup help.syntax kernel math
        om.help.markup om.rhythm.meter sequences ;
 IN: om.rhythm
 
+[!use-om-reference]
+
 HELP: rhythm-duration
 { $var-description "" } ;
 
@@ -64,21 +66,21 @@ HELP: fuse-rests-and-ties
   { "relts" { $sequence-of rhythm-element } }
   { "relts'" { $sequence-of rhythm-element } }
 }
-{ $description "fuse-pauses-and-tied-notes-between-beats" } ;
+{ $description "" } ;
 
 HELP: fuse-notes-deep
 { $values
   { "relts" { $sequence-of rhythm-element } }
   { "relts'" { $sequence-of rhythm-element } }
 }
-{ $description "grouper1" } ;
+{ $description "" } ;
 
 HELP: fuse-rests-deep
 { $values
   { "relts" { $sequence-of rhythm-element } }
   { "relts'" { $sequence-of rhythm-element } }
 }
-{ $description "grouper2" } ;
+{ $description "" } ;
 
 HELP: measure
 { $var-description "This is a special kind of " { $link rhythm } ", whose " { $snippet "duration" } " slot holds a " { $link meter } "." } ;

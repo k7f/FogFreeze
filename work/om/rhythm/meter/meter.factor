@@ -19,8 +19,6 @@ M: string >meter ( str -- mtr )
 
 M: sequence >meter ( seq -- mtr ) first2 <meter> ;
 
-! symbol->ratio
-
 M: symbol >meter ( sym -- mtr ) name>> >meter ;
 
 <<

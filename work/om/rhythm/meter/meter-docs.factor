@@ -4,6 +4,8 @@
 USING: help.markup help.syntax kernel math om.help.markup ;
 IN: om.rhythm.meter
 
+[!use-om-reference]
+
 HELP: meter
 { $var-description "This is a special kind of rhythm duration serving as time signature of measures." } ;
 

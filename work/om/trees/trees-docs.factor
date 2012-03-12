@@ -5,6 +5,8 @@ USING: addenda.help.markup arrays help.markup help.syntax math om.help.markup
        om.rhythm ;
 IN: om.trees
 
+[!use-om-reference]
+
 HELP: mktree
 { $values
   { "durs" { $sequence-of rational } }

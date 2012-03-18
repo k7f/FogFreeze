@@ -2,10 +2,9 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays help.markup help.syntax kernel math
-       math.constants math.order om.help.markup sequences words.symbol ;
+       math.constants math.order om.help.markup om.help.reference sequences
+       words.symbol ;
 IN: om.kernel
-
-[!use-om-reference]
 
 HELP: om+
 { $values
@@ -365,6 +364,18 @@ HELP: pgcd
   { "result" null }
 }
 { $description "Find the greats common divisor bethween 2 rational." } ;
+
+OM-REFERENCE:
+"projects/01-basicproject/functions/kernel.lisp"
+{ "om+" om+ }
+{ "om*" om* }
+{ "om-" om- }
+{ "om/" om/ }
+{ "om^" om^ }
+{ "om-e" om-e }
+{ "om-log" om-log }
+{ "om-round" om-round }
+{ "om//" om// } ;
 
 ARTICLE: "om.kernel" "om.kernel"
 { $vocab-intro "om.kernel" "projects/01-basicproject/functions/kernel.lisp" } ;

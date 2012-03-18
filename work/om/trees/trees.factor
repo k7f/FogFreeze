@@ -5,9 +5,6 @@ USING: accessors arrays kernel math math.functions om.rhythm om.rhythm.meter
        sequences ;
 IN: om.trees
 
-! ____________________________________
-! 02-musicproject/functions/trees.lisp
-
 ! ______
 ! mktree
 

@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays help.markup help.syntax kernel math
-       om.graphics om.help.markup sequences ;
+       om.graphics om.help.markup om.help.reference sequences ;
 IN: om.bpf
 
 HELP: internal-bpf
@@ -68,6 +68,12 @@ HELP: simple-bpf-from-list
   }
 }
 { $moving-target "The optional argument " { $snippet "decimals" } " is ignored." } ;
+
+OM-REFERENCE:
+"projects/01-basicproject/classes/bpf.lisp"
+{ "point-pairs" point-pairs }
+{ "cons-bpf" cons-bpf }
+{ "simple-bpf-from-list" simple-bpf-from-list } ;
 
 ARTICLE: "om.bpf" "om.bpf"
 { $vocab-intro "om.bpf" "projects/01-basicproject/classes/bpf.lisp" } ;

@@ -2,10 +2,9 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays help.markup help.syntax kernel math
-       om.help.markup om.rhythm.meter sequences ;
+       om.help.markup om.help.reference om.rhythm.meter om.rhythm.private
+       sequences ;
 IN: om.rhythm
-
-[!use-om-reference]
 
 HELP: rhythm-duration
 { $var-description "" } ;
@@ -101,6 +100,20 @@ HELP: zip-measures
   { "rhm" rhythm }
 }
 { $description "Takes a sequence of durations followed by a sequence of time signatures, and outputs a corresponding " { $link rhythm } ", which contains a sequence of " { $link measure } "s in the " { $snippet "division" } " slot." } ;
+
+OM-REFERENCE:
+"projects/02-musicproject/functions/trees.lisp"
+{ "build-one-measure" <measure> }
+{ "simple->tree" zip-measures }
+{ "better-predefined-subdiv?" (?split-heuristically) }
+{ "fuse-pauses-and-tied-notes-between-beats" fuse-rests-and-ties }
+{ "grouper1" fuse-notes-deep }
+{ "grouper2" fuse-rests-deep }
+{ "grouper3" fuse-rests-deep } ;
+
+OM-REFERENCE:
+"projects/02-musicproject/container/tree2container.lisp"
+{ "resolve-?" >rhythm-element } ;
 
 ARTICLE: "om.rhythm" "om.rhythm"
 { $aux-vocab-intro "om.rhythm" "om.trees" } ;

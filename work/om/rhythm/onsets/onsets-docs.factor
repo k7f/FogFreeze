@@ -2,10 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup help.markup help.syntax math om.help.markup
-       sequences ;
+       om.help.reference sequences ;
 IN: om.rhythm.onsets
-
-[!use-om-reference]
 
 HELP: ratios>integers
 { $values
@@ -92,6 +90,15 @@ HELP: trim-between*
   }
 }
 { $see-also trim-between } ;
+
+OM-REFERENCE:
+"projects/02-musicproject/functions/trees.lisp"
+{ "make-proportional-cell" ratios>integers }
+{ "x-dx-pause-ok" onsets>durations }
+{ "dx-x-pause-ok" durations>onsets }
+{ "build-local-times" global>local }
+{ "get-onsettime-before" last-before }
+{ "filter-events-between" trim-between } ;
 
 ARTICLE: "note-or-rest-ambiguity" "note-or-rest ambiguity"
 "Sign bit is used as the note-or-rest flag.  Therefore, in order to avoid the ambiguity, the lowest absolute value of a valid onset is 1." ;

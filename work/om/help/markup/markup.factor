@@ -2,11 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays assocs help.markup help.markup.private
-       kernel present sequences urls vocabs.loader words ;
+       kernel present sequences urls words ;
 IN: om.help.markup
-
-! FIXME need to refresh (once again...) current page in the browser
-: [!use-om-reference] ( -- ) "om.help.reference" reload ;
 
 : $vocab-intro ( children -- )
     { "The " } print-element dup first 1array $vocab-link

@@ -8,9 +8,6 @@ USING: addenda.errors addenda.sequences addenda.sequences.deep arrays classes
        sequences.deep sequences.private words ;
 IN: om.kernel
 
-! _____________________________________
-! 01-basicproject/functions/kernel.lisp
-
 ! ___________________
 ! om+ om* om- om/ om^
 

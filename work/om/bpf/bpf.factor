@@ -5,9 +5,6 @@ USING: accessors arrays combinators kernel math om.graphics om.support
        sequences sorting vectors ;
 IN: om.bpf
 
-! ________________________________
-! 01-basicproject/classes/bpf.lisp
-
 <PRIVATE
 : (new-points) ( n -- points )
     {

@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors arrays kernel math math.functions om.rhythm om.rhythm.meter
-       sequences ;
+       om.rhythm.transformer refs sequences ;
 IN: om.trees
 
 ! ______
@@ -64,3 +64,35 @@ M: number tietree ( num -- num' )
 
 M: rhythm tietree ( rhm -- rhm' )
     [ [ tietree ] map ] change-division ;
+
+! ____________
+! remove-rests
+
+<PRIVATE
+: (remove-rests-out) ( ref -- value/f )
+    value>> dup integer? [
+        dup 0 < [ neg ] [ drop f ] if
+    ] [ drop f ] if ; inline
+
+: (remove-rests-in) ( ref -- value/f )
+    value>> dup integer? [
+        dup 0 > [ drop f ] [ abs >float  ] if
+    ] [ abs ] if ; inline
+
+: (remove-rests) ( refs -- refs' )
+    f swap [
+        swap over [
+            [ (remove-rests-in) ]
+            [ (remove-rests-out) ] if
+            [ dup ] [ f f ] if*
+        ] dip [ set-ref ] keep
+    ] map nip ;
+PRIVATE>
+
+GENERIC: remove-rests ( relt -- relt' )
+
+M: number remove-rests ( value -- value' )
+    dup integer? [ abs ] when ;
+
+M: rhythm remove-rests ( rhm -- rhm' )
+    [ (remove-rests) ] with-rhythm-transformer ;

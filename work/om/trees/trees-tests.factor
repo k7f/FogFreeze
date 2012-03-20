@@ -48,3 +48,11 @@ IN: om.trees.tests
       { 4//4 { -1 { 1 { 1 2 -1 1 } } -1 1 } } }
     [ >rhythm-element ] map f swap <rhythm> tietree
 ] unit-test
+
+[ T{ rhythm f 2
+     { T{ rhythm f T{ meter f 4 4 } { 1 T{ rhythm f 1 { 1 2 1 1 } } 1 1 } }
+       T{ rhythm f T{ meter f 4 4 } { 1.0 T{ rhythm f 1 { 1 2 1 1 } } 1 1 } } } } ] [
+    { { 4//4 { 1 { 1 { 1 -2 1 1 } } 1 -1 } }
+      { 4//4 { -1 { 1 { 1 2 -1 1 } } -1 1 } } }
+    [ >rhythm-element ] map f swap <rhythm> remove-rests
+] unit-test

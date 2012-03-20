@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays help.markup help.syntax math om.help.markup
-       om.help.reference om.rhythm ;
+       om.help.reference om.rhythm om.trees.private ;
 IN: om.trees
 
 HELP: mktree
@@ -40,12 +40,21 @@ HELP: tietree
 }
 { $description "Converts all rests in " { $snippet "tree" } " (a rhytm tree, VOICE or POLY object) into ties (i.e. float values in the RT)." } ;
 
+HELP: remove-rests
+{ $values
+  { "relt" rhythm-element }
+  { "relt'" rhythm-element }
+}
+{ $description "Converts all rests to notes." } ;
+
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
 { "mktree" mktree }
 { "reducetree" reducetree }
 { "pulsemaker" pulsemaker }
-{ "tietree" tietree } ;
+{ "tietree" tietree }
+{ "transform-rests" (remove-rests) }
+{ "remove-rests" remove-rests } ;
 
 ARTICLE: "om.trees" "om.trees"
 { $vocab-intro "om.trees" "projects/02-musicproject/functions/trees.lisp" } ;

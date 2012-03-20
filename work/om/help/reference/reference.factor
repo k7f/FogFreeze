@@ -20,7 +20,9 @@ SYNTAX: OM-REFERENCE: \ ; parse-until unclip (om-reference) ;
     +om-reference-tables+ get-global >alist [ ($ref-table) ] assoc-each ;
 PRIVATE>
 
-OM-VOCABS: bpf kernel rhythm rhythm.meter rhythm.onsets rhythm.private trees ;
+OM-VOCABS:
+    bpf kernel rhythm rhythm.meter rhythm.onsets rhythm.transformer
+    rhythm.private trees trees.private ;
 
 ARTICLE: "om-functions" "OM functions"
 { $ref-tables } ;

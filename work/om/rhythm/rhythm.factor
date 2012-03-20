@@ -9,7 +9,9 @@ IN: om.rhythm
 MIXIN: rhythm-duration
 MIXIN: rhythm-element
 
-TUPLE: rhythm { duration maybe: rhythm-duration } { division sequence } ;
+TUPLE: rhythm
+    { duration maybe: rhythm-duration }
+    { division sequence } ;
 
 : ?change-division ( ... object quot: ( ... value -- ... value' ? ) -- ... object ? )
     over [ [ division>> ] dip call ] dip swap

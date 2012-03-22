@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: om.rhythm om.rhythm.meter tools.test ;
+USING: kernel math om.rhythm om.rhythm.meter tools.test ;
 IN: om.rhythm.tests
 
 [ T{ rhythm f 1 { 1/4 1/4 1/4 1/4 } } ] [
@@ -144,4 +144,20 @@ IN: om.rhythm.tests
      { T{ rhythm f T{ meter f 3 4 } { 1 1 1 } }
        T{ rhythm f T{ meter f 3 4 } { 3. } } } } ] [
     { 1/4 1/4 4/4 } { { 3 4 } { 3 4 } } zip-measures
+] unit-test
+
+[ T{ rhythm f T{ meter f 4 4 } { T{ rhythm f 1 { 2 } } 2 4 } } ] [
+    T{ rhythm f T{ meter f 4 4 } { T{ rhythm f 1 { 1 } } 1 2 } } [ 2 * ] map-rhythm
+] unit-test
+
+[ T{ rhythm f T{ meter f 4 4 } { T{ rhythm f 1 { 2 } } 2 4 } } ] [
+    T{ rhythm f T{ meter f 4 4 } { T{ rhythm f 1 { 1 } } 1 2 } } [ 2 * ] map-rhythm!
+] unit-test
+
+[ f ] [
+    T{ rhythm f T{ meter f 4 4 } { 1 } } dup [ ] map-rhythm eq?
+] unit-test
+
+[ t ] [
+    T{ rhythm f T{ meter f 4 4 } { 1 } } dup [ ] map-rhythm! eq?
 ] unit-test

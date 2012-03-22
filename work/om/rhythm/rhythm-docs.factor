@@ -101,6 +101,24 @@ HELP: zip-measures
 }
 { $description "Takes a sequence of durations followed by a sequence of time signatures, and outputs a corresponding " { $link rhythm } ", which contains a sequence of " { $link measure } "s in the " { $snippet "division" } " slot." } ;
 
+HELP: map-rhythm
+{ $values
+  { "relt" rhythm-element }
+  { "quot" { $quotation "( ... value -- ... value' )" } }
+  { "relt'" rhythm-element }
+}
+{ $description "If the input " { $link rhythm-element } " is a number, outputs the result of applying the quotation to that number.  If it is a " { $link rhythm } ", applies the quotation to each atomic " { $link rhythm-element } " of the rhythm, collecting new values in a new rhythm structure." }
+{ $see-also map-rhythm! } ;
+
+HELP: map-rhythm!
+{ $values
+  { "relt" rhythm-element }
+  { "quot" { $quotation "( ... value -- ... value' )" } }
+  { "relt'" rhythm-element }
+}
+{ $description "If the input " { $link rhythm-element } " is a number, outputs the result of applying the quotation to that number.  If it is a " { $link rhythm } ", applies the quotation to each atomic " { $link rhythm-element } " of the rhythm, replacing old values with new values in the same rhythm structure." }
+{ $see-also map-rhythm } ;
+
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
 { "build-one-measure" <measure> }

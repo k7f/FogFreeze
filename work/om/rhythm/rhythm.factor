@@ -277,3 +277,18 @@ PRIVATE>
     [ nip (tsigs>bars) ] 2bi
     [ (zip-measure) ] 2curry map-index
     f swap rhythm boa ;
+
+! __________
+! map-rhythm
+
+: map-rhythm ( ... relt quot: ( ... value -- ... value' ) -- ... relt' )
+    over rhythm? [
+        swap clone
+        [ swap [ map-rhythm ] curry map ] change-division
+    ] [ call ] if ; inline recursive
+
+: map-rhythm! ( ... relt quot: ( ... value -- ... value' ) -- ... relt' )
+    over rhythm? [
+        swap
+        [ swap [ map-rhythm! ] curry map! ] change-division
+    ] [ call ] if ; inline recursive

@@ -58,5 +58,5 @@ PRIVATE>
 : >rhythm-transformer< ( rt -- rhm )
     [ refs>> [ !rhythm-ref ] each ] [ underlying>> ] bi ;
 
-: with-rhythm-transformer ( ... rhm quot: ( ... rt -- ... rt' ) -- ... rhm' )
+: with-rhythm-transformer ( ... rhm quot: ( ... refs -- ... refs' ) -- ... rhm' )
     [ <rhythm-transformer> ] dip change-refs >rhythm-transformer< ; inline

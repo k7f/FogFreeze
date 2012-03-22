@@ -54,10 +54,10 @@ HELP: >rhythm-transformer<
 HELP: with-rhythm-transformer
 { $values
   { "rhm" rhythm }
-  { "quot" { $quotation "( ... rt -- ... rt' )" } }
+  { "quot" { $quotation "( ... refs -- ... refs' )" } }
   { "rhm'" rhythm }
 }
-{ $description "Modifies a " { $link rhythm } ": constructs a temporary " { $link rhythm-transformer } ",  passes it through a quotation, and updates all atomic " { $link rhythm-element } "s, except those invalidated by the quotation." } ;
+{ $description "Modifies a " { $link rhythm } ". Constructs a temporary " { $link rhythm-transformer } ",  passes it through a quotation as " { $sequence-of rhythm-ref } ", and updates all " { $link rhythm-element } "s referred to by valid " { $link rhythm-ref } "s returned by the quotation." } ;
 
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"

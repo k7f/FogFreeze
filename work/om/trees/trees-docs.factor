@@ -53,8 +53,9 @@ OM-REFERENCE:
 { "reducetree" reducetree }
 { "pulsemaker" pulsemaker }
 { "tietree" tietree }
-{ "transform-rests" (remove-rests) }
-{ "remove-rests" remove-rests } ;
+{ "transform-rests" transform-rests }
+{ "remove-rests" remove-rests }
+{ "remove-rests" remove-rests! } ;
 
 ARTICLE: "om.trees" "om.trees"
 { $vocab-intro "om.trees" "projects/02-musicproject/functions/trees.lisp" } ;

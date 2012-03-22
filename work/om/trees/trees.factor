@@ -69,24 +69,43 @@ M: rhythm tietree ( rhm -- rhm' )
 ! remove-rests
 
 <PRIVATE
-: (remove-rests-out) ( ref -- value/f )
+: (?transform-rest-out) ( ref -- value/f )
     value>> dup integer? [
         dup 0 < [ neg ] [ drop f ] if
     ] [ drop f ] if ; inline
 
-: (remove-rests-in) ( ref -- value/f )
+: (?transform-rest-in) ( ref -- value/f )
     value>> dup integer? [
         dup 0 > [ drop f ] [ abs >float  ] if
     ] [ abs ] if ; inline
 
-: (remove-rests) ( refs -- refs' )
-    f swap [
-        swap over [
-            [ (remove-rests-in) ]
-            [ (remove-rests-out) ] if
-            [ dup ] [ f f ] if*
-        ] dip [ set-ref ] keep
-    ] map nip ;
+: (?transform-rest) ( in? ref -- in?' ref' )
+    swap over [
+        [ (?transform-rest-in) ]
+        [ (?transform-rest-out) ] if
+        [ dup ] [ f f ] if*
+    ] dip [ set-ref ] keep ; inline
+PRIVATE>
+
+: transform-rests ( refs -- refs' )
+    f swap [ (?transform-rest) ] map nip ;
+
+<PRIVATE
+: (?remove-rest-out) ( value -- value'/f )
+    dup integer? [
+        dup 0 < [ neg ] [ drop f ] if
+    ] [ drop f ] if ; inline
+
+: (?remove-rest-in) ( value -- value'/f )
+    dup integer? [
+        dup 0 > [ drop f ] [ abs >float ] if
+    ] [ abs ] if ; inline
+
+: (?remove-rest) ( in? value -- in?' value' )
+    [
+        swap [ (?remove-rest-in) ]
+        [ (?remove-rest-out) ] if dup dup
+    ] keep ? ; inline
 PRIVATE>
 
 GENERIC: remove-rests ( relt -- relt' )
@@ -95,4 +114,12 @@ M: number remove-rests ( value -- value' )
     dup integer? [ abs ] when ;
 
 M: rhythm remove-rests ( rhm -- rhm' )
-    [ (remove-rests) ] with-rhythm-transformer ;
+    f swap [ (?remove-rest) ] map-rhythm nip ;
+
+GENERIC: remove-rests! ( relt -- relt' )
+
+M: number remove-rests! ( value -- value' )
+    dup integer? [ abs ] when ;
+
+M: rhythm remove-rests! ( rhm -- rhm' )
+    f swap [ (?remove-rest) ] map-rhythm! nip ;

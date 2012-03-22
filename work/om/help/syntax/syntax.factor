@@ -47,7 +47,7 @@ PRIVATE>
 : (om-reference) ( table path -- )
     [ >array dup (update-references) ]
     [ "code/" prepend ] bi*
-    +om-reference-tables+ get-global [ assoc-union ] change-at ;
+    +om-reference-tables+ get-global [ append ] change-at ;
 
 SYMBOL: +om-vocabs+
 

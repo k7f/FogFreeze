@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: arrays assocs help.markup help.markup.private kernel lexer
-       linked-assocs math namespaces sequences words ;
+       linked-assocs math namespaces sequences sets words ;
 IN: om.help.syntax
 
 <PRIVATE
@@ -47,7 +47,7 @@ PRIVATE>
 : (om-reference) ( table path -- )
     [ >array dup (update-references) ]
     [ "code/" prepend ] bi*
-    +om-reference-tables+ get-global [ append ] change-at ;
+    +om-reference-tables+ get-global [ append members ] change-at ;
 
 SYMBOL: +om-vocabs+
 

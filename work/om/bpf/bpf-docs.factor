@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays help.markup help.syntax kernel math
-       om.graphics om.help.markup om.help.reference sequences ;
+       om.graphics om.help.markup om.help.reference ;
 IN: om.bpf
 
 HELP: internal-bpf

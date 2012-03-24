@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.help.markup help.markup help.syntax om.help.markup quotations
-       sequences ;
+USING: addenda.help.markup help.markup help.syntax om.help.markup
+       om.help.reference sequences ;
 IN: om.combinatorial
 
 HELP: sort-list
@@ -57,6 +57,15 @@ HELP: permutations
   { "seq'" sequence }
 }
 { $description "Return a list of all the permutations of " { $snippet "bag" } "." } ;
+
+OM-REFERENCE:
+"projects/01-basicproject/functions/combinatorial.lisp"
+{ "sort-list" sort-list }
+{ "rotate" rotate }
+{ "nth-random" nth-random }
+{ "permut-random" permut-random }
+{ "posn-order" posn-order }
+{ "permutations" permutations } ;
 
 ARTICLE: "om.combinatorial" "om.combinatorial"
 { $vocab-intro "om.combinatorial" "projects/01-basicproject/functions/combinatorial.lisp" } ;

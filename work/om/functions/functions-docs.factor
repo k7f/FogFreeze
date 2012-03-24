@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup help.markup help.syntax kernel math om.bpf
-       om.help.markup quotations sequences ;
+       om.help.markup om.help.reference ;
 IN: om.functions
 
 HELP: linear-fun
@@ -81,6 +81,13 @@ HELP: om-sample
     { "This version, compatibly, excludes upper boundary when " { $snippet "xmax" } " is specified in by-count mode \u{em-dash} which might be just an off-by-one bug..." }
   }
 } ;
+
+OM-REFERENCE:
+"projects/01-basicproject/functions/functions.lisp"
+{ "linear-fun" linear-fun }
+{ "y-transfer" y-transfer }
+{ "x-transfer" x-transfer }
+{ "om-sample" om-sample } ;
 
 ARTICLE: "om.functions" "om.functions"
 { $vocab-intro "om.functions" "projects/01-basicproject/functions/functions.lisp" } ;

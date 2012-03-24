@@ -4,9 +4,6 @@
 USING: addenda.sets fry kernel macros om.support quotations sequences sets ;
 IN: om.sets
 
-! ___________________________________
-! 01-basicproject/functions/sets.lisp
-
 <PRIVATE
 MACRO: (x-set-operator) ( &keys word* word -- quot: ( seq1 seq2 &rest -- seq' ) )
     [ [ = ] unpack-test&key ] 2dip pick [ = ] =

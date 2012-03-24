@@ -6,9 +6,6 @@ USING: addenda.sequences arrays assocs circular fry kernel macros math
        sequences.deep sorting words ;
 IN: om.combinatorial
 
-! ____________________________________________
-! 01-basicproject/functions/combinatorial.lisp
-
 SYMBOL: :rec
 
 <PRIVATE

@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel math om.help.markup ;
+USING: help.markup help.syntax kernel math om.help.markup om.help.reference ;
 IN: om.graphics
 
 HELP: om-point
@@ -191,6 +191,34 @@ HELP: om-point-in-rect?
   { "?" boolean }
 }
 { $description "" } ;
+
+OM-REFERENCE:
+"api/om-LW/graphics.lisp"
+{ "ompoint" om-point "type" }
+{ "om-make-point" <om-point> }
+{ "om-make-point" om-make-point }
+{ "om-add-points" om-add-points }
+{ "om-subtract-points" om-subtract-points }
+{ "om-point-*" om-point-* }
+{ "dot-prod-2D" dot-prod-2D }
+{ "norm-2D" norm-2D }
+{ "dist2D" dist2D }
+{ "dist-to-line" dist-to-line }
+{ "om-point-in-line-p" om-point-in-line? }
+{ "om-rect" om-rect "type" }
+{ "om-make-rect" <om-rect> }
+{ "om-make-rect" om-make-rect }
+{ "om-pts-to-rect" om-pts-to-rect }
+{ "om-rect-top" om-rect-top }
+{ "om-rect-bottom" om-rect-bottom }
+{ "om-rect-left" om-rect-left }
+{ "om-rect-right" om-rect-right }
+{ "om-rect-w" om-rect-w }
+{ "om-rect-h" om-rect-h }
+{ "om-rect-topleft" om-rect-topleft }
+{ "om-rect-bottomright" om-rect-bottomright }
+{ "om-sect-rect" om-sect-rect }
+{ "om-point-in-rect?" om-point-in-rect? } ;
 
 ARTICLE: "om.graphics" "om.graphics"
 { $vocab-intro "om.graphics" "api/om-LW/graphics.lisp" } ;

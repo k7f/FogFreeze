@@ -130,11 +130,6 @@ M: sequence om-max ( obj seq -- result ) [ max ] om-binop-sequence ;
 ! _________________
 ! list-min list-max
 
-<PRIVATE
-: (list-min) ( seq default -- num )
-    swap [ dup atom? [ min ] [ drop ] if ] deep-each ;
-PRIVATE>
-
 GENERIC: list-min ( obj -- result )
 
 M: sequence list-min ( seq -- num/f )
@@ -150,6 +145,30 @@ M: sequence list-max ( seq -- num/f )
     [ [ max ] deep-reduce ] [ drop f ] if* ;
 
 M: object list-max ( obj -- obj ) ;
+
+<PRIVATE
+: (list-min*) ( seq default -- num )
+    swap [ dup atom? [ min ] [ drop ] if ] deep-each ;
+
+: (list-max*) ( seq default -- num )
+    swap [ dup atom? [ max ] [ drop ] if ] deep-each ;
+PRIVATE>
+
+GENERIC: list-min* ( obj -- result )
+
+M: sequence list-min* ( seq -- num/f )
+    [ dup sequence? [ empty? not ] when ] filter  ! FIXME deep-harvest
+    [ f ] [ largest-float (list-min*) ] if-empty ;
+
+M: object list-min* ( obj -- obj ) ;
+
+GENERIC: list-max* ( obj -- result )
+
+M: sequence list-max* ( seq -- num/f )
+    [ dup sequence? [ empty? not ] when ] filter  ! FIXME deep-harvest
+    [ f ] [ largest-float neg (list-max*) ] if-empty ;
+
+M: object list-max* ( obj -- obj ) ;
 
 ! _________________
 ! tree-min tree-max
@@ -207,7 +226,6 @@ M: integer om-random ( low high -- result )
 ! perturbation
 
 <PRIVATE
-! cf defun mulalea
 : (perturbation) ( num percent -- result )
     [ neg ] [ >float ] bi uniform-random-float 1.0 + * ;
 PRIVATE>

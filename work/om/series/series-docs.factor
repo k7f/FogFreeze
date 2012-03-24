@@ -1,7 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax layouts math om.help.markup sequences ;
+USING: help.markup help.syntax layouts math om.help.markup om.help.reference
+       sequences ;
 IN: om.series
 
 HELP: x->dx
@@ -108,6 +109,17 @@ HELP: inharm-ser
   { "seq" sequence }
 }
 { $description "Generates a list of " { $snippet "npart" } " partials from " { $snippet "begin" } " when partial n = " { $snippet "begin" } " * n^" { $snippet "dist" } "." } ;
+
+OM-REFERENCE:
+"projects/01-basicproject/functions/series.lisp"
+{ "x->dx" x->dx }
+{ "dx->x" dx->x }
+{ "arithm-ser" arithm-ser }
+{ "fibo-ser" fibo-ser }
+{ "geometric-ser" geometric-ser }
+{ "prime-ser" prime-ser }
+{ "prime-factors" prime-factors }
+{ "inharm-ser" inharm-ser } ;
 
 ARTICLE: "om.series" "om.series"
 { $vocab-intro "om.series" "projects/01-basicproject/functions/series.lisp" } ;

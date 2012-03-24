@@ -176,8 +176,16 @@ IN: om.kernel.tests
     { 2 3 1 4 } list-min
 ] unit-test
 
+[ 1 ] [
+    { 2 3 1 4 } list-min*
+] unit-test
+
 [ 4 ] [
     { 2 4 1 3 } list-max
+] unit-test
+
+[ 4 ] [
+    { 2 4 1 3 } list-max*
 ] unit-test
 
 [ 1 ] [

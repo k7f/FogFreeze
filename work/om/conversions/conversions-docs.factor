@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.help.markup help.markup help.syntax math om.help.markup
-       sequences strings ;
+USING: addenda.help.markup addenda.sequences.deep help.markup help.syntax
+       math om.help.markup om.help.reference strings ;
 IN: om.conversions
 
 HELP: approx-m
@@ -181,6 +181,27 @@ HELP: beats>ms
   { "duration" float }
 }
 { $description "Converts a symbolic rhythmic beat division into the corresponding duration in milliseconds." } ;
+
+OM-REFERENCE:
+"projects/02-musicproject/functions/conversions.lisp"
+{ "approx-m" approx-m }
+{ "mc->f" midicents>hz }
+{ "f->mc" hz>midicents }
+{ "*ascii-note-C-scale*" +ascii-note-C-scale+ "variable" }
+{ "*ascii-note-do-scale*" +ascii-note-do-scale+ "variable" }
+{ "*ascii-note-scales*" +ascii-note-scales+ "variable" }
+{ "*ascii-note-alterations*" +ascii-note-alterations+ "variable" }
+{ "*ascii-intervals*" +ascii-intervals+ "variable" }
+{ "deep-mapcar" deep-map-atoms }
+{ "mc->n1" midicents>string }
+{ "mc->n" midicents>string* }
+{ "n->mc1" string>midicents }
+{ "n->mc" string>midicents* }
+{ "int->symb1" interval>string }
+{ "int->symb" interval>string* }
+{ "symb->int1" string>interval }
+{ "symb->int" string>interval* }
+{ "beats->ms" beats>ms } ;
 
 ARTICLE: "om.conversions" "om.conversions"
 { $vocab-intro "om.conversions" "projects/02-musicproject/functions/conversions.lisp" } ;

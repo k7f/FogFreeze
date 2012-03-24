@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays help.markup help.syntax kernel math
-       om.help.markup sequences words.symbol ;
+       om.help.markup om.help.reference sequences words.symbol ;
 IN: om.lists
 
 HELP: last-elem
@@ -130,6 +130,22 @@ HELP: subs-posn
   { "seq" sequence }
 }
 { $description "Substitutes the elements of " { $snippet "lis1" } " at position(s) " { $snippet "posn" } " (if they exist) with the corresponding elements in " { $snippet "val" } "." } ;
+
+OM-REFERENCE:
+"projects/01-basicproject/functions/lists.lisp"
+{ "last-elem" last-elem }
+{ "last-n" last-n }
+{ "first-n" first-n }
+{ "x-append" x-append }
+{ "flat" flat }
+{ "create-list" create-list }
+{ "mat-trans" mat-trans }
+{ "expand-lst" expand-lst }
+{ "group-list" group-list }
+{ "remove-dup" remove-dup }
+{ "list-modulo" list-modulo }
+{ "interlock" interlock }
+{ "subs-posn" subs-posn } ;
 
 ARTICLE: "om.lists" "om.lists"
 { $vocab-intro "om.lists" "projects/01-basicproject/functions/lists.lisp" } ;

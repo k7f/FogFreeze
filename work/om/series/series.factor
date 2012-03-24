@@ -6,9 +6,6 @@ USING: addenda.errors addenda.sequences arrays classes fry kernel layouts
        math.primes.factors math.ranges om.support sequences ;
 IN: om.series
 
-! _____________________________________
-! 01-basicproject/functions/series.lisp
-
 <PRIVATE
 : (max-length) ( start end -- length/f )
     over 1 < [ nip ] [ swap - ] if

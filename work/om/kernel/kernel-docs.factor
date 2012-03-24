@@ -2,8 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays help.markup help.syntax kernel math
-       math.constants math.order om.help.markup om.help.reference sequences
-       words.symbol ;
+       math.constants math.order om.help.markup om.help.reference
+       om.kernel.private sequences words.symbol ;
 IN: om.kernel
 
 HELP: om+
@@ -374,8 +374,42 @@ OM-REFERENCE:
 { "om^" om^ }
 { "om-e" om-e }
 { "om-log" om-log }
+{ "approx-decimals" (approx-decimals) }
 { "om-round" om-round }
-{ "om//" om// } ;
+{ "om//" om// }
+{ "om-abs" om-abs }
+{ "om-min" om-min }
+{ "om-max" om-max }
+{ "list-min" list-min }
+{ "list-max" list-max }
+{ "list-min2" (list-min*) }
+{ "list-max2" (list-max*) }
+{ "list-min" list-min* }
+{ "list-max" list-max* }
+{ "tree-min" tree-min }
+{ "tree-max" tree-max }
+{ "average" (average-weighted) }
+{ "om-mean" om-mean }
+{ "om-random" om-random }
+{ "mulalea" (perturbation) }
+{ "perturbation" perturbation }
+{ "om-scale" om-scale }
+{ "g-scaling/sum" g-scaling/sum }
+{ "om-scale/sum" om-scale/sum }
+{ "factorize" factorize }
+{ "neutral-element" (neutral-element) }
+{ "reduce-tree" reduce-tree }
+{ "number-interpolation" (interpolation-point) }
+{ "number-interpole-values" (interpolation-samples) }
+{ "interpolation" interpolation }
+{ "rang-p" rang-p }
+{ "list-explode" list-explode }
+{ "list-filter" list-filter }
+{ "table-filter" table-filter }
+{ "band-filter" band-filter }
+{ "range-filter" range-filter }
+{ "posn-match" posn-match }
+{ "pgcd" pgcd } ;
 
 ARTICLE: "om.kernel" "om.kernel"
 { $vocab-intro "om.kernel" "projects/01-basicproject/functions/kernel.lisp" } ;

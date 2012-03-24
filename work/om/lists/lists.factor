@@ -8,9 +8,6 @@ USING: accessors addenda.errors addenda.math addenda.sequences addenda.sets
 QUALIFIED: sets
 IN: om.lists
 
-! _____________________________________
-! 01-basicproject/functions/lists.lisp
-
 ! _________
 ! last-elem
 

@@ -6,9 +6,6 @@ USING: addenda.errors addenda.sequences.deep arrays assocs combinators kernel
        math.parser namespaces om.support sequences strings ;
 IN: om.conversions
 
-! __________________________________________
-! 02-musicproject/functions/conversions.lisp
-
 ! ________
 ! approx-m
 

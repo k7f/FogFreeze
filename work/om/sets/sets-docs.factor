@@ -1,7 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel om.help.markup sequences ;
+USING: help.markup help.syntax kernel om.help.markup om.help.reference
+       sequences ;
 IN: om.sets
 
 HELP: x-union
@@ -70,6 +71,14 @@ HELP: included?
 { $description "Tests if " { $snippet "lst1" } " is included in " { $snippet "lst" } "."
   $nl
   { $snippet "test" } " is a function or function name for a binary comparison." } ;
+
+OM-REFERENCE:
+"projects/01-basicproject/functions/sets.lisp"
+{ "x-union" x-union }
+{ "x-intersect" x-intersect }
+{ "x-diff" x-diff }
+{ "x-xor" x-xor }
+{ "included?" included? } ;
 
 ARTICLE: "om.sets" "om.sets"
 { $vocab-intro "om.sets" "projects/01-basicproject/functions/sets.lisp" } ;

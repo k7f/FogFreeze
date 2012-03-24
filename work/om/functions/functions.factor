@@ -6,9 +6,6 @@ USING: accessors addenda.errors addenda.sequences arrays classes combinators
        om.kernel om.lists om.series om.support quotations sequences words ;
 IN: om.functions
 
-! ________________________________________
-! 01-basicproject/functions/functions.lisp
-
 ! __________
 ! linear-fun
 

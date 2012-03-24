@@ -13,16 +13,18 @@ SYNTAX: OM-REFERENCE: \ ; parse-until unclip (om-reference) ;
         first2 [ \ $snippet ] dip \ $link [ swap 2array ] 2bi@ 2array
     ] map $table ;
 
-! FIXME first invocation may take some time to complete (open a popup?)
-! FIXME find a way to specify order of and to sort the tables and their parts
+! FIXME first invocation may take some time to complete, so present a list
+! of om sources as folded subtopics, each to be unfolded on demand.
+! FIXME find a way to specify order of tables and their parts, and to sort them.
 : $ref-tables ( element -- )
     drop +om-vocabs+ get-global [ require ] each
     +om-reference-tables+ get-global >alist [ ($ref-table) ] assoc-each ;
 PRIVATE>
 
 OM-VOCABS:
-    bpf kernel rhythm rhythm.meter rhythm.onsets rhythm.transformer
-    rhythm.private trees trees.private ;
+    bpf combinatorial conversions functions functions.auxiliary graphics
+    kernel kernel.private lists rhythm rhythm.meter rhythm.onsets
+    rhythm.private rhythm.transformer series sets trees trees.private ;
 
-ARTICLE: "om-functions" "OM functions"
+ARTICLE: "om-words" "OM words"
 { $ref-tables } ;

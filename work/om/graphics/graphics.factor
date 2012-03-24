@@ -5,9 +5,6 @@ USING: accessors combinators kernel locals math math.functions math.order
        slots ;
 IN: om.graphics
 
-! _______________________
-! api/om-LW/graphics.lisp
-
 ! ________
 ! om-point
 

@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup classes help.markup help.syntax math om.help.markup
-       sequences ;
+       om.help.reference sequences ;
 IN: om.functions.auxiliary
 
 HELP: x-around
@@ -71,6 +71,15 @@ HELP: interpole
 { $description "" }
 { $see-also interpolate }
 { $warning "This version handles the left ray (half line) in the right way, i.e. in the same way as the right ray \u{em-dash} incompatibly." } ;
+
+OM-REFERENCE:
+"projects/01-basicproject/functions/functions.lisp"
+{ "x-around" x-around }
+{ "y-around" y-around }
+{ "linear-interpol" linear-interpol }
+{ "linear-interpol" linear-interpol* }
+{ "interpolate" interpolate }
+{ "interpole" interpole } ;
 
 ARTICLE: "om.functions.auxiliary" "om.functions.auxiliary"
 { $aux-vocab-intro "om.functions" } ;

@@ -58,8 +58,28 @@ PRIVATE>
         [ 1array ] [ flatten ] if
     ] keep rhythm-transformer boa ;
 
+<PRIVATE
+: (create-refs*) ( ndx parent relt pred: ( ... value -- ... ? ) -- ndx' refs )
+    over rhythm? [
+        [ nip [ division>> ] keep ] dip
+        [ swapd (create-refs*) ] 2curry map
+    ] [
+        keep swapd
+        [ [ 1 + ] when dup ] 2dip <rhythm-ref>
+    ] if ; inline recursive
+PRIVATE>
+
+: <rhythm-transformer*> ( ... rhm pred: ( ... value -- ... ? ) -- ... rt )
+    over [
+        [ -1 f ] 2dip (create-refs*) nip dup rhythm-ref?
+        [ 1array ] [ flatten ] if
+    ] dip rhythm-transformer boa ; inline
+
 : >rhythm-transformer< ( rt -- rhm )
     [ refs>> [ !rhythm-ref ] each ] [ underlying>> ] bi ;
 
 : with-rhythm-transformer ( ... rhm quot: ( ... refs -- ... refs' ) -- ... rhm' )
     [ <rhythm-transformer> ] dip change-refs >rhythm-transformer< ; inline
+
+: with-rhythm-transformer* ( ... rhm pred: ( ... value -- ... ? ) quot: ( ... refs -- ... refs' ) -- ... rhm' )
+    [ <rhythm-transformer*> ] dip change-refs >rhythm-transformer< ; inline

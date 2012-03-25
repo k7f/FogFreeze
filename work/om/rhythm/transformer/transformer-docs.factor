@@ -61,6 +61,7 @@ HELP: with-rhythm-transformer
 
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
+{ "treeobj" rhythm-ref "type" }
 { "trans-tree" <rhythm-transformer> }
 { "trans-obj" >rhythm-transformer< } ;
 

@@ -1,7 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays kernel math om.rhythm refs sequences sequences.deep ;
+USING: accessors addenda.sequences arrays kernel math om.rhythm refs
+       sequences sequences.deep ;
 IN: om.rhythm.transformer
 
 ! __________
@@ -39,19 +40,21 @@ TUPLE: rhythm-transformer
     { underlying rhythm } ;
 
 <PRIVATE
-GENERIC: (create-references) ( ndx parent relt -- refs )
+GENERIC: (create-refs) ( ndx parent relt -- ndx' refs )
 
-M: number (create-references) ( ndx parent value -- ref )
-    <rhythm-ref> ;
+M: number (create-refs) ( ndx parent value -- ndx' ref )
+    [ [ 1 + ] keep ] 2dip <rhythm-ref> ;
 
-M: rhythm (create-references) ( ndx parent rhm -- refs )
-    2nip [ division>> ] keep
-    [ rot (create-references) ] curry map-index ;
+: (create-next-refs) ( ndx relt rhm -- ndx' refs )
+    swap (create-refs) ; inline
+
+M: rhythm (create-refs) ( ndx parent rhm -- ndx' refs )
+    nip [ division>> ] keep [ (create-next-refs) ] curry map ;
 PRIVATE>
 
 : <rhythm-transformer> ( rhm -- rt )
     [
-        f f rot (create-references) dup rhythm-ref?
+        0 f rot (create-refs) nip dup rhythm-ref?
         [ 1array ] [ flatten ] if
     ] keep rhythm-transformer boa ;
 

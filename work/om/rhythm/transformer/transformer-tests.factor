@@ -21,5 +21,5 @@ IN: om.rhythm.transformer.tests
        { T{ rhythm f T{ meter f 3 4 } { 1 T{ rhythm f 1 { 1 1. } } 1 } }
          T{ rhythm f T{ meter f 3 4 } { 1 } }
        }
-    } [ integer? ] <rhythm-transformer*> indices&places
+    } -1 [ integer? ] make-rhythm-transformer nip indices&places
 ] unit-test

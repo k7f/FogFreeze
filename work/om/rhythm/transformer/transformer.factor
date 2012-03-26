@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors addenda.sequences arrays kernel math om.rhythm refs
-       sequences sequences.deep ;
+USING: accessors arrays kernel locals math om.rhythm refs sequences
+       sequences.deep ;
 IN: om.rhythm.transformer
 
 ! __________
@@ -55,28 +55,25 @@ PRIVATE>
         [ 1array ] [ flatten ] if
     ] keep rhythm-transformer boa ;
 
-<PRIVATE
-: (create-refs*) ( ... place ndx parent relt pred: ( ... value -- ... ? ) -- ... place' refs )
-    over rhythm? [
-        [ 2nip [ division>> ] keep ] dip
-        [ [ rot ] dip (create-refs*) ] 2curry map-index
-    ] [
-        keep [ -rot ] dip <rhythm-ref>
-        [ [ 1 + ] when ] dip over >>place
-    ] if ; inline recursive
-PRIVATE>
-
-: <rhythm-transformer*> ( ... rhm pred: ( ... value -- ... ? ) -- ... rt )
-    over [
-        [ -1 0 f ] 2dip (create-refs*) nip dup rhythm-ref?
-        [ 1array ] [ flatten ] if
-    ] dip rhythm-transformer boa ; inline
-
 : >rhythm-transformer< ( rt -- rhm )
     [ refs>> [ !rhythm-ref ] each ] [ underlying>> ] bi ;
 
 : with-rhythm-transformer ( ... rhm quot: ( ... refs -- ... refs' ) -- ... rhm' )
     [ <rhythm-transformer> ] dip change-refs >rhythm-transformer< ; inline
 
-: with-rhythm-transformer* ( ... rhm pred: ( ... value -- ... ? ) quot: ( ... refs -- ... refs' ) -- ... rhm' )
-    [ <rhythm-transformer*> ] dip change-refs >rhythm-transformer< ; inline
+<PRIVATE
+:: (next-ref) ( ... place ndx parent value pred: ( ... value -- ... ? ) -- ... place' ref )
+    value pred call place swap [ 1 + ] when
+    [ ndx parent value <rhythm-ref> ] keep >>place ; inline
+
+: (create-refs*) ( ... place ndx parent relt pred: ( ... value -- ... ? ) -- ... place' refs )
+    over rhythm? [
+        [ 2nip [ division>> ] keep ] dip
+        [ [ rot ] dip (create-refs*) ] 2curry map-index
+    ] [ (next-ref) ] if ; inline recursive
+PRIVATE>
+
+:: make-rhythm-transformer ( ... rhm place pred: ( ... value -- ... ? ) -- ... place' rt )
+    place 0 f rhm pred (create-refs*)
+    dup rhythm-ref? [ 1array ] [ flatten ] if
+    rhm rhythm-transformer boa ; inline

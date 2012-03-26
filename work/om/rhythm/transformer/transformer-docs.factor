@@ -43,7 +43,7 @@ HELP: rhythm-transformer
 { $var-description "An auxiliary data structure facilitating " { $link rhythm } " traversal."
   $nl
   "The slot " { $snippet "refs" } " is a flat sequence of " { $link rhythm-ref } "s (a subsequence of atomic " { $link rhythm-element } "s contained in the " { $snippet "underlying" } " " { $link rhythm } ")." }
-{ $see-also with-rhythm-transformer with-rhythm-transformer* } ;
+{ $see-also with-rhythm-transformer make-rhythm-transformer } ;
 
 HELP: <rhythm-transformer>
 { $values
@@ -51,18 +51,7 @@ HELP: <rhythm-transformer>
   { "rt" rhythm-transformer }
 }
 { $description "Creates a new " { $link rhythm-transformer } " containing " { $link rhythm-ref } "s to all atomic " { $link rhythm-element } "s of " { $snippet "rhm" } "." }
-{ $see-also <rhythm-transformer*> } ;
-
-HELP: <rhythm-transformer*>
-{ $values
-  { "rhm" rhythm }
-  { "pred" { $quotation "( ... value -- ... ? )" } }
-  { "rt" rhythm-transformer }
-}
-{ $description "Creates a new " { $link rhythm-transformer } " containing " { $link rhythm-ref } "s to all atomic " { $link rhythm-element } "s of " { $snippet "rhm" } "."
-  $nl
-  "Indexing of references is controlled by the predicate, which takes a numeric value of an atomic element and outputs a boolean indicating whether to increment the index for that atom." }
-{ $see-also <rhythm-transformer> } ;
+{ $see-also make-rhythm-transformer } ;
 
 HELP: >rhythm-transformer<
 { $values
@@ -78,19 +67,19 @@ HELP: with-rhythm-transformer
   { "rhm'" rhythm }
 }
 { $description "Modifies a " { $link rhythm } ". Constructs a temporary " { $link rhythm-transformer } ",  passes it through a quotation as " { $sequence-of rhythm-ref } ", and updates all " { $link rhythm-element } "s referred to by valid " { $link rhythm-ref } "s returned by the quotation." }
-{ $see-also with-rhythm-transformer* } ;
+{ $see-also make-rhythm-transformer } ;
 
-HELP: with-rhythm-transformer*
+HELP: make-rhythm-transformer
 { $values
   { "rhm" rhythm }
+  { "place" integer }
   { "pred" { $quotation "( ... value -- ... ? )" } }
-  { "quot" { $quotation "( ... refs -- ... refs' )" } }
-  { "rhm'" rhythm }
+  { "rt" rhythm-transformer }
 }
-{ $description "Modifies a " { $link rhythm } ". Constructs a temporary " { $link rhythm-transformer } ",  passes it through a quotation as " { $sequence-of rhythm-ref } ", and updates all " { $link rhythm-element } "s referred to by valid " { $link rhythm-ref } "s returned by the quotation."
-  $nl  
-  "Indexing of references is controlled by the predicate, which takes a numeric value of an atomic element and outputs a boolean indicating whether to increment the index for that atom." }
-{ $see-also with-rhythm-transformer } ;
+{ $description "Creates a new " { $link rhythm-transformer } " containing " { $link rhythm-ref } "s to all atomic " { $link rhythm-element } "s of " { $snippet "rhm" } "."
+  $nl
+  "Global indexing of references is controlled by the predicate, which takes a numeric value of an atomic element and outputs a boolean indicating whether to increment the index for that atom, starting from " { $snippet "place" } " as the initial index value." }
+{ $see-also <rhythm-transformer> } ;
 
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"

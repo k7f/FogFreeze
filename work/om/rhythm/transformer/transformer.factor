@@ -11,22 +11,19 @@ IN: om.rhythm.transformer
 TUPLE: rhythm-ref
     { index integer }
     { parent maybe: rhythm }
-    { value number initial: 1 } ;
+    { value number initial: 1 }
+    { place integer } ;
 
 INSTANCE: rhythm-ref ref
 
 : <rhythm-ref> ( ndx parent value/f -- ref )
-    [ 2dup division>> nth ] unless* rhythm-ref boa ;
-
-: >rhythm-ref< ( ref -- ndx parent/f value )
-    [ index>> ] [ parent>> ] [ value>> ] tri
-    over [ 3dup -rot division>> set-nth ] when ;
+    [ 2dup division>> nth ] unless* 0 rhythm-ref boa ;
 
 : !rhythm-ref ( ref -- )
     [ value>> ] [ index>> ] [ parent>> ] tri
     [ division>> set-nth ] [ 2drop ] if* ;
 
-M: rhythm-ref get-ref ( ref -- value )
+M: rhythm-ref get-ref ( ref -- value/f )
     dup parent>> [ value>> ] [ drop f ] if ;
 
 M: rhythm-ref set-ref ( value ref -- )
@@ -40,38 +37,38 @@ TUPLE: rhythm-transformer
     { underlying rhythm } ;
 
 <PRIVATE
-GENERIC: (create-refs) ( ndx parent relt -- ndx' refs )
+GENERIC: (create-refs) ( ... place ndx parent relt -- ... place' refs )
 
-M: number (create-refs) ( ndx parent value -- ndx' ref )
-    [ [ 1 + ] keep ] 2dip <rhythm-ref> ;
+M: number (create-refs) ( ... place ndx parent value -- ... place' ref )
+    <rhythm-ref> [ [ 1 + ] keep ] dip swap >>place ;
 
-: (create-next-refs) ( ndx relt rhm -- ndx' refs )
-    swap (create-refs) ; inline
+: (create-next-refs) ( ... place relt ndx rhm -- ... place' refs )
+    rot (create-refs) ; inline
 
-M: rhythm (create-refs) ( ndx parent rhm -- ndx' refs )
-    nip [ division>> ] keep [ (create-next-refs) ] curry map ;
+M: rhythm (create-refs) ( ... place ndx parent rhm -- ... place' refs )
+    2nip [ division>> ] keep [ (create-next-refs) ] curry map-index ;
 PRIVATE>
 
 : <rhythm-transformer> ( rhm -- rt )
     [
-        0 f rot (create-refs) nip dup rhythm-ref?
+        [ 0 0 f ] dip (create-refs) nip dup rhythm-ref?
         [ 1array ] [ flatten ] if
     ] keep rhythm-transformer boa ;
 
 <PRIVATE
-: (create-refs*) ( ndx parent relt pred: ( ... value -- ... ? ) -- ndx' refs )
+: (create-refs*) ( ... place ndx parent relt pred: ( ... value -- ... ? ) -- ... place' refs )
     over rhythm? [
-        [ nip [ division>> ] keep ] dip
-        [ swapd (create-refs*) ] 2curry map
+        [ 2nip [ division>> ] keep ] dip
+        [ [ rot ] dip (create-refs*) ] 2curry map-index
     ] [
-        keep swapd
-        [ [ 1 + ] when dup ] 2dip <rhythm-ref>
+        keep [ -rot ] dip <rhythm-ref>
+        [ [ 1 + ] when ] dip over >>place
     ] if ; inline recursive
 PRIVATE>
 
 : <rhythm-transformer*> ( ... rhm pred: ( ... value -- ... ? ) -- ... rt )
     over [
-        [ -1 f ] 2dip (create-refs*) nip dup rhythm-ref?
+        [ -1 0 f ] 2dip (create-refs*) nip dup rhythm-ref?
         [ 1array ] [ flatten ] if
     ] dip rhythm-transformer boa ; inline
 

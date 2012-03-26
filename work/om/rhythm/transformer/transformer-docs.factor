@@ -2,40 +2,48 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup help.markup help.syntax math om.help.markup
-       om.help.reference om.rhythm ;
+       om.help.reference om.rhythm refs ;
 IN: om.rhythm.transformer
 
 HELP: rhythm-ref
-{ $var-description "A reference to an atomic " { $link rhythm-element } "." } ;
+{ $var-description "A reference to an atomic " { $link rhythm-element } "."
+  $nl
+  "The slot " { $snippet "index" } " is the element's local index in the " { $snippet "parent" } "'s division.  The slot " { $snippet "place" } " is the element's global index in the overall " { $link rhythm } "."} ;
 
 HELP: <rhythm-ref>
 { $values
   { "ndx" integer }
   { "parent" rhythm }
-  { "value/f" { $maybe integer } }
+  { "value/f" { $maybe number } }
   { "ref" rhythm-ref }
 }
 { $description "Creates a new " { $link rhythm-ref } ". Missing numeric " { $snippet "value" } " is supplied from the current element at " { $snippet "ndx" } ". The " { $snippet "parent" } " is never modified, even if numeric " { $snippet "value" } " is specified." } ;
-
-HELP: >rhythm-ref<
-{ $values
-  { "ref" rhythm-ref }
-  { "ndx" integer }
-  { "parent/f" { $maybe rhythm } }
-  { "value" integer }
-}
-{ $description "Outputs the current values of a " { $link rhythm-ref } "'s slots.  If " { $snippet "parent" } " " { $link rhythm } " is valid, the element referred to is updated." }
-{ $see-also !rhythm-ref } ;
 
 HELP: !rhythm-ref
 { $values
   { "ref" rhythm-ref }
 }
-{ $description "Updates the element referred to by a " { $link rhythm-ref } " without outputing slot values." }
-{ $see-also >rhythm-ref< } ;
+{ $description "Updates the element referred to by a " { $link rhythm-ref } "." } ;
+
+HELP: get-ref
+{ $values
+  { "ref" rhythm-ref }
+  { "value/f" { $maybe number } }
+}
+{ $description "" } ;
+
+HELP: set-ref
+{ $values
+  { "value/f" { $maybe number } }
+  { "ref" rhythm-ref }
+}
+{ $description "" } ;
 
 HELP: rhythm-transformer
-{ $var-description "The slot " { $snippet "refs" } " is a flat " { $sequence-of rhythm-ref } ". This is a subsequence of atomic " { $link rhythm-element } "s contained in the " { $snippet "underlying" } " " { $link rhythm } "." } ;
+{ $var-description "An auxiliary data structure facilitating " { $link rhythm } " traversal."
+  $nl
+  "The slot " { $snippet "refs" } " is a flat sequence of " { $link rhythm-ref } "s (a subsequence of atomic " { $link rhythm-element } "s contained in the " { $snippet "underlying" } " " { $link rhythm } ")." }
+{ $see-also with-rhythm-transformer with-rhythm-transformer* } ;
 
 HELP: <rhythm-transformer>
 { $values

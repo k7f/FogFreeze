@@ -12,10 +12,14 @@ IN: addenda.sequences.iterators.tests
     f <iterator> [ + ] fold
 ] unit-test
 
-[ { } ] [
+[ f ] [
     { } <iterator> [ + ] fold
 ] unit-test
 
 [ 720 ] [
     7 iota <iterator> [ ?step drop ] keep [ * ] fold
+] unit-test
+
+[ 28 ] [
+    { 1 2 3 } { 4 5 6 } <bi-iterator> 7 [ + + ] bi-fold
 ] unit-test

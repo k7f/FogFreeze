@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors addenda.sequences.iterators arrays kernel locals math
-       om.rhythm refs sequences sequences.deep ;
+       math.functions om.rhythm refs sequences sequences.deep ;
 IN: om.rhythm.transformer
 
 ! __________
@@ -146,3 +146,38 @@ M: rhythm-transformer map-rests>notes! ( rt -- rt' )
 
 M: rhythm-transformer map-rests>notes ( rt -- rt' )
     clone-rhythm map-rests>notes! ;
+
+! __________________
+! submap-notes>rests
+
+<PRIVATE
+: (?sub-notes>rests-start) ( ref places value -- value/f )
+    swap rot place>> swap member?
+    [ neg ] [ drop f ] if ; inline
+
+: (sub-notes>rests-cont) ( ref places value -- value/f )
+    2nip neg round >integer ; inline
+
+: (?sub-notes>rests-out) ( ref places -- value/f )
+    over value>> dup integer? [
+        dup 0 > [ (?sub-notes>rests-start) ] [ 3drop f ] if
+    ] [ 3drop f ] if ; inline
+
+: (?sub-notes>rests-in) ( ref places -- value/f )
+    over value>> dup integer? [
+        dup 0 > [ (?sub-notes>rests-start) ] [ 3drop f ] if
+    ] [ (sub-notes>rests-cont) ] if ; inline
+
+: (?sub-notes>rests) ( in? ref places -- in?' )
+    rot pick [
+        [ (?sub-notes>rests-in) ]
+        [ (?sub-notes>rests-out) ] if
+        [ dup ] [ f f ] if*
+    ] dip set-ref ; inline
+PRIVATE>
+
+M: rhythm-transformer submap-notes>rests! ( rt places -- rt' )
+    [ [ f ] [ refs>> ] bi ] dip [ (?sub-notes>rests) ] curry each drop ;
+
+M: rhythm-transformer submap-notes>rests ( rt places -- rt' )
+    [ clone-rhythm ] [ submap-notes>rests! ] bi* ;

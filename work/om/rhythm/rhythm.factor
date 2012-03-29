@@ -381,3 +381,9 @@ M: number map-notes>rests! ( value -- value' )
 
 M: rhythm map-notes>rests! ( rhm -- rhm' )
     f swap [ (?notes>rests) ] map-rhythm! nip ;
+
+! __________________
+! submap-notes>rests
+
+GENERIC# submap-notes>rests  1 ( obj places -- obj' )
+GENERIC# submap-notes>rests! 1 ( obj places -- obj' )

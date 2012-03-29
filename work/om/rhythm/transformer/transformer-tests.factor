@@ -52,6 +52,11 @@ CONSTANT: rhythmC T{
                  T{ rhythm f 1 { -1 } } }
 }
 
+CONSTANT: rhythmD T{
+    rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -1 } } 1 } }
+                 T{ rhythm f 1 { 1 } } }
+}
+
 [ { 0 0 1 2 0 } { 0 1 2 3 4 } ] [
     rhythmA <rhythm-transformer> indices&places
 ] unit-test
@@ -90,4 +95,18 @@ CONSTANT: rhythmC T{
                     T{ rhythm f 1 { 1 } } } }
 ] [
     rhythmC <rhythm-transformer> map-rests>notes >rhythm-transformer<
+] unit-test
+
+[
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { -1 -1 } } 1 } }
+                    T{ rhythm f 1 { -1 } } } }
+] [
+    rhythmD <rhythm-transformer> { 1 2 4 } submap-notes>rests! >rhythm-transformer<
+] unit-test
+
+[
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { -1 -1 } } 1 } }
+                    T{ rhythm f 1 { -1 } } } }
+] [
+    rhythmD <rhythm-transformer> { 1 2 4 } submap-notes>rests >rhythm-transformer<
 ] unit-test

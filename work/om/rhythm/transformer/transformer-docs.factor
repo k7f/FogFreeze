@@ -5,20 +5,6 @@ USING: help.markup help.syntax kernel math om.help.markup om.help.reference
        om.rhythm refs ;
 IN: om.rhythm.transformer
 
-HELP: map-rests>notes
-{ $values
-  { "rt" rhythm-transformer }
-  { "rt'" rhythm-transformer }
-}
-{ $description "Outputs a new " { $link rhythm-transformer } " after creating a clone of the underlying " { $link rhythm } ", redirecting all references to the corresponding nodes of the new rhythm, and replacing all rests with notes in the new rhythm." } ;
-
-HELP: map-rests>notes!
-{ $values
-  { "rt" rhythm-transformer }
-  { "rt'" rhythm-transformer }
-}
-{ $description "Replaces all rests with notes in a rhythm tree." } ;
-
 HELP: rhythm-ref
 { $class-description "A reference to a " { $link rhythm-element } "."
   { $list

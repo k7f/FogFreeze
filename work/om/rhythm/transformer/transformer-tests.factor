@@ -110,3 +110,17 @@ CONSTANT: rhythmD T{
 ] [
     rhythmD <rhythm-transformer> { 1 2 4 } submap-notes>rests >rhythm-transformer<
 ] unit-test
+
+[
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { -1 -1 } } 1 } }
+                    T{ rhythm f 1 { -1 } } } }
+] [
+    rhythmD { 0 2 } submap-notes>rests!
+] unit-test
+
+[
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { -1 -1 } } 1 } }
+                    T{ rhythm f 1 { -1 } } } }
+] [
+    rhythmD { 0 2 } submap-notes>rests
+] unit-test

@@ -82,10 +82,28 @@ PRIVATE>
     ] [ (next-ref) ] if ; inline recursive
 PRIVATE>
 
+! _______________________
+! make-rhythm-transformer
+
 :: make-rhythm-transformer ( ... rhm place pred: ( ... value -- ... ? ) -- ... lastplace rt )
     place 0 f rhm pred (create-refs*)
     dup rhythm-ref? [ 1array ] [ flatten ] if
     rhm rhythm-transformer boa ; inline
+
+! _____________________
+! make-note-transformer
+
+: make-note-transformer ( rhm place -- lastplace rt )
+    [ dup integer? [ 0 > ] [ drop f ] if ] make-rhythm-transformer ;
+
+! _____
+! clone
+
+M: rhythm-transformer clone ( rt -- rt' )
+    (clone) [ [ clone ] map ] change-refs ; inline
+
+! ____________
+! clone-rhythm
 
 <PRIVATE
 GENERIC: (rt-clone) ( newparent iter oldref oldrelt -- newrelt )
@@ -109,9 +127,6 @@ M:: rhythm (rt-clone) ( newparent iter oldref oldrhm -- newrhm )
     newrhm swap >>division
     oldrhm duration>> clone >>duration ;
 PRIVATE>
-
-M: rhythm-transformer clone ( rt -- rt' )
-    (clone) [ [ clone ] map ] change-refs ; inline
 
 M: rhythm-transformer clone-rhythm ( rt -- rt' )
     [ refs>> [ clone ] map ]
@@ -181,3 +196,11 @@ M: rhythm-transformer submap-notes>rests! ( rt places -- rt' )
 
 M: rhythm-transformer submap-notes>rests ( rt places -- rt' )
     [ clone-rhythm ] [ submap-notes>rests! ] bi* ;
+
+M: rhythm submap-notes>rests ( rhm places -- rhm' )
+    [ 0 make-note-transformer nip ]
+    [ submap-notes>rests >rhythm-transformer< ] bi* ;
+
+M: rhythm submap-notes>rests! ( rhm places -- rhm' )
+    [ 0 make-note-transformer nip ]
+    [ submap-notes>rests >rhythm-transformer< ] bi* ;

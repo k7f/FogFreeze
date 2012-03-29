@@ -95,12 +95,26 @@ HELP: make-rhythm-transformer
   "Global indexing of references is controlled by the predicate, which takes a numeric value of an atomic element and outputs a boolean indicating whether to increment the index for that atom, starting from " { $snippet "place" } " as the initial index value. The global index assigned to the last atom is output alongside the transformer." }
 { $see-also <rhythm-transformer> } ;
 
+HELP: make-note-transformer
+{ $values
+  { "rhm" rhythm }
+  { "place" integer }
+  { "lastplace" integer }
+  { "rt" rhythm-transformer }
+}
+{ $description "Creates a new " { $link rhythm-transformer } " containing " { $link rhythm-ref } "s to all atomic " { $link rhythm-element } "s of " { $snippet "rhm" } "."
+  $nl
+  "Global index starts form " { $snippet "place" } " and is incremented for each note." }
+{ $see-also make-rhythm-transformer } ;
+
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
 { "treeobj" rhythm-ref "type" }
 { "trans-tree" <rhythm-transformer> }
 { "trans-obj" >rhythm-transformer< }
-{ "transform-rests" map-rests>notes! } ;
+{ "transform-rests" map-rests>notes! }
+{ "transform-notes-flt" submap-notes>rests! }
+{ "trans-note-index" make-note-transformer } ;
 
 ARTICLE: "om.rhythm.transformer" "om.rhythm.transformer"
 { $aux-vocab-intro "om.rhythm.transformer" "om.trees" } ;

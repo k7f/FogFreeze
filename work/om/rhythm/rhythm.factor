@@ -9,6 +9,8 @@ IN: om.rhythm
 MIXIN: rhythm-duration
 MIXIN: rhythm-element
 
+GENERIC: clone-rhythm ( obj -- cloned )
+
 TUPLE: rhythm
     { duration maybe: rhythm-duration }
     { division sequence } ;
@@ -53,6 +55,21 @@ PRIVATE>
 
 : <rhythm> ( dur dvn -- relt )
     dup sequence? [ (create-rhythm) ] [ nip class-of invalid-input ] if ;
+
+! ____________
+! clone-rhythm
+
+<PRIVATE
+GENERIC: (clone-rhythm) ( obj -- cloned )
+
+M: object (clone-rhythm) ( obj -- cloned ) clone ; inline
+
+M: rhythm (clone-rhythm) ( rhm -- rhm' )
+    (clone) [ clone ] change-duration
+    [ [ (clone-rhythm) ] map ] change-division ; inline
+PRIVATE>
+
+M: rhythm clone-rhythm ( rhm -- rhm' )  (clone-rhythm) ; inline
 
 ! _______________
 ! >rhythm-element

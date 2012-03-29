@@ -7,13 +7,33 @@ USING: addenda.help.markup arrays help.markup help.syntax kernel math
 IN: om.rhythm
 
 HELP: rhythm-duration
-{ $var-description "" } ;
+{ $var-description "A numeric value or a " { $link meter } "." } ;
 
 HELP: rhythm-element
-{ $var-description "" } ;
+{ $var-description "A node in a rhythm tree: a numeric atom or a " { $link rhythm } "."
+  $nl
+  "Standard interpretation of atomic rhythm elements is defined for three subdomains:"
+  { $list
+    { "positive " { $link integer } "s are notes;" }
+    { "negative " { $link integer } "s are rests;" }
+    { "positive " { $link float } "s are tied continuations of previous notes." }
+  }
+} ;
+
+HELP: clone-rhythm
+{ $values
+  { "obj" object }
+  { "cloned" object }
+}
+{ $contract "Given a " { $link rhythm } " object, the output is a deep copy of the entire rhythm tree.  If a method is defined for a rhythm-related type, it will perform deep copy of its underlying rhythm." } ;
 
 HELP: rhythm
-{ $var-description "The slot " { $snippet "division" } " holds " { $sequence-of rhythm-element } "." } ;
+{ $var-description "A rhythm tree."
+  { $list
+    { "Slot " { $snippet "duration" } " may hold a " { $link rhythm-duration } " or may be left without an explicit value." }
+    { "Slot " { $snippet "division" } " is " { $sequence-of rhythm-element } "." }
+  }
+} ;
 
 HELP: >rhythm-duration
 { $values

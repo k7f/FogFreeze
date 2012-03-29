@@ -177,3 +177,19 @@ IN: om.rhythm.tests
     T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -1 } } 1 } }
                     T{ rhythm f 1 { -1 } } } } map-rests>notes!
 ] unit-test
+
+[
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { -1 -1 } } -1 } }
+                    T{ rhythm f 1 { -1 } } } }
+] [
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -1 } } 1 } }
+                    T{ rhythm f 1 { -1 } } } } map-notes>rests
+] unit-test
+
+[
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { -1 -1 } } -1 } }
+                    T{ rhythm f 1 { -1 } } } }
+] [
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -1 } } 1 } }
+                    T{ rhythm f 1 { -1 } } } } map-notes>rests!
+] unit-test

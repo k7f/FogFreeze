@@ -155,6 +155,22 @@ HELP: map-rests>notes!
 { $contract "Given a " { $link rhythm } " object, the output is the modified input rhythm having all rests replaced with notes.  If a method is defined for a rhythm-handling type, it will replace all rests with notes in its underlying rhythm." }
 { $see-also map-rests>notes } ;
 
+HELP: map-notes>rests
+{ $values
+  { "obj" object }
+  { "obj'" object }
+}
+{ $contract "Given a " { $link rhythm } " object, the output is a deep copy of the entire rhythm tree with all notes replaced with rests.  If a method is defined for a rhythm-handling type, it will perform deep copy of its underlying rhythm and replace all notes with rests in it." }
+{ $see-also map-notes>rests! } ;
+
+HELP: map-notes>rests!
+{ $values
+  { "obj" object }
+  { "obj'" object }
+}
+{ $contract "Given a " { $link rhythm } " object, the output is the modified input rhythm having all notes replaced with rests.  If a method is defined for a rhythm-handling type, it will replace all notes with rests in its underlying rhythm." }
+{ $see-also map-notes>rests } ;
+
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
 { "build-one-measure" <measure> }

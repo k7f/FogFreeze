@@ -345,3 +345,39 @@ M: number map-rests>notes! ( value -- value' )
 
 M: rhythm map-rests>notes! ( rhm -- rhm' )
     f swap [ (?rests>notes) ] map-rhythm! nip ;
+
+! _______________
+! map-notes>rests
+
+GENERIC: map-notes>rests ( obj -- obj' )
+GENERIC: map-notes>rests! ( obj -- obj' )
+
+<PRIVATE
+: (?notes>rests-out) ( value -- value'/f )
+    dup integer? [
+        dup 0 > [ neg ] [ drop f ] if
+    ] [ drop f ] if ; inline
+
+: (?notes>rests-in) ( value -- value'/f )
+    dup integer? [
+        dup 0 > [ neg ] [ drop f ] if
+    ] [ neg round >integer ] if ; inline
+
+: (?notes>rests) ( in? value -- in?' value' )
+    [
+        swap [ (?notes>rests-in) ]
+        [ (?notes>rests-out) ] if dup dup
+    ] keep ? ; inline
+PRIVATE>
+
+M: number map-notes>rests ( value -- value' )
+    dup integer? [ dup 0 > [ neg ] when ] when ;
+
+M: rhythm map-notes>rests ( rhm -- rhm' )
+    f swap [ (?notes>rests) ] map-rhythm nip ;
+
+M: number map-notes>rests! ( value -- value' )
+    dup integer? [ dup 0 > [ neg ] when ] when ;
+
+M: rhythm map-notes>rests! ( rhm -- rhm' )
+    f swap [ (?notes>rests) ] map-rhythm! nip ;

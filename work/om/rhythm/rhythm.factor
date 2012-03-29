@@ -387,3 +387,9 @@ M: rhythm map-notes>rests! ( rhm -- rhm' )
 
 GENERIC# submap-notes>rests  1 ( obj places -- obj' )
 GENERIC# submap-notes>rests! 1 ( obj places -- obj' )
+
+M: number submap-notes>rests ( value places -- value' )
+    drop map-notes>rests ; inline
+
+M: number submap-notes>rests! ( value places -- value' )
+    drop map-notes>rests! ; inline

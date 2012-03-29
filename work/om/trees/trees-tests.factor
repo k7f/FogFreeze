@@ -44,7 +44,8 @@ IN: om.trees.tests
 
 [ T{ rhythm f 2
      { T{ rhythm f T{ meter f 4 4 } { 1 T{ rhythm f 1 { 1 2.0 1 1 } } 1 1.0 } }
-       T{ rhythm f T{ meter f 4 4 } { 1.0 T{ rhythm f 1 { 1 2 1.0 1 } } 1.0 1 } } } } ] [
+       T{ rhythm f T{ meter f 4 4 } { 1.0 T{ rhythm f 1 { 1 2 1.0 1 } } 1.0 1 } } } }
+] [
     { { 4//4 { 1 { 1 { 1 -2 1 1 } } 1 -1 } }
       { 4//4 { -1 { 1 { 1 2 -1 1 } } -1 1 } } }
     [ >rhythm-element ] map f swap <rhythm> tietree
@@ -52,24 +53,37 @@ IN: om.trees.tests
 
 [ T{ rhythm f 2
      { T{ rhythm f T{ meter f 4 4 } { 1 T{ rhythm f 1 { 1 2 1 1 } } 1 1 } }
-       T{ rhythm f T{ meter f 4 4 } { 1.0 T{ rhythm f 1 { 1 2 1 1 } } 1 1 } } } } ] [
+       T{ rhythm f T{ meter f 4 4 } { 1.0 T{ rhythm f 1 { 1 2 1 1 } } 1 1 } } } }
+] [
     { { 4//4 { 1 { 1 { 1 -2 1 1 } } 1 -1 } }
       { 4//4 { -1 { 1 { 1 2 -1 1 } } -1 1 } } }
-    [ >rhythm-element ] map f swap <rhythm> [ transform-rests ] with-rhythm-transformer
+    [ >rhythm-element ] map f swap <rhythm>
+    <rhythm-transformer> transform-rests >rhythm-transformer<
 ] unit-test
 
 [ T{ rhythm f 2
      { T{ rhythm f T{ meter f 4 4 } { 1 T{ rhythm f 1 { 1 2 1 1 } } 1 1 } }
-       T{ rhythm f T{ meter f 4 4 } { 1.0 T{ rhythm f 1 { 1 2 1 1 } } 1 1 } } } } ] [
+       T{ rhythm f T{ meter f 4 4 } { 1.0 T{ rhythm f 1 { 1 2 1 1 } } 1 1 } } } }
+] [
     { { 4//4 { 1 { 1 { 1 -2 1 1 } } 1 -1 } }
       { 4//4 { -1 { 1 { 1 2 -1 1 } } -1 1 } } }
     [ >rhythm-element ] map f swap <rhythm> remove-rests
 ] unit-test
 
-[ T{ rhythm f 2
-     { T{ rhythm f T{ meter f 4 4 } { 1 T{ rhythm f 1 { 1 2 1 1 } } 1 1 } }
-       T{ rhythm f T{ meter f 4 4 } { 1.0 T{ rhythm f 1 { 1 2 1 1 } } 1 1 } } } } ] [
-    { { 4//4 { 1 { 1 { 1 -2 1 1 } } 1 -1 } }
-      { 4//4 { -1 { 1 { 1 2 -1 1 } } -1 1 } } }
-    [ >rhythm-element ] map f swap <rhythm> remove-rests!
+[
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { -1 -1 } } 1 } }
+                    T{ rhythm f 1 { -1 } } } }
+] [
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -1 } } 1 } }
+                    T{ rhythm f 1 { 1 } } }
+    } <rhythm-transformer> { 1 4 } transform-notes-flt >rhythm-transformer<
+] unit-test
+
+[
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { -1 -1 } } 1 } }
+                    T{ rhythm f 1 { -1 } } } }
+] [
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -1 } } 1 } }
+                    T{ rhythm f 1 { 1 } } }
+    } { 0 2 } filtertree
 ] unit-test

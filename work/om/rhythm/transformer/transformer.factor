@@ -198,9 +198,9 @@ M: rhythm-transformer submap-notes>rests ( rt places -- rt' )
     [ clone-rhythm ] [ submap-notes>rests! ] bi* ;
 
 M: rhythm submap-notes>rests ( rhm places -- rhm' )
-    [ 0 make-note-transformer nip ]
+    [ -1 make-note-transformer nip ]
     [ submap-notes>rests >rhythm-transformer< ] bi* ;
 
 M: rhythm submap-notes>rests! ( rhm places -- rhm' )
-    [ 0 make-note-transformer nip ]
-    [ submap-notes>rests >rhythm-transformer< ] bi* ;
+    [ -1 make-note-transformer nip ]
+    [ submap-notes>rests! >rhythm-transformer< ] bi* ;

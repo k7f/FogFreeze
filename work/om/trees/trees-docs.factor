@@ -2,7 +2,7 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays help.markup help.syntax math om.help.markup
-       om.help.reference om.rhythm om.trees.private ;
+       om.help.reference om.rhythm om.rhythm.transformer om.trees.private ;
 IN: om.trees
 
 HELP: mktree
@@ -40,12 +40,35 @@ HELP: tietree
 }
 { $description "Converts all rests in " { $snippet "tree" } " (a rhytm tree, VOICE or POLY object) into ties (i.e. float values in the RT)." } ;
 
+HELP: transform-rests
+{ $values
+  { "rt" rhythm-transformer }
+  { "rt'" rhythm-transformer }
+}
+{ $description "" } ;
+
 HELP: remove-rests
 { $values
   { "relt" rhythm-element }
   { "relt'" rhythm-element }
 }
 { $description "Converts all rests to notes." } ;
+
+HELP: transform-notes-flt
+{ $values
+  { "rt" rhythm-transformer }
+  { "places" { $sequence-of integer } }
+  { "rt'" rhythm-transformer }
+}
+{ $description "" } ;
+
+HELP: filtertree
+{ $values
+  { "relt" rhythm-element }
+  { "places" { $sequence-of integer } }
+  { "relt'" rhythm-element }
+}
+{ $description "Replaces expressed notes in given positions from " { $snippet "places" } " with rests." } ;
 
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
@@ -55,7 +78,8 @@ OM-REFERENCE:
 { "tietree" tietree }
 { "transform-rests" transform-rests }
 { "remove-rests" remove-rests }
-{ "remove-rests" remove-rests! } ;
+{ "transform-notes-flt" transform-notes-flt }
+{ "filtertree" filtertree } ;
 
 ARTICLE: "om.trees" "om.trees"
 { $vocab-intro "om.trees" "projects/02-musicproject/functions/trees.lisp" } ;

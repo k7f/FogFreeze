@@ -65,6 +65,10 @@ CONSTANT: rhythmD T{
     rhythmB -1 [ integer? ] make-rhythm-transformer nip indices&places
 ] unit-test
 
+[ { 0 0 1 2 0 } { -1 0 0 1 2 } ] [
+    rhythmD -1 make-note-transformer nip indices&places
+] unit-test
+
 [ f t ] [
     rhythmC <rhythm-transformer> dup clone [ eq? ] [ = ] 2bi
 ] unit-test
@@ -87,7 +91,8 @@ CONSTANT: rhythmD T{
     T{ rhythm f f { T{ rhythm f 1 { 1 T{ rhythm f 1 { 1 1 } } 1 } }
                     T{ rhythm f 1 { 1 } } } }
 ] [
-    rhythmC <rhythm-transformer> map-rests>notes! >rhythm-transformer<
+    rhythmC clone-rhythm <rhythm-transformer>
+    map-rests>notes! >rhythm-transformer<
 ] unit-test
 
 [
@@ -101,21 +106,23 @@ CONSTANT: rhythmD T{
     T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { -1 -1 } } 1 } }
                     T{ rhythm f 1 { -1 } } } }
 ] [
-    rhythmD <rhythm-transformer> { 1 2 4 } submap-notes>rests! >rhythm-transformer<
+    rhythmD clone-rhythm <rhythm-transformer>
+    { 1 2 4 } submap-notes>rests! >rhythm-transformer<
 ] unit-test
 
 [
     T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { -1 -1 } } 1 } }
                     T{ rhythm f 1 { -1 } } } }
 ] [
-    rhythmD <rhythm-transformer> { 1 2 4 } submap-notes>rests >rhythm-transformer<
+    rhythmD <rhythm-transformer>
+    { 1 2 4 } submap-notes>rests >rhythm-transformer<
 ] unit-test
 
 [
     T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { -1 -1 } } 1 } }
                     T{ rhythm f 1 { -1 } } } }
 ] [
-    rhythmD { 0 2 } submap-notes>rests!
+    rhythmD clone-rhythm { 0 2 } submap-notes>rests!
 ] unit-test
 
 [

@@ -68,58 +68,17 @@ M: rhythm tietree ( rhm -- rhm' )
 ! ____________
 ! remove-rests
 
-<PRIVATE
-: (?transform-rest-out) ( ref -- value/f )
-    value>> dup integer? [
-        dup 0 < [ neg ] [ drop f ] if
-    ] [ drop f ] if ; inline
-
-: (?transform-rest-in) ( ref -- value/f )
-    value>> dup integer? [
-        dup 0 > [ drop f ] [ abs >float  ] if
-    ] [ abs ] if ; inline
-
-: (?transform-rest) ( in? ref -- in?' ref' )
-    swap over [
-        [ (?transform-rest-in) ]
-        [ (?transform-rest-out) ] if
-        [ dup ] [ f f ] if*
-    ] dip [ set-ref ] keep ; inline
-PRIVATE>
-
-: transform-rests ( refs -- refs' )
-    f swap [ (?transform-rest) ] map nip ;
-
-<PRIVATE
-: (?remove-rest-out) ( value -- value'/f )
-    dup integer? [
-        dup 0 < [ neg ] [ drop f ] if
-    ] [ drop f ] if ; inline
-
-: (?remove-rest-in) ( value -- value'/f )
-    dup integer? [
-        dup 0 > [ drop f ] [ abs >float ] if
-    ] [ abs ] if ; inline
-
-: (?remove-rest) ( in? value -- in?' value' )
-    [
-        swap [ (?remove-rest-in) ]
-        [ (?remove-rest-out) ] if dup dup
-    ] keep ? ; inline
-PRIVATE>
+GENERIC: transform-rests ( rt -- rt' )
+M: rhythm-transformer transform-rests ( rt -- rt' ) map-rests>notes! ; inline
 
 GENERIC: remove-rests ( relt -- relt' )
+M: rhythm-element remove-rests ( relt -- relt' ) map-rests>notes! ; inline
 
-M: number remove-rests ( value -- value' )
-    dup integer? [ abs ] when ;
+! __________
+! filtertree
 
-M: rhythm remove-rests ( rhm -- rhm' )
-    f swap [ (?remove-rest) ] map-rhythm nip ;
+GENERIC# transform-notes-flt 1 ( rt places -- rt' )
+M: rhythm-transformer transform-notes-flt ( rt places -- rt' ) submap-notes>rests! ; inline
 
-GENERIC: remove-rests! ( relt -- relt' )
-
-M: number remove-rests! ( value -- value' )
-    dup integer? [ abs ] when ;
-
-M: rhythm remove-rests! ( rhm -- rhm' )
-    f swap [ (?remove-rest) ] map-rhythm! nip ;
+GENERIC# filtertree 1 ( relt places -- relt' )
+M: rhythm-element filtertree ( relt places -- relt' ) submap-notes>rests! ; inline

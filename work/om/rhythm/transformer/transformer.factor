@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays kernel locals math om.rhythm refs sequences
-       sequences.deep ;
+USING: accessors addenda.sequences.iterators arrays kernel locals math
+       om.rhythm refs sequences sequences.deep ;
 IN: om.rhythm.transformer
 
 ! __________
@@ -11,23 +11,35 @@ IN: om.rhythm.transformer
 TUPLE: rhythm-ref
     { index integer }
     { parent maybe: rhythm }
-    { value number initial: 1 }
+    { value rhythm-element initial: 1 }
     { place integer } ;
 
 INSTANCE: rhythm-ref ref
 
-: <rhythm-ref> ( ndx parent value/f -- ref )
+: <rhythm-ref> ( ndx parent/f relt/f -- ref )
     [ 2dup division>> nth ] unless* 0 rhythm-ref boa ;
 
 : !rhythm-ref ( ref -- )
     [ value>> ] [ index>> ] [ parent>> ] tri
     [ division>> set-nth ] [ 2drop ] if* ;
 
-M: rhythm-ref get-ref ( ref -- value/f )
+M: rhythm-ref get-ref ( ref -- relt/f )
     dup parent>> [ value>> ] [ drop f ] if ;
 
-M: rhythm-ref set-ref ( value ref -- )
+M: rhythm-ref set-ref ( relt/f ref -- )
     over [ value<< ] [ parent<< ] if ;
+
+<PRIVATE
+: (co-refs?) ( ref2 ref1 parent -- ref2 ? )
+    [ [ parent>> ] dip eq? ]
+    [ over [ value>> ] bi@ eq? ] if* ; inline
+PRIVATE>
+
+: co-refs? ( ref1 ref2 -- ref2/f )
+    2dup [ index>> ] bi@ = [
+        swap over parent>>
+        (co-refs?) [ drop f ] unless
+    ] [ 2drop f ] if ;
 
 ! __________________
 ! rhythm-transformer
@@ -58,9 +70,6 @@ PRIVATE>
 : >rhythm-transformer< ( rt -- rhm )
     [ refs>> [ !rhythm-ref ] each ] [ underlying>> ] bi ;
 
-: with-rhythm-transformer ( ... rhm quot: ( ... refs -- ... refs' ) -- ... rhm' )
-    [ <rhythm-transformer> ] dip change-refs >rhythm-transformer< ; inline
-
 <PRIVATE
 :: (next-ref) ( ... place ndx parent value pred: ( ... value -- ... ? ) -- ... place' ref )
     value pred call place swap [ 1 + ] when
@@ -73,7 +82,39 @@ PRIVATE>
     ] [ (next-ref) ] if ; inline recursive
 PRIVATE>
 
-:: make-rhythm-transformer ( ... rhm place pred: ( ... value -- ... ? ) -- ... place' rt )
+:: make-rhythm-transformer ( ... rhm place pred: ( ... value -- ... ? ) -- ... lastplace rt )
     place 0 f rhm pred (create-refs*)
     dup rhythm-ref? [ 1array ] [ flatten ] if
     rhm rhythm-transformer boa ; inline
+
+<PRIVATE
+GENERIC: (rt-clone) ( newparent iter oldref oldrelt -- newrelt )
+
+: ((rt-clone-atom)) ( newparent iter value -- value )
+    [ ?step parent<< ] dip ; inline
+
+: (rt-clone-atom) ( newparent iter oldref value newref -- value )
+    swapd co-refs? [ ((rt-clone-atom)) ] [ 2nip ] if ; inline
+
+M: number (rt-clone) ( newparent iter oldref value -- value )
+    pick ?peek nip [ (rt-clone-atom) ] [ 2nip nip ] if* ;
+
+:: (pre-clone-next) ( relt newparent iter ndx oldrhm -- newparent iter oldref relt )
+    newparent iter ndx oldrhm relt [ <rhythm-ref> ] keep ; inline
+
+M:: rhythm (rt-clone) ( newparent iter oldref oldrhm -- newrhm )
+    rhythm new :> newrhm
+    newrhm iter oldrhm [ division>> ] keep
+    [ (pre-clone-next) (rt-clone) ] curry with with map-index
+    newrhm swap >>division
+    oldrhm duration>> clone >>duration ;
+PRIVATE>
+
+M: rhythm-transformer clone ( rt -- rt' )
+    (clone) [ [ clone ] map ] change-refs ; inline
+
+M: rhythm-transformer clone-rhythm ( rt -- rt' )
+    [ refs>> [ clone ] map ]
+    [ underlying>> ] bi over
+    [ <iterator> f swap f ] [ (rt-clone) ] [ swap ] tri*
+    rhythm-transformer boa ;

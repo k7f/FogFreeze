@@ -5,7 +5,7 @@ USING: help.markup help.syntax kernel math om.help.markup om.help.reference ;
 IN: om.rhythm.meter
 
 HELP: meter
-{ $var-description "This is a special kind of rhythm duration serving as time signature of measures." } ;
+{ $class-description "This is a special kind of rhythm duration serving as time signature of measures." } ;
 
 HELP: <meter>
 { $values

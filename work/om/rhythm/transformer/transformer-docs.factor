@@ -5,8 +5,22 @@ USING: help.markup help.syntax kernel math om.help.markup om.help.reference
        om.rhythm refs ;
 IN: om.rhythm.transformer
 
+HELP: map-rests>notes
+{ $values
+  { "rt" rhythm-transformer }
+  { "rt'" rhythm-transformer }
+}
+{ $description "Outputs a new " { $link rhythm-transformer } " after creating a clone of the underlying " { $link rhythm } ", redirecting all references to the corresponding nodes of the new rhythm, and replacing all rests with notes in the new rhythm." } ;
+
+HELP: map-rests>notes!
+{ $values
+  { "rt" rhythm-transformer }
+  { "rt'" rhythm-transformer }
+}
+{ $description "Replaces all rests with notes in a rhythm tree." } ;
+
 HELP: rhythm-ref
-{ $var-description "A reference to a " { $link rhythm-element } "."
+{ $class-description "A reference to a " { $link rhythm-element } "."
   { $list
     { "Slot " { $snippet "index" } " is the element's local index in the " { $snippet "parent" } "'s division." }
     { "Slot " { $snippet "place" } " is the element's global index in the overall " { $link rhythm } "." } }
@@ -51,7 +65,7 @@ HELP: co-refs?
 { $description "Outputs the second of two " { $link rhythm-ref } "s if they point to the same node of the same rhythmic structure; otherwise outputs " { $link POSTPONE: f } "." } ;
 
 HELP: rhythm-transformer
-{ $var-description "An auxiliary data structure facilitating " { $link rhythm } " traversal."
+{ $class-description "An auxiliary data structure facilitating " { $link rhythm } " traversal."
   $nl
   "The slot " { $snippet "refs" } " is a flat sequence of " { $link rhythm-ref } "s. Typically (although not necessarily) it is a subsequence of atomic " { $link rhythm-element } "s contained in the " { $snippet "underlying" } " " { $link rhythm } "."
   $nl
@@ -60,6 +74,8 @@ HELP: rhythm-transformer
     { "The method " { $link clone } " makes a copy of the " { $snippet "refs" } " sequence and its elements, but the new references still point to the original " { $snippet "underlying" } " " { $link rhythm } "." }
     { "The method " { $link clone-rhythm } ", additionally, makes a deep copy of the " { $snippet "underlying" } " " { $link rhythm } ", and points new references to it." }
   }
+  $nl
+  "Several rhythm-related words have methods defined for this type.  For example, if a " { $link rhythm-transformer } " is input to " { $link map-rests>notes } ", the result will be a new " { $link rhythm-transformer } " attached to a clone of the underlying " { $link rhythm } " of the input transformer, with all references redirected to the corresponding nodes of the new rhythm, and all rests replaced with notes in the new rhythm."
 }
 { $see-also make-rhythm-transformer } ;
 
@@ -97,7 +113,8 @@ OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
 { "treeobj" rhythm-ref "type" }
 { "trans-tree" <rhythm-transformer> }
-{ "trans-obj" >rhythm-transformer< } ;
+{ "trans-obj" >rhythm-transformer< }
+{ "transform-rests" map-rests>notes! } ;
 
 ARTICLE: "om.rhythm.transformer" "om.rhythm.transformer"
 { $aux-vocab-intro "om.rhythm.transformer" "om.trees" } ;

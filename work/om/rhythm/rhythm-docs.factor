@@ -7,10 +7,10 @@ USING: addenda.help.markup arrays help.markup help.syntax kernel math
 IN: om.rhythm
 
 HELP: rhythm-duration
-{ $var-description "A numeric value or a " { $link meter } "." } ;
+{ $class-description "A numeric value or a " { $link meter } "." } ;
 
 HELP: rhythm-element
-{ $var-description "A node in a rhythm tree: a numeric atom or a " { $link rhythm } "."
+{ $class-description "A node in a rhythm tree: a numeric atom or a " { $link rhythm } "."
   $nl
   "Standard interpretation of atomic rhythm elements is defined for three subdomains:"
   { $list
@@ -28,7 +28,7 @@ HELP: clone-rhythm
 { $contract "Given a " { $link rhythm } " object, the output is a deep copy of the entire rhythm tree.  If a method is defined for a rhythm-handling type, it will perform deep copy of its underlying rhythm." } ;
 
 HELP: rhythm
-{ $var-description "A rhythm tree."
+{ $class-description "A rhythm tree."
   { $list
     { "Slot " { $snippet "duration" } " may hold a " { $link rhythm-duration } " or may be left without an explicit value." }
     { "Slot " { $snippet "division" } " is " { $sequence-of rhythm-element } "." }
@@ -102,7 +102,7 @@ HELP: fuse-rests-deep
 { $description "" } ;
 
 HELP: measure
-{ $var-description "This is a special kind of " { $link rhythm } ", whose " { $snippet "duration" } " slot holds a " { $link meter } "." } ;
+{ $class-description "This is a special kind of " { $link rhythm } ", whose " { $snippet "duration" } " slot holds a " { $link meter } "." } ;
 
 HELP: <measure>
 { $values

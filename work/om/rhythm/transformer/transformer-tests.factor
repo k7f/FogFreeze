@@ -77,3 +77,17 @@ CONSTANT: rhythmC T{
     rhythmC <rhythm-transformer> dup clone-rhythm
     [ refs>> last parent>> ] bi@ [ eq? ] [ = ] 2bi
 ] unit-test
+
+[
+    T{ rhythm f f { T{ rhythm f 1 { 1 T{ rhythm f 1 { 1 1 } } 1 } }
+                    T{ rhythm f 1 { 1 } } } }
+] [
+    rhythmC <rhythm-transformer> map-rests>notes! >rhythm-transformer<
+] unit-test
+
+[
+    T{ rhythm f f { T{ rhythm f 1 { 1 T{ rhythm f 1 { 1 1 } } 1 } }
+                    T{ rhythm f 1 { 1 } } } }
+] [
+    rhythmC <rhythm-transformer> map-rests>notes >rhythm-transformer<
+] unit-test

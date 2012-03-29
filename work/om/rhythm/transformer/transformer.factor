@@ -118,3 +118,31 @@ M: rhythm-transformer clone-rhythm ( rt -- rt' )
     [ underlying>> ] bi over
     [ <iterator> f swap f ] [ (rt-clone) ] [ swap ] tri*
     rhythm-transformer boa ;
+
+! _______________
+! map-rests>notes
+
+<PRIVATE
+: (?rests>notes-out) ( ref -- value/f )
+    value>> dup integer? [
+        dup 0 < [ neg ] [ drop f ] if
+    ] [ drop f ] if ; inline
+
+: (?rests>notes-in) ( ref -- value/f )
+    value>> dup integer? [
+        dup 0 > [ drop f ] [ abs >float  ] if
+    ] [ abs ] if ; inline
+
+: (?rests>notes) ( in? ref -- in?' )
+    swap over [
+        [ (?rests>notes-in) ]
+        [ (?rests>notes-out) ] if
+        [ dup ] [ f f ] if*
+    ] dip set-ref ; inline
+PRIVATE>
+
+M: rhythm-transformer map-rests>notes! ( rt -- rt' )
+    [ f ] [ refs>> ] bi [ (?rests>notes) ] each drop ;
+
+M: rhythm-transformer map-rests>notes ( rt -- rt' )
+    clone-rhythm map-rests>notes! ;

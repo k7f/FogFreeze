@@ -161,3 +161,19 @@ IN: om.rhythm.tests
 [ t ] [
     T{ rhythm f T{ meter f 4 4 } { 1 } } dup [ ] map-rhythm! eq?
 ] unit-test
+
+[
+    T{ rhythm f f { T{ rhythm f 1 { 1 T{ rhythm f 1 { 1 1 } } 1 } }
+                    T{ rhythm f 1 { 1 } } } }
+] [
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -1 } } 1 } }
+                    T{ rhythm f 1 { -1 } } } } map-rests>notes
+] unit-test
+
+[
+    T{ rhythm f f { T{ rhythm f 1 { 1 T{ rhythm f 1 { 1 1 } } 1 } }
+                    T{ rhythm f 1 { 1 } } } }
+] [
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -1 } } 1 } }
+                    T{ rhythm f 1 { -1 } } } } map-rests>notes!
+] unit-test

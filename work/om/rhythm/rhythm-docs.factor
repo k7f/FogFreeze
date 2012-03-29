@@ -25,7 +25,7 @@ HELP: clone-rhythm
   { "obj" object }
   { "cloned" object }
 }
-{ $contract "Given a " { $link rhythm } " object, the output is a deep copy of the entire rhythm tree.  If a method is defined for a rhythm-related type, it will perform deep copy of its underlying rhythm." } ;
+{ $contract "Given a " { $link rhythm } " object, the output is a deep copy of the entire rhythm tree.  If a method is defined for a rhythm-handling type, it will perform deep copy of its underlying rhythm." } ;
 
 HELP: rhythm
 { $var-description "A rhythm tree."
@@ -139,6 +139,22 @@ HELP: map-rhythm!
 { $description "If the input " { $link rhythm-element } " is a number, outputs the result of applying the quotation to that number.  If it is a " { $link rhythm } ", applies the quotation to each atomic " { $link rhythm-element } " of the rhythm, replacing old values with new values in the same rhythm structure." }
 { $see-also map-rhythm } ;
 
+HELP: map-rests>notes
+{ $values
+  { "obj" object }
+  { "obj'" object }
+}
+{ $contract "Given a " { $link rhythm } " object, the output is a deep copy of the entire rhythm tree with all rests replaced with notes.  If a method is defined for a rhythm-handling type, it will perform deep copy of its underlying rhythm and replace all rests with notes in it." }
+{ $see-also map-rests>notes! } ;
+
+HELP: map-rests>notes!
+{ $values
+  { "obj" object }
+  { "obj'" object }
+}
+{ $contract "Given a " { $link rhythm } " object, the output is the modified input rhythm having all rests replaced with notes.  If a method is defined for a rhythm-handling type, it will replace all rests with notes in its underlying rhythm." }
+{ $see-also map-rests>notes } ;
+
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
 { "build-one-measure" <measure> }
@@ -147,7 +163,9 @@ OM-REFERENCE:
 { "fuse-pauses-and-tied-notes-between-beats" fuse-rests-and-ties }
 { "grouper1" fuse-notes-deep }
 { "grouper2" fuse-rests-deep }
-{ "grouper3" fuse-rests-deep } ;
+{ "grouper3" fuse-rests-deep }
+{ "remove-rests" map-rests>notes }
+{ "remove-rests" map-rests>notes! } ;
 
 OM-REFERENCE:
 "projects/02-musicproject/container/tree2container.lisp"

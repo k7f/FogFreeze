@@ -309,3 +309,39 @@ PRIVATE>
         swap
         [ swap [ map-rhythm! ] curry map! ] change-division
     ] [ call ] if ; inline recursive
+
+! _______________
+! map-rests>notes
+
+GENERIC: map-rests>notes ( obj -- obj' )
+GENERIC: map-rests>notes! ( obj -- obj' )
+
+<PRIVATE
+: (?rests>notes-out) ( value -- value'/f )
+    dup integer? [
+        dup 0 < [ neg ] [ drop f ] if
+    ] [ drop f ] if ; inline
+
+: (?rests>notes-in) ( value -- value'/f )
+    dup integer? [
+        dup 0 > [ drop f ] [ abs >float ] if
+    ] [ abs ] if ; inline
+
+: (?rests>notes) ( in? value -- in?' value' )
+    [
+        swap [ (?rests>notes-in) ]
+        [ (?rests>notes-out) ] if dup dup
+    ] keep ? ; inline
+PRIVATE>
+
+M: number map-rests>notes ( value -- value' )
+    dup integer? [ abs ] when ;
+
+M: rhythm map-rests>notes ( rhm -- rhm' )
+    f swap [ (?rests>notes) ] map-rhythm nip ;
+
+M: number map-rests>notes! ( value -- value' )
+    dup integer? [ abs ] when ;
+
+M: rhythm map-rests>notes! ( rhm -- rhm' )
+    f swap [ (?rests>notes) ] map-rhythm! nip ;

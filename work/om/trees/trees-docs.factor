@@ -2,7 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays help.markup help.syntax math om.help.markup
-       om.help.reference om.rhythm om.rhythm.transformer om.trees.private ;
+       om.help.reference om.rhythm om.rhythm.transformer om.trees.private
+       sequences ;
 IN: om.trees
 
 HELP: mktree
@@ -70,6 +71,20 @@ HELP: filtertree
 }
 { $description "Replaces expressed notes in given positions from " { $snippet "places" } " with rests." } ;
 
+HELP: group-pulses
+{ $values
+  { "rhm" rhythm }
+  { "pulses" { $sequence-of sequence } }
+}
+{ $description "Collects every pulses (expressed durations, including tied notes) from " { $snippet "tree" } "." } ;
+
+HELP: n-pulses
+{ $values
+  { "rhm" rhythm }
+  { "n" integer }
+}
+{ $description "Returns the numbre of pulses in " { $snippet "tree" } "." } ;
+
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
 { "mktree" mktree }
@@ -79,7 +94,9 @@ OM-REFERENCE:
 { "transform-rests" transform-rests }
 { "remove-rests" remove-rests }
 { "transform-notes-flt" transform-notes-flt }
-{ "filtertree" filtertree } ;
+{ "filtertree" filtertree }
+{ "group-pulses" group-pulses }
+{ "n-pulses" n-pulses } ;
 
 ARTICLE: "om.trees" "om.trees"
 { $vocab-intro "om.trees" "projects/02-musicproject/functions/trees.lisp" } ;

@@ -1,8 +1,9 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors arrays kernel math math.functions om.rhythm om.rhythm.meter
-       om.rhythm.transformer refs sequences ;
+USING: accessors addenda.sequences arrays kernel math math.functions
+       om.lists om.rhythm om.rhythm.meter om.rhythm.transformer om.series
+       refs sequences ;
 IN: om.trees
 
 ! ______
@@ -82,3 +83,26 @@ M: rhythm-transformer transform-notes-flt ( rt places -- rt' ) submap-notes>rest
 
 GENERIC# filtertree 1 ( relt places -- relt' )
 M: rhythm-element filtertree ( relt places -- relt' ) submap-notes>rests! ; inline
+
+! ____________
+! group-pulses
+
+<PRIVATE
+: (non-tie-indices) ( atoms -- indices )
+    [ float? not ] filter/indices ;
+
+: (group-pulses) ( atoms indices -- pulses )
+    dup first 0 = [ 0 prefix ] unless
+    over length suffix
+    x->dx 'linear group-list ;
+PRIVATE>
+
+: group-pulses ( rhm -- pulses )
+    rhythm-atoms dup (non-tie-indices)
+    [ drop f ] [ (group-pulses) ] if-empty ;
+
+! ________
+! n-pulses
+
+: n-pulses ( rhm -- n )
+    group-pulses [ first 0 > ] filter length ;

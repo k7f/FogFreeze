@@ -87,3 +87,13 @@ IN: om.trees.tests
                     T{ rhythm f 1 { 1 } } }
     } { 0 2 } filtertree
 ] unit-test
+
+[ { { 1 } { 1 2.0 1.0 } { 1 } { 1 } { 1 } { 1 } { 1 } { 2 } { 1 } { 1 } { -1 } { 1 } } ] [
+    f { { 4//4 { 1 { 1 { 1 2.0 1.0 1 } } 1 1 } }
+        { 4//4 { 1 { 1 { 1 2 1 1 } } -1 1 } } } <rhythm> group-pulses
+] unit-test
+
+[ 11 ] [
+    f { { 4//4 { 1 { 1 { 1 2.0 1.0 1 } } 1 1 } }
+        { 4//4 { 1 { 1 { 1 2 1 1 } } -1 1 } } } <rhythm> n-pulses
+] unit-test

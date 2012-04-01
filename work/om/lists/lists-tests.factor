@@ -36,6 +36,10 @@ IN: om.lists.tests
     { 1 2 3 } 4 { 5 6 7 } x-append
 ] unit-test
 
+[ { 1 { 2 } 3 { 4 { 5 } 6 } } ] [
+    { { 1 { 2 } } { 3 } { { 4 { 5 } 6 } } } flat-once
+] unit-test
+
 [ { 1 2 3 4 5 6 } ] [
     { { 1 2 } 3 { { 4 5 } 6 } } f flat
 ] unit-test

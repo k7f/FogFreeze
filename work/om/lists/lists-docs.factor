@@ -38,6 +38,13 @@ HELP: x-append
 { $description "Appends lists or atoms together to form a new list." }
 { $notes "This function also works with additional elements." } ;
 
+HELP: flat-once
+{ $values
+  { "seq" sequence }
+  { "seq'" sequence }
+}
+{ $description "If all elements of the sequence are sequences themselves, outputs a copy of input with top level of nesting removed.  Otherwise, if the first element of input is not a sequence, outputs the input sequence.  Otherwise, throws an error." } ;
+
 HELP: flat
 { $values
   { "seq" sequence }
@@ -137,6 +144,7 @@ OM-REFERENCE:
 { "last-n" last-n }
 { "first-n" first-n }
 { "x-append" x-append }
+{ "flat-once" flat-once }
 { "flat" flat }
 { "create-list" create-list }
 { "mat-trans" mat-trans }

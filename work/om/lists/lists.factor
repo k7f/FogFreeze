@@ -85,6 +85,11 @@ PRIVATE>
 ! ____
 ! flat
 
+GENERIC: flat-once ( seq -- seq' )
+
+M: sequence flat-once ( seq -- seq' )
+    dup first atom? [ concat ] unless ;
+
 <PRIVATE
 : (flat-new) ( seq -- seq' )
     [ sum-lengths-with-atoms ] keep new-resizable ; inline

@@ -2,8 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors addenda.errors addenda.sequences arrays classes combinators
-       fry grouping kernel locals make math math.functions om.lists
-       om.rhythm.meter om.rhythm.onsets om.series sequences ;
+       fry grouping kernel locals make math math.functions om.rhythm.meter
+       om.rhythm.onsets om.series sequences ;
 IN: om.rhythm
 
 MIXIN: rhythm-duration
@@ -403,6 +403,8 @@ M: number submap-notes>rests! ( value places -- value' )
 PRIVATE>
 
 GENERIC: rhythm-atoms ( obj -- atoms )
+
+M: number rhythm-atoms ( num -- atoms ) 1array ;
 
 M: rhythm rhythm-atoms ( rhm -- atoms )
     [ division>> [ (rhythm-atoms) ] each ] { } make ;

@@ -131,3 +131,7 @@ CONSTANT: rhythmD T{
 ] [
     rhythmD { 0 2 } submap-notes>rests
 ] unit-test
+
+[ { -1 1 1.0 1 -1 } ] [
+    rhythmB rhythm-atoms
+] unit-test

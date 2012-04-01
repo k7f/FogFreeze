@@ -1,7 +1,7 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors addenda.sequences.iterators arrays kernel locals math
+USING: accessors addenda.sequences.iterators arrays kernel locals make math
        math.functions om.rhythm refs sequences sequences.deep ;
 IN: om.rhythm.transformer
 
@@ -204,3 +204,9 @@ M: rhythm submap-notes>rests ( rhm places -- rhm' )
 M: rhythm submap-notes>rests! ( rhm places -- rhm' )
     [ -1 make-note-transformer nip ]
     [ submap-notes>rests! >rhythm-transformer< ] bi* ;
+
+! ____________
+! rhythm-atoms
+
+M: rhythm-transformer rhythm-atoms ( rt -- atoms )
+    [ refs>> [ value>> rhythm-atoms % ] each ] { } make ;

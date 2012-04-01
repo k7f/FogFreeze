@@ -193,6 +193,13 @@ HELP: submap-notes>rests!
   "If a method is defined for a rhythm-handling type, it will replace selected notes with rests in its underlying rhythm." }
 { $see-also submap-notes>rests } ;
 
+HELP: rhythm-atoms
+{ $values
+  { "obj" object }
+  { "atoms" { $sequence-of number } }
+}
+{ $contract "Outputs a flat sequence containing all atoms of a " { $link rhythm } ".  If there is a method defined for a given rhythm-handling type, the input rhythm may be provided indirectly." } ;
+
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
 { "build-one-measure" <measure> }
@@ -203,7 +210,8 @@ OM-REFERENCE:
 { "grouper2" fuse-rests-deep }
 { "grouper3" fuse-rests-deep }
 { "remove-rests" map-rests>notes }
-{ "remove-rests" map-rests>notes! } ;
+{ "remove-rests" map-rests>notes! }
+{ "give-pulse" rhythm-atoms } ;
 
 OM-REFERENCE:
 "projects/02-musicproject/container/tree2container.lisp"

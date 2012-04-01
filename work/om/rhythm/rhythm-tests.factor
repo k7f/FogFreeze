@@ -193,3 +193,8 @@ IN: om.rhythm.tests
     T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -1 } } 1 } }
                     T{ rhythm f 1 { -1 } } } } map-notes>rests!
 ] unit-test
+
+[ { -1 1 -1 1 -1 } ] [
+    T{ rhythm f f { T{ rhythm f 1 { -1 T{ rhythm f 1 { 1 -1 } } 1 } }
+                    T{ rhythm f 1 { -1 } } } } rhythm-atoms
+] unit-test

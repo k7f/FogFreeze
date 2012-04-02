@@ -85,6 +85,13 @@ HELP: n-pulses
 }
 { $description "Returns the numbre of pulses in " { $snippet "tree" } "." } ;
 
+HELP: reversetree
+{ $values
+  { "rhm" rhythm }
+  { "rhm'" rhythm }
+}
+{ $description "Recursively reverses " { $snippet "tree" } "." } ;
+
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
 { "mktree" mktree }
@@ -96,7 +103,8 @@ OM-REFERENCE:
 { "transform-notes-flt" transform-notes-flt }
 { "filtertree" filtertree }
 { "group-pulses" group-pulses }
-{ "n-pulses" n-pulses } ;
+{ "n-pulses" n-pulses }
+{ "reversetree" reversetree } ;
 
 ARTICLE: "om.trees" "om.trees"
 { $vocab-intro "om.trees" "projects/02-musicproject/functions/trees.lisp" } ;

@@ -97,3 +97,12 @@ IN: om.trees.tests
     f { { 4//4 { 1 { 1 { 1 2.0 1.0 1 } } 1 1 } }
         { 4//4 { 1 { 1 { 1 2 1 1 } } -1 1 } } } <rhythm> n-pulses
 ] unit-test
+
+[ T{ rhythm f 2 { T{ rhythm f T{ meter f 4 4 }
+                     { 1 -1 T{ rhythm f 1 { 1 1 2 1 } } 1.0 } }
+                  T{ rhythm f T{ meter f 4 4 }
+                     { 1 1 T{ rhythm f 1 { 1 1 2.0 1.0 } } 1 } } } }
+] [
+    f { { 4//4 { 1 { 1 { 1 2.0 1.0 1 } } 1 1 } }
+        { 4//4 { 1 { 1 { 1.0 2 1 1 } } -1 1 } } } <rhythm> reversetree
+] unit-test

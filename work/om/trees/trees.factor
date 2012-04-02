@@ -106,3 +106,22 @@ PRIVATE>
 
 : n-pulses ( rhm -- n )
     group-pulses [ first 0 > ] filter length ;
+
+! ___________
+! reversetree
+
+<PRIVATE
+: (reverse-ties) ( slice -- slice/f )
+    dup length 1 > [
+        dup [ first [ value>> >float ] keep value<< ]
+        [ last [ value>> >integer ] keep value<< ] bi
+    ] [ drop f ] if ; inline
+
+: (reversetree) ( relt -- relt' )
+    dup rhythm? [
+        [ [ (reversetree) ] map! reverse! ] change-division
+    ] when ;
+PRIVATE>
+
+: reversetree ( rhm -- rhm' )
+    [ (reverse-ties) ] map-note-slices (reversetree) ;

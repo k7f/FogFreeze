@@ -86,14 +86,30 @@ HELP: make-rhythm-transformer
 { $values
   { "rhm" rhythm }
   { "place" integer }
-  { "pred" { $quotation "( ... value -- ... ? )" } }
+  { "increment" { $quotation "( ... value -- ... ? )" } }
   { "lastplace" integer }
   { "rt" rhythm-transformer }
 }
 { $description "Creates a new " { $link rhythm-transformer } " containing " { $link rhythm-ref } "s to all atomic " { $link rhythm-element } "s of " { $snippet "rhm" } "."
   $nl
   "Global indexing of references is controlled by the predicate, which takes a numeric value of an atomic element and outputs a boolean indicating whether to increment the index for that atom, starting from " { $snippet "place" } " as the initial index value. The global index assigned to the last atom is output alongside the transformer." }
-{ $see-also <rhythm-transformer> } ;
+{ $notes "Although a typical caller discards it, the " { $snippet "lastplace" } " output is retained as a way to work around a compiler bug." }
+{ $see-also <rhythm-transformer> make-rhythm-transformer* } ;
+
+HELP: make-rhythm-transformer*
+{ $values
+  { "rhm" rhythm }
+  { "place" integer }
+  { "include" { $quotation "( ..a value -- ..b ? )" } }
+  { "increment" { $quotation "( ..b value -- ..a ? )" } }
+  { "lastplace" integer }
+  { "rt" rhythm-transformer }
+}
+{ $description "Creates a new " { $link rhythm-transformer } " containing " { $link rhythm-ref } "s to atomic " { $link rhythm-element } "s of " { $snippet "rhm" } ", for which the predicate " { $snippet "include" } " outputs a true value."
+  $nl
+  "Global indexing of references is controlled by the predicate " { $snippet "increment" } ", which takes a numeric value of an atomic element and outputs a boolean indicating whether to increment the index for that atom, starting from " { $snippet "place" } " as the initial index value. The global index assigned to the last atom is output alongside the transformer." }
+{ $notes "Although a typical caller discards it, the " { $snippet "lastplace" } " output is retained as a way to work around a compiler bug." }
+{ $see-also <rhythm-transformer> make-rhythm-transformer } ;
 
 HELP: make-note-transformer
 { $values
@@ -104,8 +120,22 @@ HELP: make-note-transformer
 }
 { $description "Creates a new " { $link rhythm-transformer } " containing " { $link rhythm-ref } "s to all atomic " { $link rhythm-element } "s of " { $snippet "rhm" } "."
   $nl
-  "Global index starts form " { $snippet "place" } " and is incremented for each note." }
-{ $see-also make-rhythm-transformer } ;
+  "Global index starts from " { $snippet "place" } " and is incremented for each note." }
+{ $notes "Although a typical caller discards it, the " { $snippet "lastplace" } " output is retained as a way to work around a compiler bug." }
+{ $see-also make-note-transformer* make-rhythm-transformer } ;
+
+HELP: make-note-transformer*
+{ $values
+  { "rhm" rhythm }
+  { "place" integer }
+  { "lastplace" integer }
+  { "rt" rhythm-transformer }
+}
+{ $description "Creates a new " { $link rhythm-transformer } " containing " { $link rhythm-ref } "s to all atomic " { $link rhythm-element } "s of " { $snippet "rhm" } ", excluding rests."
+  $nl
+  "Global index starts from " { $snippet "place" } " and is incremented for each note." }
+{ $notes "Although a typical caller discards it, the " { $snippet "lastplace" } " output is retained as a way to work around a compiler bug." }
+{ $see-also make-note-transformer make-rhythm-transformer* } ;
 
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"

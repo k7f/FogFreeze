@@ -69,6 +69,10 @@ CONSTANT: rhythmD T{
     rhythmD -1 make-note-transformer nip indices&places
 ] unit-test
 
+[ { 0 1 2 } { 0 0 1 } ] [
+    rhythmB -1 make-note-transformer* nip indices&places
+] unit-test
+
 [ f t ] [
     rhythmC <rhythm-transformer> dup clone [ eq? ] [ = ] 2bi
 ] unit-test

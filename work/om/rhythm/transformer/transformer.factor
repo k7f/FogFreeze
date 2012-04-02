@@ -54,11 +54,11 @@ GENERIC: (create-refs) ( ... place ndx parent relt -- ... place' refs )
 M: number (create-refs) ( ... place ndx parent value -- ... place' ref )
     <rhythm-ref> [ [ 1 + ] keep ] dip swap >>place ;
 
-: (create-next-refs) ( ... place relt ndx rhm -- ... place' refs )
+: (next-refs) ( ... place relt ndx rhm -- ... place' refs )
     rot (create-refs) ; inline
 
 M: rhythm (create-refs) ( ... place ndx parent rhm -- ... place' refs )
-    2nip [ division>> ] keep [ (create-next-refs) ] curry map-index ;
+    2nip [ division>> ] keep [ (next-refs) ] curry map-index ;
 PRIVATE>
 
 : <rhythm-transformer> ( rhm -- rt )
@@ -70,24 +70,56 @@ PRIVATE>
 : >rhythm-transformer< ( rt -- rhm )
     [ refs>> [ !rhythm-ref ] each ] [ underlying>> ] bi ;
 
-<PRIVATE
-:: (next-ref) ( ... place ndx parent value pred: ( ... value -- ... ? ) -- ... place' ref )
-    value pred call place swap [ 1 + ] when
-    [ ndx parent value <rhythm-ref> ] keep >>place ; inline
-
-: (create-refs*) ( ... place ndx parent relt pred: ( ... value -- ... ? ) -- ... place' refs )
-    over rhythm? [
-        [ 2nip [ division>> ] keep ] dip
-        [ [ rot ] dip (create-refs*) ] 2curry map-index
-    ] [ (next-ref) ] if ; inline recursive
-PRIVATE>
-
 ! _______________________
 ! make-rhythm-transformer
 
-:: make-rhythm-transformer ( ... rhm place pred: ( ... value -- ... ? ) -- ... lastplace rt )
-    place 0 f rhm pred (create-refs*)
+<PRIVATE
+:: (placed-ref) ( ... place ndx parent value increment: ( ... value -- ... ? ) -- ... place' ref )
+    place value increment call [ 1 + ] when
+    [ ndx parent value <rhythm-ref> ] keep >>place ; inline
+
+DEFER: (more-placed-refs)
+
+: (create-placed-refs) ( ... place ndx parent relt increment: ( ... value -- ... ? ) -- ... place' refs )
+    over rhythm? [
+        [ 2nip [ division>> ] keep ] dip
+        [ (more-placed-refs) ] 2curry map-index
+    ] [ (placed-ref) ] if ; inline recursive
+
+: (more-placed-refs) ( ... place relt ndx parent increment -- ... place' refs )
+    [ rot ] dip (create-placed-refs) ; inline
+PRIVATE>
+
+:: make-rhythm-transformer ( ... rhm place increment: ( ... value -- ... ? ) -- ... lastplace rt )
+    place 0 f rhm increment (create-placed-refs)
     dup rhythm-ref? [ 1array ] [ flatten ] if
+    rhm rhythm-transformer boa ; inline
+
+! ________________________
+! make-rhythm-transformer*
+
+<PRIVATE
+:: (placed-ref*) ( ..a place ndx parent value include: ( ..a value -- ..b ? ) increment: ( ..b value -- ..a ? ) -- ..a place' )
+    value include call [
+        place value increment call [ 1 + ] when
+        [ ndx parent value <rhythm-ref> ] keep >>place ,
+    ] [ place ] if ; inline
+
+DEFER: (more-placed-refs*)
+
+: (create-placed-refs*) ( ..a place ndx parent relt include: ( ..a value -- ..b ? ) increment: ( ..b value -- ..a ? ) -- ..a place' )
+    pick rhythm? [
+        [ 2nip [ division>> ] keep ] 2dip
+        [ (more-placed-refs*) ] 3curry each-index
+    ] [ (placed-ref*) ] if ; inline recursive
+
+: (more-placed-refs*) ( ... place relt ndx parent include increment -- ... place' )
+    [ rot ] 2dip (create-placed-refs*) ; inline
+PRIVATE>
+
+:: make-rhythm-transformer* ( ..a rhm place include: ( ..a value -- ..b ? ) increment: ( ..b value -- ..a ? ) -- ..a lastplace rt )
+    place 0 f rhm include increment
+    [ (create-placed-refs*) ] { } make
     rhm rhythm-transformer boa ; inline
 
 ! _____________________
@@ -95,6 +127,9 @@ PRIVATE>
 
 : make-note-transformer ( rhm place -- lastplace rt )
     [ dup integer? [ 0 > ] [ drop f ] if ] make-rhythm-transformer ;
+
+: make-note-transformer* ( rhm place -- lastplace rt )
+    [ 0 > ] [ integer? ] make-rhythm-transformer* ;
 
 ! _____
 ! clone

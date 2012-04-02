@@ -139,3 +139,22 @@ CONSTANT: rhythmD T{
 [ { -1 1 1.0 1 -1 } ] [
     rhythmB rhythm-atoms
 ] unit-test
+
+[ { { 1 } { 2 3.0 } { 5 } } ] [
+    f { 1 2 3. -4 5 -6 } <rhythm> <rhythm-transformer>
+    group-notes [ [ value>> ] map ] map
+] unit-test
+
+[ { { 2 3.0 } { 5 } } ] [
+    f { -1 2 3. -4 5 } <rhythm> <rhythm-transformer>
+    group-notes [ [ value>> ] map ] map
+] unit-test
+
+[ { { 2 3.0 } { 5 } } ] [
+    f { -1 2 3. -4 5 } <rhythm> group-notes [ [ value>> ] map ] map
+] unit-test
+
+[ T{ rhythm f 15 { -1 4 6. -4 10 } } ] [
+    f { -1 2 3. -4 5 } <rhythm> dup <rhythm-transformer>
+    [ [ [ 2 * ] change-value !rhythm-ref ] each ] each-note
+] unit-test

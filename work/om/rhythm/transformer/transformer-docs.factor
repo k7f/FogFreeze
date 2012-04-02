@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: help.markup help.syntax kernel math om.help.markup om.help.reference
-       om.rhythm refs ;
+USING: addenda.help.markup help.markup help.syntax kernel math om.help.markup
+       om.help.reference om.rhythm refs sequences ;
 IN: om.rhythm.transformer
 
 HELP: rhythm-ref
@@ -136,6 +136,24 @@ HELP: make-note-transformer*
   "Global index starts from " { $snippet "place" } " and is incremented for each note." }
 { $notes "Although a typical caller discards it, the " { $snippet "lastplace" } " output is retained as a way to work around a compiler bug." }
 { $see-also make-note-transformer make-rhythm-transformer* } ;
+
+HELP: group-notes
+{ $values
+  { "rt" rhythm-transformer }
+  { "slices" { $sequence-of slice } }
+}
+{ $description "Outputs a sequence of all notes of a " { $link rhythm } ".  Each note is represented by a slice containing " { $link rhythm-ref } "s to the note proper and its tied continuations."
+  $nl
+  "The rhythm may be provided directly or wrapped in a rhythm-handling type." } ;
+
+HELP: each-note
+{ $values
+  { "rt" rhythm-transformer }
+  { "quot" { $quotation "( ... slice -- ... )" } }
+}
+{ $description "Applies the quotation to each note of a " { $link rhythm } ".  The note is passed as a slice containing " { $link rhythm-ref } "s to the note proper and its tied continuations."
+  $nl
+  "The rhythm may be provided directly or wrapped in a rhythm-handling type." } ;
 
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"

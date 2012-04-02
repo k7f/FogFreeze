@@ -245,3 +245,38 @@ M: rhythm submap-notes>rests! ( rhm places -- rhm' )
 
 M: rhythm-transformer rhythm-atoms ( rt -- atoms )
     [ refs>> [ value>> rhythm-atoms % ] each ] { } make ;
+
+! ___________
+! group-notes
+
+<PRIVATE
+: (next-slice) ( from to seq -- )
+    <slice> [
+        dup first value>> 0 > [ , ] [ drop ] if
+    ] unless-empty ; inline
+
+: (?group-next-slice) ( refs from ref ndx -- refs from' )
+    swap value>> integer? [
+        [ pick (next-slice) ] keep
+    ] [ drop ] if ; inline
+
+: (?group-last-slice) ( refs from -- )
+    swap [ length ] keep (next-slice) ; inline
+PRIVATE>
+
+GENERIC: group-notes ( rt -- slices )
+
+M: rhythm-transformer group-notes ( rt -- slices )
+    refs>> [ 0 ] keep [
+        [ (?group-next-slice) ] each-index
+        (?group-last-slice)
+    ] { } make ;
+
+M: rhythm group-notes ( rhm -- slices )
+    -1 make-note-transformer* nip group-notes ;
+
+! _________
+! each-note
+
+: each-note ( ... rt quot: ( ... slice -- ... ) -- ... )
+    [ group-notes ] dip each ; inline

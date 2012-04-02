@@ -156,5 +156,20 @@ CONSTANT: rhythmD T{
 
 [ T{ rhythm f 15 { -1 4 6. -4 10 } } ] [
     f { -1 2 3. -4 5 } <rhythm> dup <rhythm-transformer>
-    [ [ [ 2 * ] change-value !rhythm-ref ] each ] each-note
+    [ [ [ 2 * ] change-value !rhythm-ref ] each ] each-note-slice
+] unit-test
+
+[ T{ rhythm f 15 { -1 4 6. -4 10 } } ] [
+    f { -1 2 3. -4 5 } <rhythm> dup
+    [ [ [ 2 * ] change-value !rhythm-ref ] each ] each-note-slice
+] unit-test
+
+[ T{ rhythm f 15 { -1 4 6. -4 10 } } ] [
+    f { -1 2 3. -4 5 } <rhythm>
+    [ dup [ [ 2 * ] change-value drop ] each ] map-note-slices!
+] unit-test
+
+[ T{ rhythm f 21 { 2 4 6. -4 10 -6 } } ] [
+    f { 1 2 3. -4 5 -6 } <rhythm>
+    [ dup [ [ 2 * ] change-value drop ] each ] map-note-slices
 ] unit-test

@@ -139,21 +139,43 @@ HELP: make-note-transformer*
 
 HELP: group-notes
 { $values
-  { "rt" rhythm-transformer }
+  { "obj" object }
   { "slices" { $sequence-of slice } }
 }
 { $description "Outputs a sequence of all notes of a " { $link rhythm } ".  Each note is represented by a slice containing " { $link rhythm-ref } "s to the note proper and its tied continuations."
   $nl
   "The rhythm may be provided directly or wrapped in a rhythm-handling type." } ;
 
-HELP: each-note
+HELP: each-note-slice
 { $values
-  { "rt" rhythm-transformer }
+  { "obj" object }
   { "quot" { $quotation "( ... slice -- ... )" } }
 }
 { $description "Applies the quotation to each note of a " { $link rhythm } ".  The note is passed as a slice containing " { $link rhythm-ref } "s to the note proper and its tied continuations."
   $nl
   "The rhythm may be provided directly or wrapped in a rhythm-handling type." } ;
+
+HELP: map-note-slices
+{ $values
+  { "obj" object }
+  { "quot" { $quotation "( ... slice -- ... seq )" } }
+  { "obj'" object }
+}
+{ $description "Applies the quotation to each note of a " { $link rhythm } "'s clone.  The note is passed as a slice containing " { $link rhythm-ref } "s to the note proper and its tied continuations.  The quotation is expected to output a sequence of " { $link rhythm-ref } "s, as a way of selecting the " { $link rhythm-element } "s which should be updated."
+  $nl
+  "The rhythm may be provided directly or wrapped in a rhythm-handling type." }
+{ $see-also map-note-slices! } ;
+
+HELP: map-note-slices!
+{ $values
+  { "obj" object }
+  { "quot" { $quotation "( ... slice -- ... seq )" } }
+  { "obj'" object }
+}
+{ $description "Applies the quotation to each note of a " { $link rhythm } ".  The note is passed as a slice containing " { $link rhythm-ref } "s to the note proper and its tied continuations.  The quotation is expected to output a sequence of " { $link rhythm-ref } "s, as a way of selecting the " { $link rhythm-element } "s which should be updated."
+  $nl
+  "The rhythm may be provided directly or wrapped in a rhythm-handling type." }
+{ $see-also map-note-slices } ;
 
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"

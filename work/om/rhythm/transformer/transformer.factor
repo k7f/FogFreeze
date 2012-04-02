@@ -264,7 +264,7 @@ M: rhythm-transformer rhythm-atoms ( rt -- atoms )
     swap [ length ] keep (next-slice) ; inline
 PRIVATE>
 
-GENERIC: group-notes ( rt -- slices )
+GENERIC: group-notes ( obj -- slices )
 
 M: rhythm-transformer group-notes ( rt -- slices )
     refs>> [ 0 ] keep [
@@ -275,8 +275,17 @@ M: rhythm-transformer group-notes ( rt -- slices )
 M: rhythm group-notes ( rhm -- slices )
     -1 make-note-transformer* nip group-notes ;
 
-! _________
-! each-note
+! _______________
+! each-note-slice
 
-: each-note ( ... rt quot: ( ... slice -- ... ) -- ... )
+: each-note-slice ( ... obj quot: ( ... slice -- ... ) -- ... )
     [ group-notes ] dip each ; inline
+
+! _______________
+! map-note-slices
+
+: map-note-slices! ( ... obj quot: ( ... slice -- ... seq ) -- ... obj' )
+    [ dup group-notes ] dip [ [ !rhythm-ref ] each ] compose each ; inline
+
+: map-note-slices ( ... obj quot: ( ... slice -- ... seq ) -- ... obj' )
+    [ clone-rhythm ] dip map-note-slices! ; inline

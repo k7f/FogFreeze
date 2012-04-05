@@ -27,6 +27,8 @@ OM-REFERENCE:
 { "symbol->ratio" >meter } ;
 
 ARTICLE: "om.rhythm.meter" "om.rhythm.meter"
-{ $aux-vocab-intro "om.rhythm.meter" "om.trees" } ;
+{ $aux-vocab-intro "om.rhythm.meter" "om.trees" }
+$nl
+"Any pair of integers separated with " { $snippet "//" } " is accepted as a valid meter, if written inside rhythm literals.  Outside of rhythm literals, however, the notation " { $snippet "num//den" } " is restricted to a small, predefined subset of integer pairs." ;
 
 ABOUT: "om.rhythm.meter"

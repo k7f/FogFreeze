@@ -1,8 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors ascii kernel math math.parser math.ranges parser sequences
-       splitting strings words.symbol ;
+USING: accessors addenda.errors ascii kernel math math.parser math.ranges
+       parser sequences splitting strings words.symbol ;
 IN: om.rhythm.meter
 
 TUPLE: meter { num number } { den number } ;
@@ -13,9 +13,18 @@ GENERIC: >meter ( obj -- mtr )
 
 M: meter >meter ( mtr -- mtr ) ;
 
+<PRIVATE
+: (meter-separator) ( char -- ? )
+    dup digit? [ drop f ] [
+        dup CHAR: / =
+         [ drop t ] [ 1string invalid-input ] if
+    ] if ;
+PRIVATE>
+
 M: string >meter ( str -- mtr )
-    [ digit? not ] split-when harvest
-    first2 [ string>number ] bi@ <meter> ;
+    dup [ (meter-separator) ] split-when
+    dup length 3 = [ nip ] [ drop invalid-input ] if
+    [ first ] [ third ] bi [ string>number ] bi@ <meter> ;
 
 M: sequence >meter ( seq -- mtr ) first2 <meter> ;
 

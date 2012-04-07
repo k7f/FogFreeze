@@ -23,7 +23,7 @@ HELP: >rational
   { "obj" object }
   { "rat" rational }
 }
-{ $description "Converts the input to a rational number.  The set of convertible types contains at least numbers and non-empty sequences of convertibles.  The currently defined set of convertible types contains, additionally: " { $convertibles >rational { number sequence } "no additional types" } "." } ;
+{ $description "Converts the input to a rational number.  The set of convertible types contains at least numbers and non-empty sequences of convertibles.  The currently defined set of convertible types contains, additionally: " { $input-types >rational { number sequence } "no additional types" } "." } ;
 
 ARTICLE: "addenda.math" "addenda.math"
 { $vocab-link "addenda.math" } ;

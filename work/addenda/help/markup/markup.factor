@@ -22,16 +22,16 @@ IN: addenda.help.markup
     print-element $snippet ;
 
 <PRIVATE
-: ($convertibles-args) ( elements -- on-empty word exclude )
+: ($input-types-args) ( elements -- on-empty word exclude )
     [ third ] [ first2 ] bi ; inline
 
-: ($convertibles) ( word exclude -- types )
+: ($input-types) ( word exclude -- types )
     [ "methods" word-prop keys ] dip
     [ [ class<= ] with any? not ] curry filter ; inline
 PRIVATE>
 
-: $convertibles ( elements -- )
-    ($convertibles-args) ($convertibles)
+: $input-types ( elements -- )
+    ($input-types-args) ($input-types)
     [ print-element ] [
         nip [ ", " print-element ] [ ($link) ] interleave
     ] if-empty ;

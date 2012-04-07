@@ -1,9 +1,9 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors assocs classes colors help.markup help.stylesheet io.styles
-       kernel namespaces quotations sequences ui.operations ui.tools.inspector
-       urls webbrowser words ;
+USING: accessors assocs classes classes.algebra colors help.markup
+       help.stylesheet io.styles kernel namespaces quotations sequences
+       ui.operations urls webbrowser words ;
 IN: addenda.help.markup
 
 : $sequence-of ( element -- )
@@ -20,6 +20,21 @@ IN: addenda.help.markup
 : $word/callable ( element -- )
     { "a " { $link word } " or a " { $link callable } " with stack effect " }
     print-element $snippet ;
+
+<PRIVATE
+: ($convertibles-args) ( elements -- on-empty word exclude )
+    [ third ] [ first2 ] bi ; inline
+
+: ($convertibles) ( word exclude -- types )
+    [ "methods" word-prop keys ] dip
+    [ [ class<= ] with any? not ] curry filter ; inline
+PRIVATE>
+
+: $convertibles ( elements -- )
+    ($convertibles-args) ($convertibles)
+    [ print-element ] [
+        nip [ ", " print-element ] [ ($link) ] interleave
+    ] if-empty ;
 
 : $moving-target ( element -- )
     [

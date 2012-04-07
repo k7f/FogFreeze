@@ -1,60 +1,71 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors addenda.errors addenda.sequences arrays classes combinators
-       fry grouping kernel locals make math math.functions om.rhythm.meter
-       om.rhythm.onsets om.series sequences ;
+USING: accessors addenda.errors addenda.math addenda.sequences arrays assocs
+       classes combinators fry grouping kernel lexer locals make math
+       math.functions math.parser om.rhythm.meter om.rhythm.onsets om.series
+       parser sequences ;
 IN: om.rhythm
 
-MIXIN: rhythm-duration
-MIXIN: rhythm-element
+MIXIN: rhythm
 
-GENERIC: clone-rhythm ( obj -- cloned )
+UNION: rhythm-duration number meter ;
 
-TUPLE: rhythm
+TUPLE: rhythm-tree
     { duration maybe: rhythm-duration }
     { division sequence } ;
 
-: ?change-division ( ... object quot: ( ... value -- ... value' ? ) -- ... object ? )
-    over [ [ division>> ] dip call ] dip swap
-    [ swap >>division t ] [ nip f ] if ; inline
+UNION: rhythm-element number rhythm-tree ;
 
-INSTANCE: number rhythm-duration
-INSTANCE: meter  rhythm-duration
+INSTANCE: number rhythm
+INSTANCE: rhythm-tree rhythm
 
-INSTANCE: number rhythm-element
-INSTANCE: rhythm rhythm-element
+! _______________
+! rhythm protocol
+
+GENERIC: >rhythm-element ( rhm -- relt )
+GENERIC: clone-rhythm ( rhm -- cloned )
+
+! ________________
+! >rhythm-duration
 
 : >rhythm-duration ( obj -- dur )
     dup number? [ >meter ] unless ;
 
-GENERIC: >rhythm-element ( obj -- relt )
+! ________________
+! ?change-division
+
+: ?change-division ( ... rht quot: ( ... value -- ... value' ? ) -- ... rht ? )
+    over [ [ division>> ] dip call ] dip swap
+    [ swap >>division t ] [ nip f ] if ; inline
+
+! ________
+! <rhythm>
 
 <PRIVATE
-GENERIC: fullratio ( obj -- rat )
-
-M: rational fullratio ( n   -- rat ) ;
-M: float    fullratio ( n   -- rat ) round >integer ;
-M: sequence fullratio ( seq -- rat ) first2 / ;
-M: meter    fullratio ( mtr -- dur ) [ num>> ] [ den>> ] bi / ; inline
-
 GENERIC: (subtree-extent) ( obj -- dur )
 
-M: rational (subtree-extent) ( n   -- dur ) abs ; inline
-M: float    (subtree-extent) ( n   -- dur ) abs round >integer ; inline
-M: sequence (subtree-extent) ( seq -- dur ) first fullratio abs ; inline
-M: rhythm   (subtree-extent) ( rtm -- dur ) duration>> fullratio ; inline
+M: rational    (subtree-extent) ( num -- dur ) abs ; inline
+M: float       (subtree-extent) ( num -- dur ) abs round >integer ; inline
+M: sequence    (subtree-extent) ( seq -- dur ) first >rational abs ; inline
+M: rhythm-tree (subtree-extent) ( rht -- dur ) duration>> >rational ; inline
 
-: (create-rhythm) ( dur dvn -- relt )
-    [ >rhythm-element ] map over [
-        [ >rhythm-duration ] dip
-    ] [
+: (create-rhythm) ( dur dvn -- rht )
+    [ >rhythm-element ] map over t eq? [
         nip [ 0 [ (subtree-extent) + ] reduce ] keep
-    ] if rhythm boa ; inline
+    ] [
+        over [ [ >rhythm-duration ] dip ] when
+    ] if rhythm-tree boa ; inline
 PRIVATE>
 
-: <rhythm> ( dur dvn -- relt )
+: <rhythm> ( dur dvn -- rht )
     dup sequence? [ (create-rhythm) ] [ nip class-of invalid-input ] if ;
+
+! _______________
+! >rhythm-element
+
+M: rhythm-element  >rhythm-element ( relt -- relt ) ;
+M: proper-sequence >rhythm-element ( seq -- relt ) first2 <rhythm> ;
 
 ! ____________
 ! clone-rhythm
@@ -64,18 +75,13 @@ GENERIC: (clone-rhythm) ( obj -- cloned )
 
 M: object (clone-rhythm) ( obj -- cloned ) clone ; inline
 
-M: rhythm (clone-rhythm) ( rhm -- rhm' )
+M: rhythm-tree (clone-rhythm) ( rht -- rht' )
     (clone) [ clone ] change-duration
     [ [ (clone-rhythm) ] map ] change-division ; inline
 PRIVATE>
 
-M: rhythm clone-rhythm ( rhm -- rhm' )  (clone-rhythm) ; inline
-
-! _______________
-! >rhythm-element
-
-M: rhythm-element  >rhythm-element ( relt -- relt ) ;
-M: proper-sequence >rhythm-element ( seq -- relt ) first2 <rhythm> ;
+M: rhythm-tree clone-rhythm ( rht -- rht' ) (clone-rhythm) ; inline
+M: number clone-rhythm ( num -- num ) ; inline
 
 ! _____________
 ! onsets>rhythm
@@ -93,57 +99,57 @@ M: proper-sequence >rhythm-element ( seq -- relt ) first2 <rhythm> ;
     [ [ abs ] map ] bi {
         {
             [ dup { 2 2 2 3 3 } sequence= ]
-            [ drop 3 cut [ 2 swap rhythm boa ] [ first2 ] bi* 3array ]
+            [ drop 3 cut [ 2 swap rhythm-tree boa ] [ first2 ] bi* 3array ]
         } {
             [ dup { 3 3 2 2 2 } sequence= ]
-            [ drop 2 cut [ first2 ] [ 2 swap rhythm boa ] bi* 3array ]
+            [ drop 2 cut [ first2 ] [ 2 swap rhythm-tree boa ] bi* 3array ]
         } {
             [ dup { 3 2 2 2 3 } sequence= ]
-            [ drop [ first ] [ 1 4 rot <slice> >array 2 swap rhythm boa ] [ last ] tri 3array ]
+            [ drop [ first ] [ 1 4 rot <slice> >array 2 swap rhythm-tree boa ] [ last ] tri 3array ]
         } {
             [ dup { 3. 2 2 2 3 } sequence= ]
-            [ drop [ first >float ] [ 1 4 rot <slice> >array 2 swap rhythm boa ] [ last ] tri 3array ]
+            [ drop [ first >float ] [ 1 4 rot <slice> >array 2 swap rhythm-tree boa ] [ last ] tri 3array ]
         } {
             [ dup { 3 3 4 2 } sequence= ]
-            [ drop first4 [ 2 * ] dip 2array 2 swap rhythm boa 3array ]
+            [ drop first4 [ 2 * ] dip 2array 2 swap rhythm-tree boa 3array ]
         } {
             [ dup { 4 2 3 3 } sequence= ]
-            [ drop first4 [ [ 2 * ] dip 2array 2 swap rhythm boa ] 2dip 3array ]
+            [ drop first4 [ [ 2 * ] dip 2array 2 swap rhythm-tree boa ] 2dip 3array ]
         } {
             [ dup { 2 4 3 3 } sequence= ]
-            [ drop first4 [ 2 * 2array 2 swap rhythm boa ] 2dip 3array ]
+            [ drop first4 [ 2 * 2array 2 swap rhythm-tree boa ] 2dip 3array ]
         } {
             [ dup { 3 3 2 4 } sequence= ]
-            [ drop first4 2 * 2array 2 swap rhythm boa 3array ]
+            [ drop first4 2 * 2array 2 swap rhythm-tree boa 3array ]
         } {
             [ dup { 3 1 1 1 } sequence= ]
-            [ drop first4 3array 1 swap rhythm boa 2array ]
+            [ drop first4 3array 1 swap rhythm-tree boa 2array ]
         } {
             [ dup { 3. 1 1 1 } sequence= ]
-            [ drop first4 3array 1 swap rhythm boa [ >float ] dip 2array ]
+            [ drop first4 3array 1 swap rhythm-tree boa [ >float ] dip 2array ]
         } {
             [ dup { 1 1 1 3 } sequence= ]
-            [ drop first4 [ 3array 1 swap rhythm boa ] dip 2array ]
+            [ drop first4 [ 3array 1 swap rhythm-tree boa ] dip 2array ]
         }
         [ 2drop f ]
     } cond ; inline
 
-: (?unbox-note) ( rhm -- rhm/num )
+: (?unbox-note) ( rht -- rht/num )
     dup division>> dup ?length 1 =
     [ nip first ] [ drop ] if ; inline
 PRIVATE>
 
-: onsets>rhythm ( onsets -- rhm )
+: onsets>rhythm ( onsets -- rht )
     dup first abs 1 = [ onsets>durations* ] [
         1 prefix onsets>durations*
         dup [ first >float ] keep set-first
     ] if [ (?split-heuristically) dup ] keep ?
-    1 swap rhythm boa ;
+    1 swap rhythm-tree boa ;
 
 ! _______________
 ! absolute-rhythm
 
-: absolute-rhythm ( onsets total -- rhm )
+: absolute-rhythm ( onsets total -- rht )
     (?attach-endpoint) onsets>rhythm ;
 
 : absolute-rhythm-element ( onsets total -- relt )
@@ -189,7 +195,7 @@ PRIVATE>
 : ?fuse-notes-deep ( relts -- relts' ? )
     dup empty? [ f ] [
         unclip-slice {
-            { [ dup rhythm? ] [ [ ?fuse-notes-deep ] ?change-division ] }
+            { [ dup rhythm-tree? ] [ [ ?fuse-notes-deep ] ?change-division ] }
             { [ dup 0 < ] [ f ] }
             [
                 [
@@ -210,7 +216,7 @@ PRIVATE>
 : (rest?) ( relt -- ? )
     dup number? [ 0 < ] [ drop f ] if ; inline
 
-: (?unbox-rest) ( rhm -- rhm' ? )
+: (?unbox-rest) ( rht -- rht' ? )
     dup duration>> dup number? [
         over division>> dup ?length 1 = [
             first (rest?) [ neg nip t ] [ drop f ] if
@@ -219,7 +225,7 @@ PRIVATE>
 
 : (?unbox-rests-deep) ( relts -- relts' ? )
     f swap [
-        dup rhythm? [
+        dup rhythm-tree? [
             (?unbox-rest) [
                 [ (?unbox-rests-deep) ] ?change-division
             ] unless* swap [ or ] dip
@@ -229,7 +235,7 @@ PRIVATE>
 : (?fuse-rests-deep) ( relts -- relts' ? )
     dup empty? [ f ] [
         unclip-slice {
-            { [ dup rhythm? ] [ [ (?fuse-rests-deep) ] ?change-division ] }
+            { [ dup rhythm-tree? ] [ [ (?fuse-rests-deep) ] ?change-division ] }
             { [ dup 0 > ] [ f ] }
             [
                 [
@@ -251,7 +257,7 @@ PRIVATE>
 ! _________
 ! <measure>
 
-PREDICATE: measure < rhythm duration>> meter? ;
+PREDICATE: measure < rhythm-tree duration>> meter? ;
 
 <PRIVATE
 :: (create-measure-element) ( onsets start duration -- relt )
@@ -269,7 +275,7 @@ PREDICATE: measure < rhythm duration>> meter? ;
 PRIVATE>
 
 : <measure> ( onsets num den -- measure )
-    [ <meter> nip ] [ (create-beats) (create-measure) ] 3bi rhythm boa ;
+    [ <meter> nip ] [ (create-beats) (create-measure) ] 3bi rhythm-tree boa ;
 
 ! ____________
 ! zip-measures
@@ -289,23 +295,23 @@ PRIVATE>
     swap [ first ] [ second ] bi <measure> ; inline
 PRIVATE>
 
-: zip-measures ( durs tsigs -- rhm )
+: zip-measures ( durs tsigs -- rht )
     [ swap (durs>onsets) ]
     [ nip (tsigs>bars) ] 2bi
     [ (zip-measure) ] 2curry map-index
-    f swap rhythm boa ;
+    f swap rhythm-tree boa ;
 
 ! __________
 ! map-rhythm
 
 : map-rhythm ( ... relt quot: ( ... value -- ... value' ) -- ... relt' )
-    over rhythm? [
+    over rhythm-tree? [
         swap clone
         [ swap [ map-rhythm ] curry map ] change-division
     ] [ call ] if ; inline recursive
 
 : map-rhythm! ( ... relt quot: ( ... value -- ... value' ) -- ... relt' )
-    over rhythm? [
+    over rhythm-tree? [
         swap
         [ swap [ map-rhythm! ] curry map! ] change-division
     ] [ call ] if ; inline recursive
@@ -337,13 +343,13 @@ PRIVATE>
 M: number map-rests>notes ( value -- value' )
     dup integer? [ abs ] when ;
 
-M: rhythm map-rests>notes ( rhm -- rhm' )
+M: rhythm-tree map-rests>notes ( rht -- rht' )
     f swap [ (?rests>notes) ] map-rhythm nip ;
 
 M: number map-rests>notes! ( value -- value' )
     dup integer? [ abs ] when ;
 
-M: rhythm map-rests>notes! ( rhm -- rhm' )
+M: rhythm-tree map-rests>notes! ( rht -- rht' )
     f swap [ (?rests>notes) ] map-rhythm! nip ;
 
 ! _______________
@@ -373,13 +379,13 @@ PRIVATE>
 M: number map-notes>rests ( value -- value' )
     dup integer? [ dup 0 > [ neg ] when ] when ;
 
-M: rhythm map-notes>rests ( rhm -- rhm' )
+M: rhythm-tree map-notes>rests ( rht -- rht' )
     f swap [ (?notes>rests) ] map-rhythm nip ;
 
 M: number map-notes>rests! ( value -- value' )
     dup integer? [ dup 0 > [ neg ] when ] when ;
 
-M: rhythm map-notes>rests! ( rhm -- rhm' )
+M: rhythm-tree map-notes>rests! ( rht -- rht' )
     f swap [ (?notes>rests) ] map-rhythm! nip ;
 
 ! __________________
@@ -394,17 +400,64 @@ M: number submap-notes>rests ( value places -- value' )
 M: number submap-notes>rests! ( value places -- value' )
     drop map-notes>rests! ; inline
 
+! _________________
+! rhythm-substitute
+
+: rhythm-substitute ( relt assoc -- relt' )
+    [ ?at drop ] curry map-rhythm ;
+
+: rhythm-substitute! ( relt assoc -- relt )
+    [ ?at drop ] curry map-rhythm! ;
+
 ! ____________
 ! rhythm-atoms
 
 <PRIVATE
 : (rhythm-atoms) ( relt -- )
-    dup rhythm? [ division>> [ (rhythm-atoms) ] each ] [ , ] if ;
+    dup rhythm-tree? [ division>> [ (rhythm-atoms) ] each ] [ , ] if ;
 PRIVATE>
 
 GENERIC: rhythm-atoms ( obj -- atoms )
 
 M: number rhythm-atoms ( num -- atoms ) 1array ;
 
-M: rhythm rhythm-atoms ( rhm -- atoms )
+M: rhythm-tree rhythm-atoms ( rht -- atoms )
     [ division>> [ (rhythm-atoms) ] each ] { } make ;
+
+! ____________
+! {< >} syntax
+
+DEFER: {<
+
+PRIVATE>
+: (element-or-meter) ( str -- relt/meter/f )
+    {
+        {
+            [ dup "{<" = ] [
+                drop V{ } clone \ {< execute-parsing ?first
+                [ "inner syntax" invalid-input ] unless*
+            ]
+        }
+        { [ dup "f" = ] [ drop f ] }
+        { [ dup "t" = ] [ drop t ] }
+        [ dup string>number [ nip ] [ >meter ] if* ]
+    } cond ; inline
+
+: (element-or-error) ( str -- relt/* )
+    dup "{<" = [
+        drop V{ } clone \ {< execute-parsing ?first
+        [ "inner syntax" invalid-input ] unless*
+    ] [
+        dup string>number [ nip ] [ invalid-input ] if*
+    ] if ; inline
+
+: (parse-rhythm) ( accum -- accum )
+    scan-token dup ">}" = [ drop t -1 1array ] [
+        (element-or-meter) ">}" [ (element-or-error) ] map-tokens
+        [ dup meter? [ -1 ] [ t swap ] if 1array ] when-empty
+    ] if <rhythm> suffix! ;
+PRIVATE>
+
+SYMBOL: >} delimiter
+
+SYNTAX: {< (parse-rhythm) ;

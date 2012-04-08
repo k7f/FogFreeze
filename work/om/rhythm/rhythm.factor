@@ -468,7 +468,7 @@ SYMBOLS: (SEE) (SEP) (DIV) ;
         dup first (parse-state?) [
             rest [ (empty-postprocess) ] when-empty
         ] [
-            over number? [ swap prefix 1 swap ] when
+            over rhythm-element? [ swap prefix 1 swap ] when
         ] if
     ] if-empty ;
 

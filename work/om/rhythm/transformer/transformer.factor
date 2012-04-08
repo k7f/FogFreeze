@@ -271,7 +271,7 @@ M: rhythm-transformer rhythm-atoms ( rtf -- atoms )
     swap [ length ] keep (next-slice) ; inline
 PRIVATE>
 
-GENERIC: group-notes ( obj -- slices )
+GENERIC: group-notes ( rhm -- slices )
 
 M: rhythm-transformer group-notes ( rtf -- slices )
     refs>> [ 0 ] keep [
@@ -285,16 +285,16 @@ M: rhythm-tree group-notes ( rtree -- slices )
 ! _______________
 ! each-note-slice
 
-: each-note-slice ( ... obj quot: ( ... slice -- ... ) -- ... )
+: each-note-slice ( ... rhm quot: ( ... slice -- ... ) -- ... )
     [ group-notes ] dip each ; inline
 
 ! _______________
 ! map-note-slices
 
-: map-note-slices! ( ... obj quot: ( ... slice -- ... seq ) -- ... obj' )
+: map-note-slices! ( ... rhm quot: ( ... slice -- ... seq ) -- ... rhm' )
     [ dup group-notes ] dip [ [ !rhythm-ref ] each ] compose each ; inline
 
-: map-note-slices ( ... obj quot: ( ... slice -- ... seq ) -- ... obj' )
+: map-note-slices ( ... rhm quot: ( ... slice -- ... seq ) -- ... rhm' )
     [ clone-rhythm ] dip map-note-slices! ; inline
 
 ! substreeall

@@ -4,7 +4,7 @@
 USING: accessors addenda.errors addenda.math addenda.sequences arrays assocs
        classes combinators fry grouping kernel lexer locals make math
        math.functions math.parser om.rhythm.meter om.rhythm.onsets om.series
-       parser sequences ;
+       parser sequences words ;
 IN: om.rhythm
 
 MIXIN: rhythm
@@ -29,8 +29,11 @@ GENERIC: clone-rhythm ( rhm -- cloned )
 ! ________________
 ! >rhythm-duration
 
-: >rhythm-duration ( obj -- dur )
-    dup number? [ >meter ] unless ;
+GENERIC: >rhythm-duration ( obj -- dur )
+
+M: number >rhythm-duration ( num -- dur ) ;
+M: word   >rhythm-duration ( wrd -- dur ) execute( -- dur ) ;
+M: object >rhythm-duration ( obj -- dur ) >meter ;
 
 ! ________________
 ! ?change-division

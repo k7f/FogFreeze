@@ -1,9 +1,9 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: addenda.help.markup addenda.math arrays assocs help.markup help.syntax
-       kernel math om.help.markup om.help.reference om.rhythm.meter
-       om.rhythm.private sequences ;
+USING: addenda.help.markup arrays assocs help.markup help.syntax kernel math
+       om.help.markup om.help.reference om.rhythm.meter om.rhythm.private
+       sequences ;
 IN: om.rhythm
 
 HELP: rhythm
@@ -56,15 +56,15 @@ HELP: <rhythm>
 { $values
   { "dur" object }
   { "dvn" sequence }
-  { "rht" rhythm-tree }
+  { "rtree" rhythm-tree }
 }
 { $description "" } ;
 
 HELP: ?change-division
 { $values
-  { "rht" rhythm-tree }
+  { "rtree" rhythm-tree }
   { "quot" { $quotation "( ... value -- ... value' ? )" } }
-  { "rht" rhythm-tree }
+  { "rtree" rhythm-tree }
   { "?" boolean }
 }
 { $description "" } ;
@@ -72,7 +72,7 @@ HELP: ?change-division
 HELP: onsets>rhythm
 { $values
   { "onsets" { $sequence-of number } }
-  { "rht" rhythm-tree }
+  { "rtree" rhythm-tree }
 }
 { $description "" } ;
 
@@ -80,7 +80,7 @@ HELP: absolute-rhythm
 { $values
   { "onsets" { $sequence-of number } }
   { "total" number }
-  { "rht" rhythm-tree }
+  { "rtree" rhythm-tree }
 }
 { $description "" } ;
 
@@ -145,7 +145,7 @@ HELP: zip-measures
 { $values
   { "durs" { $sequence-of rational } }
   { "tsigs" { $sequence-of pair } }
-  { "rht" rhythm-tree }
+  { "rtree" rhythm-tree }
 }
 { $description "Takes a sequence of durations followed by a sequence of time signatures, and outputs a corresponding " { $link rhythm-tree } ", which contains a sequence of " { $link measure } "s in the " { $snippet "division" } " slot." } ;
 
@@ -247,26 +247,28 @@ HELP: rhythm-atoms
 { $contract "Outputs a flat sequence containing all atoms of a " { $link rhythm } "." } ;
 
 HELP: {<
-{ $syntax "{< duration elements... >}" }
+{ $syntax "{< tokens... >}" }
 { $values
-  { "duration" rhythm-duration }
-  { "elements" "a list of " { $link rhythm-element } "s" }
+  { "tokens" "a list of strings representing a " { $link rhythm-duration } " followed by a list of " { $link rhythm-element } "s" }
 }
-{ $description "Marks the beginning of a literal " { $link rhythm-tree } ". Literal rhythms are terminated by " { $link POSTPONE: >} } "." }
+{ $description "Marks the beginning of a literal " { $link rhythm-tree } ".  Literal rhythms are terminated by " { $link POSTPONE: >} } "."
+  $nl
+  "A numeric duration token must be followed by the separator \"><\".  The separator may be omitted after non-numeric duration tokens.  If the first token parses to a number and isn't followed by the separator, it is implicitly preceded by two extra tokens: \"1\" and \"><\".  The same two extra tokens are prepended, if the first explicit token is the \"{<\"."
+  $nl
+  "Two special forms of duration token are allowed, apart from numeric and metric duration:"
+  { $list
+    { "the " { $snippet "t" } " form is substituted by the sum of all element durations;" }
+    { "the " { $snippet "f" } " form postpones the computation and parses to an unspecified duration." }
+  }
+}
 { $notes 
   { $list
-    { "Two special forms of the first token are allowed, apart from numeric and metric duration."
-      { $list
-        { "The " { $snippet "t" } " form is substituted by the sum of all element durations." }
-        { "The " { $snippet "f" } " form postpones that computation and parses to an unspecified duration." }
-      }
-    }
     "If literal rhythm has empty contents, it is interpreted as a unit duration rest.  The unit at the top level is semibreve (whole note).  The unit at lower levels is context-dependent."
     { "If there is only one token inside, it is interpreted as a single-element rhythm, whose details are type-dependent."
       { $list
         { "If the token parses to a number, the value of the " { $link rhythm-element } " is that number, and " { $link rhythm-duration } " is its absolute integer part." }
         { "If the token parses to a " { $link meter } ", the duration is that meter, and the rhythm contains a single rest." }
-        { "The token " { $snippet "t" } " is ignored, hence the literal rhythm parses to a unit duration rest." }
+        { "The token " { $snippet "t" } " is ignored (hence the literal rhythm parses to a unit duration rest)." }
         { "The token " { $snippet "f" } " is interpreted as a single rest of unspecified duration." }
       }
     }
@@ -276,11 +278,15 @@ HELP: {<
   "A single measure with a rest on the first beat, followed by two crotchets:"
   { $code "{< 3//4 -1 1 1 >}" }
   "A variation: a quaver tripplet on the second beat and a tie to the third beat:"
-  { $code "{< 3//4 -1 {< 1 1 1 1 >} 1. >}" }
+  { $code "{< 3//4 -1 {< 1 1 1 >} 1. >}" }
   "A single note of unspecified duration:"
   { $code "{< f 1 >}" }
-  "A single note of unit duration:"
-  { $code "{< t 1 >}" }
+  "Two notes, each of unit duration:"
+  { $code "{< t 1 1 >}" }
+  "Two notes, each of half-unit duration:"
+  { $code "{< 1 1 >}" }
+  "Two notes, each of one-and-half-unit duration:"
+  { $code "{< 3 >< 1 1 >}" }
 } ;
 
 HELP: >}

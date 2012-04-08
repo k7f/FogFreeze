@@ -53,7 +53,7 @@ TUPLE: rhythm-transformer
 
 INSTANCE: rhythm-transformer rhythm
 
-M: rhythm-transformer >rhythm-element ( rt -- relt ) underlying>> ;
+M: rhythm-transformer >rhythm-element ( rtf -- relt ) underlying>> ;
 
 <PRIVATE
 GENERIC: (create-refs) ( ... place ndx parent relt -- ... place' refs )
@@ -61,20 +61,20 @@ GENERIC: (create-refs) ( ... place ndx parent relt -- ... place' refs )
 M: number (create-refs) ( ... place ndx parent value -- ... place' ref )
     <rhythm-ref> [ [ 1 + ] keep ] dip swap >>place ;
 
-: (next-refs) ( ... place relt ndx rt -- ... place' refs )
+: (next-refs) ( ... place relt ndx rtf -- ... place' refs )
     rot (create-refs) ; inline
 
-M: rhythm-tree (create-refs) ( ... place ndx parent rt -- ... place' refs )
+M: rhythm-tree (create-refs) ( ... place ndx parent rtf -- ... place' refs )
     2nip [ division>> ] keep [ (next-refs) ] curry map-index ;
 PRIVATE>
 
-: <rhythm-transformer> ( rht -- rt )
+: <rhythm-transformer> ( rtree -- rtf )
     [
         [ 0 0 f ] dip (create-refs) nip dup rhythm-ref?
         [ 1array ] [ flatten ] if
     ] keep rhythm-transformer boa ;
 
-: >rhythm-transformer< ( rt -- rht )
+: >rhythm-transformer< ( rtf -- rtree )
     [ refs>> [ !rhythm-ref ] each ] [ underlying>> ] bi ;
 
 ! _______________________
@@ -97,10 +97,10 @@ DEFER: (more-placed-refs)
     [ rot ] dip (create-placed-refs) ; inline
 PRIVATE>
 
-:: make-rhythm-transformer ( ... rht place increment: ( ... value -- ... ? ) -- ... lastplace rt )
-    place 0 f rht increment (create-placed-refs)
+:: make-rhythm-transformer ( ... rtree place increment: ( ... value -- ... ? ) -- ... lastplace rtf )
+    place 0 f rtree increment (create-placed-refs)
     dup rhythm-ref? [ 1array ] [ flatten ] if
-    rht rhythm-transformer boa ; inline
+    rtree rhythm-transformer boa ; inline
 
 ! ________________________
 ! make-rhythm-transformer*
@@ -124,56 +124,56 @@ DEFER: (more-placed-refs*)
     [ rot ] 2dip (create-placed-refs*) ; inline
 PRIVATE>
 
-:: make-rhythm-transformer* ( ..a rht place include: ( ..a value -- ..b ? ) increment: ( ..b value -- ..a ? ) -- ..a lastplace rt )
-    place 0 f rht include increment
+:: make-rhythm-transformer* ( ..a rtree place include: ( ..a value -- ..b ? ) increment: ( ..b value -- ..a ? ) -- ..a lastplace rtf )
+    place 0 f rtree include increment
     [ (create-placed-refs*) ] { } make
-    rht rhythm-transformer boa ; inline
+    rtree rhythm-transformer boa ; inline
 
 ! _____________________
 ! make-note-transformer
 
-: make-note-transformer ( rht place -- lastplace rt )
+: make-note-transformer ( rtree place -- lastplace rtf )
     [ dup integer? [ 0 > ] [ drop f ] if ] make-rhythm-transformer ;
 
-: make-note-transformer* ( rht place -- lastplace rt )
+: make-note-transformer* ( rtree place -- lastplace rtf )
     [ 0 > ] [ integer? ] make-rhythm-transformer* ;
 
 ! _____
 ! clone
 
-M: rhythm-transformer clone ( rt -- rt' )
+M: rhythm-transformer clone ( rtf -- rtf' )
     (clone) [ [ clone ] map ] change-refs ; inline
 
 ! ____________
 ! clone-rhythm
 
 <PRIVATE
-GENERIC: (rt-clone) ( newparent iter oldref oldrelt -- newrelt )
+GENERIC: (rtf-clone) ( newparent iter oldref oldrelt -- newrelt )
 
-: ((rt-clone-atom)) ( newparent iter value -- value )
+: ((rtf-clone-atom)) ( newparent iter value -- value )
     [ ?step parent<< ] dip ; inline
 
-: (rt-clone-atom) ( newparent iter oldref value newref -- value )
-    swapd co-refs? [ ((rt-clone-atom)) ] [ 2nip ] if ; inline
+: (rtf-clone-atom) ( newparent iter oldref value newref -- value )
+    swapd co-refs? [ ((rtf-clone-atom)) ] [ 2nip ] if ; inline
 
-M: number (rt-clone) ( newparent iter oldref value -- value )
-    pick ?peek nip [ (rt-clone-atom) ] [ 2nip nip ] if* ;
+M: number (rtf-clone) ( newparent iter oldref value -- value )
+    pick ?peek nip [ (rtf-clone-atom) ] [ 2nip nip ] if* ;
 
-:: (pre-clone-next) ( relt newparent iter ndx oldrht -- newparent iter oldref relt )
-    newparent iter ndx oldrht relt [ <rhythm-ref> ] keep ; inline
+:: (pre-clone-next) ( relt newparent iter ndx oldrtree -- newparent iter oldref relt )
+    newparent iter ndx oldrtree relt [ <rhythm-ref> ] keep ; inline
 
-M:: rhythm-tree (rt-clone) ( newparent iter oldref oldrht -- newrht )
-    rhythm-tree new :> newrht
-    newrht iter oldrht [ division>> ] keep
-    [ (pre-clone-next) (rt-clone) ] curry with with map-index
-    newrht swap >>division
-    oldrht duration>> clone >>duration ;
+M:: rhythm-tree (rtf-clone) ( newparent iter oldref oldrtree -- newrtree )
+    rhythm-tree new :> newrtree
+    newrtree iter oldrtree [ division>> ] keep
+    [ (pre-clone-next) (rtf-clone) ] curry with with map-index
+    newrtree swap >>division
+    oldrtree duration>> clone >>duration ;
 PRIVATE>
 
-M: rhythm-transformer clone-rhythm ( rt -- rt' )
+M: rhythm-transformer clone-rhythm ( rtf -- rtf' )
     [ refs>> [ clone ] map ]
     [ underlying>> ] bi over
-    [ <iterator> f swap f ] [ (rt-clone) ] [ swap ] tri*
+    [ <iterator> f swap f ] [ (rtf-clone) ] [ swap ] tri*
     rhythm-transformer boa ;
 
 ! _______________
@@ -198,10 +198,10 @@ M: rhythm-transformer clone-rhythm ( rt -- rt' )
     ] dip set-ref ; inline
 PRIVATE>
 
-M: rhythm-transformer map-rests>notes! ( rt -- rt' )
+M: rhythm-transformer map-rests>notes! ( rtf -- rtf' )
     [ f ] [ refs>> ] bi [ (?rests>notes) ] each drop ;
 
-M: rhythm-transformer map-rests>notes ( rt -- rt' )
+M: rhythm-transformer map-rests>notes ( rtf -- rtf' )
     clone-rhythm map-rests>notes! ;
 
 ! __________________
@@ -233,24 +233,24 @@ M: rhythm-transformer map-rests>notes ( rt -- rt' )
     ] dip set-ref ; inline
 PRIVATE>
 
-M: rhythm-transformer submap-notes>rests! ( rt places -- rt' )
+M: rhythm-transformer submap-notes>rests! ( rtf places -- rtf' )
     [ [ f ] [ refs>> ] bi ] dip [ (?sub-notes>rests) ] curry each drop ;
 
-M: rhythm-transformer submap-notes>rests ( rt places -- rt' )
+M: rhythm-transformer submap-notes>rests ( rtf places -- rtf' )
     [ clone-rhythm ] [ submap-notes>rests! ] bi* ;
 
-M: rhythm-tree submap-notes>rests ( rht places -- rht' )
+M: rhythm-tree submap-notes>rests ( rtree places -- rtree' )
     [ -1 make-note-transformer nip ]
     [ submap-notes>rests >rhythm-transformer< ] bi* ;
 
-M: rhythm-tree submap-notes>rests! ( rht places -- rht' )
+M: rhythm-tree submap-notes>rests! ( rtree places -- rtree' )
     [ -1 make-note-transformer nip ]
     [ submap-notes>rests! >rhythm-transformer< ] bi* ;
 
 ! ____________
 ! rhythm-atoms
 
-M: rhythm-transformer rhythm-atoms ( rt -- atoms )
+M: rhythm-transformer rhythm-atoms ( rtf -- atoms )
     [ refs>> [ value>> rhythm-atoms % ] each ] { } make ;
 
 ! ___________
@@ -273,13 +273,13 @@ PRIVATE>
 
 GENERIC: group-notes ( obj -- slices )
 
-M: rhythm-transformer group-notes ( rt -- slices )
+M: rhythm-transformer group-notes ( rtf -- slices )
     refs>> [ 0 ] keep [
         [ (?group-next-slice) ] each-index
         (?group-last-slice)
     ] { } make ;
 
-M: rhythm-tree group-notes ( rht -- slices )
+M: rhythm-tree group-notes ( rtree -- slices )
     -1 make-note-transformer* nip group-notes ;
 
 ! _______________

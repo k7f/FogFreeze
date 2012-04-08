@@ -1,9 +1,8 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors addenda.sequences arrays kernel math math.functions
-       om.lists om.rhythm om.rhythm.meter om.rhythm.transformer om.series
-       refs sequences ;
+USING: accessors addenda.sequences arrays kernel math math.functions om.lists
+       om.rhythm om.rhythm.meter om.rhythm.transformer om.series sequences ;
 IN: om.trees
 
 ! ______
@@ -19,7 +18,7 @@ IN: om.trees
     dup integer? [ truncate 1 + ] unless ; inline
 PRIVATE>
 
-: mktree ( durs tsigs -- rhm )
+: mktree ( durs tsigs -- rtree )
     dup first sequence?
     [ 2dup (count-measures) swap <repetition> ] unless
     zip-measures ;
@@ -32,8 +31,8 @@ PRIVATE>
     [ ?fuse-notes-deep [ ?fuse-rests-deep ] dip or [ sift ] dip ] loop ;
 PRIVATE>
 
-: reducetree ( rhm -- rhm' )
-    >rhythm-element dup rhythm? [
+: reducetree ( rhm -- relt )
+    >rhythm-element dup rhythm-tree? [
         [ (reducetree) ] change-division
     ] when ;
 
@@ -41,14 +40,14 @@ PRIVATE>
 ! pulsemaker
 
 <PRIVATE
-: (pulsemaker) ( nums dens pulses -- rhm )
+: (pulsemaker) ( nums dens pulses -- rtree )
     [ over [ [ <meter> ] 2map ] dip ] dip
     [ dup number? [ 1array ] when <rhythm> ] 2map
     [ 1array <rhythm> ] 2map
     f swap <rhythm> ;
 PRIVATE>
 
-: pulsemaker ( nums dens pulses -- rhm )
+: pulsemaker ( nums dens pulses -- rtree )
     [
         length [
             over number? [ swap <repetition> ] [ drop ] if
@@ -63,14 +62,14 @@ GENERIC: tietree ( relt -- relt' )
 M: number tietree ( num -- num' )
     dup 0 < [ neg >float ] when ;
 
-M: rhythm tietree ( rhm -- rhm' )
+M: rhythm-tree tietree ( rtree -- rtree' )
     [ [ tietree ] map ] change-division ;
 
 ! ____________
 ! remove-rests
 
-GENERIC: transform-rests ( rt -- rt' )
-M: rhythm-transformer transform-rests ( rt -- rt' ) map-rests>notes! ; inline
+GENERIC: transform-rests ( rtf -- rtf' )
+M: rhythm-transformer transform-rests ( rtf -- rtf' ) map-rests>notes! ; inline
 
 GENERIC: remove-rests ( relt -- relt' )
 M: rhythm-element remove-rests ( relt -- relt' ) map-rests>notes! ; inline
@@ -78,8 +77,8 @@ M: rhythm-element remove-rests ( relt -- relt' ) map-rests>notes! ; inline
 ! __________
 ! filtertree
 
-GENERIC# transform-notes-flt 1 ( rt places -- rt' )
-M: rhythm-transformer transform-notes-flt ( rt places -- rt' ) submap-notes>rests! ; inline
+GENERIC# transform-notes-flt 1 ( rtf places -- rtf' )
+M: rhythm-transformer transform-notes-flt ( rtf places -- rtf' ) submap-notes>rests! ; inline
 
 GENERIC# filtertree 1 ( relt places -- relt' )
 M: rhythm-element filtertree ( relt places -- relt' ) submap-notes>rests! ; inline
@@ -118,7 +117,7 @@ PRIVATE>
     ] [ drop f ] if ; inline
 
 : (reversetree) ( relt -- relt' )
-    dup rhythm? [
+    dup rhythm-tree? [
         [ [ (reversetree) ] map! reverse! ] change-division
     ] when ;
 PRIVATE>

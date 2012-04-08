@@ -2,17 +2,16 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: addenda.help.markup arrays help.markup help.syntax math om.help.markup
-       om.help.reference om.rhythm om.rhythm.transformer om.trees.private
-       sequences ;
+       om.help.reference om.rhythm om.rhythm.transformer sequences ;
 IN: om.trees
 
 HELP: mktree
 { $values
   { "durs" { $sequence-of rational } }
   { "tsigs" { $class/sequence-of pair } }
-  { "rhm" rhythm }
+  { "rtree" rhythm-tree }
 }
-{ $description "Builds a hierarchical rhythm tree from a simple list of note values (" { $snippet "rhythm" } ").  1/4 is the quarter note."
+{ $description "Builds a hierarchical " { $link rhythm-tree } " from a simple list of note values (" { $snippet "rhythm" } ").  1/4 is the quarter note."
   $nl
   { $snippet "timesigns" } " is a list of time signatures, e.g. " { $snippet "( (4 4) (3 4) (5 8) ... )" } ".  If a single time signature is given (e.g. " { $snippet "(4 4)" } "), it is extended as much as required by the 'rhythm' length."
   $nl
@@ -21,7 +20,7 @@ HELP: mktree
 HELP: reducetree
 { $values
   { "rhm" rhythm }
-  { "rhm'" rhythm }
+  { "relt" rhythm-element }
 }
 { $description "Reduces and simplifies a tree by concatenating consecutive rests and floats." } ;
 
@@ -30,7 +29,7 @@ HELP: pulsemaker
   { "nums" { $class/sequence-of number } }
   { "dens" { $class/sequence-of number } }
   { "pulses" { $sequence-of number } }
-  { "rhm" rhythm }
+  { "rtree" rhythm-tree }
 }
 { $description "Constructs a tree starting from a (list of) measure(s) numerator(s) " { $snippet "measures-num" } " and a (list of) denominator(s) " { $snippet "beat-unit" } " filling these measures with " { $snippet "npulses" } "." } ;
 
@@ -43,8 +42,8 @@ HELP: tietree
 
 HELP: transform-rests
 { $values
-  { "rt" rhythm-transformer }
-  { "rt'" rhythm-transformer }
+  { "rtf" rhythm-transformer }
+  { "rtf'" rhythm-transformer }
 }
 { $description "" } ;
 
@@ -57,9 +56,9 @@ HELP: remove-rests
 
 HELP: transform-notes-flt
 { $values
-  { "rt" rhythm-transformer }
+  { "rtf" rhythm-transformer }
   { "places" { $sequence-of integer } }
-  { "rt'" rhythm-transformer }
+  { "rtf'" rhythm-transformer }
 }
 { $description "" } ;
 

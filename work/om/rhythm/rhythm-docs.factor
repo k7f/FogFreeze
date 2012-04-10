@@ -45,6 +45,14 @@ HELP: clone-rhythm
 }
 { $contract "Given a " { $link rhythm-tree } " object, the output is a deep copy of the entire rhythm tree.  If a method is defined for a rhythm-handling type, it will perform deep copy of its underlying rhythm tree." } ;
 
+HELP: <rhythm>
+{ $values
+  { "dur" object }
+  { "dvn" sequence }
+  { "exemplar" rhythm }
+}
+{ $description "" } ;
+
 HELP: >rhythm-duration
 { $values
   { "obj" object }
@@ -52,11 +60,19 @@ HELP: >rhythm-duration
 }
 { $description "" } ;
 
-HELP: <rhythm>
+HELP: <rhythm-tree>
 { $values
   { "dur" object }
   { "dvn" sequence }
   { "rtree" rhythm-tree }
+}
+{ $description "" } ;
+
+HELP: >rhythm-tree<
+{ $values
+  { "rtree" rhythm-tree }
+  { "dur" object }
+  { "dvn" sequence }
 }
 { $description "" } ;
 
@@ -251,27 +267,28 @@ HELP: {<
 { $values
   { "tokens" "a list of strings representing a " { $link rhythm-duration } " followed by a list of " { $link rhythm-element } "s" }
 }
-{ $description "Marks the beginning of a literal " { $link rhythm-tree } ".  Literal rhythms are terminated by " { $link POSTPONE: >} } "."
+{ $description "Marks the beginning of a literal " { $link rhythm-tree } ".  Literal rhythms are terminated by " { $link POSTPONE: >} } ".  The two-character sequence, \"><\", separates duration from rhythm elements."
   $nl
-  "A numeric duration token must be followed by the separator \"><\".  The separator may be omitted after non-numeric duration tokens.  If the first token parses to a number and isn't followed by the separator, it is implicitly preceded by two extra tokens: \"1\" and \"><\".  The same two extra tokens are prepended, if the first explicit token is the \"{<\"."
-  $nl
-  "Two special forms of duration token are allowed, apart from numeric and metric duration:"
+  "Two special forms of a duration token are allowed, apart from numeric and metric duration:"
   { $list
-    { "the " { $snippet "t" } " form is substituted by the sum of all element durations;" }
+    { "the " { $snippet "t" } " form is substituted by the sum of all element durations (the duration of an atomic " { $link rhythm-element } " is its absolute integer part);" }
     { "the " { $snippet "f" } " form postpones the computation and parses to an unspecified duration." }
   }
+  $nl
+  "If the first token parses to a number, but isn't followed by the explicit separator, the number is implicitly preceded by two extra tokens: \"1\" and \"><\".  The same two extra tokens are also prepended, if the first explicit token is the opening \"{<\", i.e. if the first element is a nested rhythm tree.  After a non-numeric duration token, separator is allowed, but may be omitted without changing the interpratation."
 }
 { $notes 
   { $list
     "If literal rhythm has empty contents, it is interpreted as a unit duration rest.  The unit at the top level is semibreve (whole note).  The unit at lower levels is context-dependent."
     { "If there is only one token inside, it is interpreted as a single-element rhythm, whose details are type-dependent."
       { $list
-        { "If the token parses to a number, the value of the " { $link rhythm-element } " is that number, and " { $link rhythm-duration } " is its absolute integer part." }
+        { "If the token parses to a number, the value of the single " { $link rhythm-element } " is that number, and " { $link rhythm-duration } " is set to " { $snippet "1" } "." }
         { "If the token parses to a " { $link meter } ", the duration is that meter, and the rhythm contains a single rest." }
         { "The token " { $snippet "t" } " is ignored (hence the literal rhythm parses to a unit duration rest)." }
         { "The token " { $snippet "f" } " is interpreted as a single rest of unspecified duration." }
       }
     }
+    "If there are exactly two tokens: duration and separator, the result is a single rest of a given duration."
   }
 }
 { $examples

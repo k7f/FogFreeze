@@ -42,9 +42,9 @@ PRIVATE>
 <PRIVATE
 : (pulsemaker) ( nums dens pulses -- rtree )
     [ over [ [ <meter> ] 2map ] dip ] dip
-    [ dup number? [ 1array ] when <rhythm> ] 2map
-    [ 1array <rhythm> ] 2map
-    f swap <rhythm> ;
+    [ dup number? [ 1array ] when <rhythm-tree> ] 2map
+    [ 1array <rhythm-tree> ] 2map
+    f swap <rhythm-tree> ;
 PRIVATE>
 
 : pulsemaker ( nums dens pulses -- rtree )

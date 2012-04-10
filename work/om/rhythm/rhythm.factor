@@ -4,7 +4,8 @@
 USING: accessors addenda.errors addenda.math addenda.sequences arrays assocs
        classes combinators fry grouping kernel lexer locals make math
        math.functions math.parser om.rhythm.meter om.rhythm.onsets om.series
-       parser sequences words ;
+       parser prettyprint prettyprint.backend prettyprint.custom
+       prettyprint.sections sequences words ;
 IN: om.rhythm
 
 MIXIN: rhythm
@@ -26,6 +27,8 @@ INSTANCE: rhythm-tree rhythm
 GENERIC: >rhythm-element ( rhm -- relt )
 GENERIC: clone-rhythm ( rhm -- cloned )
 
+GENERIC: <rhythm> ( dur dvn exemplar -- rhm )
+
 ! ________________
 ! >rhythm-duration
 
@@ -42,8 +45,8 @@ M: object >rhythm-duration ( obj -- dur ) >meter ;
     over [ [ division>> ] dip call ] dip swap
     [ swap >>division t ] [ nip f ] if ; inline
 
-! ________
-! <rhythm>
+! _____________
+! <rhythm-tree>
 
 <PRIVATE
 GENERIC: (subtree-extent) ( obj -- dur )
@@ -54,21 +57,34 @@ M: sequence    (subtree-extent) ( seq -- dur ) first >rational abs ; inline
 M: rhythm-tree (subtree-extent) ( rtree -- dur ) duration>> >rational ; inline
 
 : (create-rhythm) ( dur dvn -- rtree )
-    [ >rhythm-element ] map over t eq? [
+    [ -1 1array ] [
+        [ >rhythm-element ] map
+    ] if-empty
+    over t eq? [
         nip [ 0 [ (subtree-extent) + ] reduce ] keep
     ] [
         over [ [ >rhythm-duration ] dip ] when
     ] if rhythm-tree boa ; inline
 PRIVATE>
 
-: <rhythm> ( dur dvn -- rtree )
+: <rhythm-tree> ( dur dvn -- rtree )
     dup sequence? [ (create-rhythm) ] [ nip class-of invalid-input ] if ;
+
+! _____________
+! >rhythm-tree<
+
+: >rhythm-tree< ( rtree -- dur dvn ) [ duration>> ] [ division>> ] bi ;
+
+! ________
+! <rhythm>
+
+M: rhythm-tree <rhythm> ( dur dvn exemplar -- rtree ) drop <rhythm-tree> ;
 
 ! _______________
 ! >rhythm-element
 
 M: rhythm-element  >rhythm-element ( relt -- relt ) ;
-M: proper-sequence >rhythm-element ( seq -- relt ) first2 <rhythm> ;
+M: proper-sequence >rhythm-element ( seq -- relt ) first2 <rhythm-tree> ;
 
 ! ____________
 ! clone-rhythm
@@ -469,7 +485,7 @@ SYMBOLS: (SEE) (SEP) (DIV) ;
 : (parse-postprocess) ( car cdr -- car' cdr' )
     [ (empty-postprocess) ] [
         dup first (parse-state?) [
-            rest [ (empty-postprocess) ] when-empty
+            rest [ -1 1array ] when-empty
         ] [
             over rhythm-element? [ swap prefix 1 swap ] when
         ] if
@@ -479,9 +495,54 @@ SYMBOLS: (SEE) (SEP) (DIV) ;
     scan-token dup ">}" = [ drop t -1 1array ] [
         (element-or-meter) ">}" [ (element-or-error) ] map-tokens
         nip (parse-postprocess)
-    ] if <rhythm> suffix! ;
+    ] if <rhythm-tree> suffix! ;
 PRIVATE>
 
 SYMBOL: >} delimiter
 
 SYNTAX: {< (parse-rhythm) ;
+
+! _________
+! unparsing
+
+<PRIVATE
+: (pprint-numeric) ( num -- )
+    dup 1 = [ drop ] [ pprint* "><" text ] if ;
+
+! meter unparses to a num//den only inside rhythm literal,
+! outside, generic tuple unparsing is used
+: (pprint-meter) ( mtr -- )
+    [ num>> ] [ den>> ] bi
+    [ unparse ] bi@ "//" glue text ;
+
+: (pprint-duration) ( rtree -- )
+    duration>> {
+        { [ dup number? ] [ (pprint-numeric) ] }
+        { [ dup meter? ] [ (pprint-meter) ] }
+        [ pprint* ]
+    } cond ;
+
+: (pprint-unit-rest?) ( dvn -- ? )
+    [ t ] [
+        dup length 1 = [ first -1 = ] [ drop f ] if
+    ] if-empty ;
+
+: (pprint-empty?) ( rtree -- ? )
+    >rhythm-tree< swap 1 =
+    [ (pprint-unit-rest?) ] [ drop f ] if ;
+
+: (pprint-division) ( rtree -- )
+    division>> dup (pprint-unit-rest?)
+    [ drop -1 pprint* ]
+    [ pprint-elements ] if ;
+PRIVATE>
+
+M: rhythm-tree pprint* ( rtree -- )
+    [
+        <flow \ {< pprint-word t <inset
+        dup (pprint-empty?) [ drop ] [
+            [ (pprint-duration) ]
+            [ (pprint-division) ] bi
+        ] if block>
+        \ >} pprint-word block>
+    ] check-recursion ;

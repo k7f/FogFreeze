@@ -43,7 +43,7 @@ IN: om.trees.tests
 ] [
     { { 4//4 { 1 { 1 { 1 -2 1 1 } } 1 -1 } }
       { 4//4 { -1 { 1 { 1 2 -1 1 } } -1 1 } } }
-    [ >rhythm-element ] map f swap <rhythm> tietree
+    [ >rhythm-element ] map f swap <rhythm-tree> tietree
 ] unit-test
 
 [ {< f {< 4//4 1 {< 1 2 1 1 >} 1 1 >}
@@ -51,7 +51,7 @@ IN: om.trees.tests
 ] [
     { { 4//4 { 1 { 1 { 1 -2 1 1 } } 1 -1 } }
       { 4//4 { -1 { 1 { 1 2 -1 1 } } -1 1 } } }
-    [ >rhythm-element ] map f swap <rhythm>
+    [ >rhythm-element ] map f swap <rhythm-tree>
     <rhythm-transformer> transform-rests >rhythm-transformer<
 ] unit-test
 
@@ -60,7 +60,7 @@ IN: om.trees.tests
 ] [
     { { 4//4 { 1 { 1 { 1 -2 1 1 } } 1 -1 } }
       { 4//4 { -1 { 1 { 1 2 -1 1 } } -1 1 } } }
-    [ >rhythm-element ] map f swap <rhythm> remove-rests
+    [ >rhythm-element ] map f swap <rhythm-tree> remove-rests
 ] unit-test
 
 [ {< f {< -1 {< -1 -1 >} 1 >} {< -1 >} >} ] [
@@ -73,18 +73,18 @@ IN: om.trees.tests
 ] unit-test
 
 [ { { 1 } { 1 2.0 1.0 } { 1 } { 1 } { 1 } { 1 } { 1 } { 2 } { 1 } { 1 } { -1 } { 1 } } ] [
-    f { { 4//4 { 1 { 1 { 1 2.0 1.0 1 } } 1 1 } }
-        { 4//4 { 1 { 1 { 1 2 1 1 } } -1 1 } } } <rhythm> group-pulses
+    {< f {< 4//4 1 {< 1 2.0 1.0 1 >} 1 1 >}
+         {< 4//4 1 {< 1 2 1 1 >} -1 1 >} >} group-pulses
 ] unit-test
 
 [ 11 ] [
-    f { { 4//4 { 1 { 1 { 1 2.0 1.0 1 } } 1 1 } }
-        { 4//4 { 1 { 1 { 1 2 1 1 } } -1 1 } } } <rhythm> n-pulses
+    {< f {< 4//4 1 {< 1 2.0 1.0 1 >} 1 1 >}
+         {< 4//4 1 {< 1 2 1 1 >} -1 1 >} >} n-pulses
 ] unit-test
 
 [ {< 2 >< {< 4//4 1 -1 {< 1 1 2 1 >} 1.0 >}
           {< 4//4 1 1 {< 1 1 2.0 1.0 >} 1 >} >}
 ] [
-    2 { { 4//4 { 1 { 1 { 1 2.0 1.0 1 } } 1 1 } }
-        { 4//4 { 1 { 1 { 1.0 2 1 1 } } -1 1 } } } <rhythm> reversetree
+    {< 2 >< {< 4//4 1 {< 1 2.0 1.0 1 >} 1 1 >}
+            {< 4//4 1 {< 1.0 2 1 1 >} -1 1 >} >} reversetree
 ] unit-test

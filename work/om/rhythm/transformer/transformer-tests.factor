@@ -108,35 +108,35 @@ CONSTANT: rhythmD {< f {< -1 {< 1 -1 >} 1 >} {< 1 >} >}
 ] unit-test
 
 [ { { 1 } { 2 3.0 } { 5 } } ] [
-    f { 1 2 3. -4 5 -6 } <rhythm> <rhythm-transformer>
+    {< f 1 2 3. -4 5 -6 >} <rhythm-transformer>
     group-notes [ [ value>> ] map ] map
 ] unit-test
 
 [ { { 2 3.0 } { 5 } } ] [
-    f { -1 2 3. -4 5 } <rhythm> <rhythm-transformer>
+    {< f -1 2 3. -4 5 >} <rhythm-transformer>
     group-notes [ [ value>> ] map ] map
 ] unit-test
 
 [ { { 2 3.0 } { 5 } } ] [
-    f { -1 2 3. -4 5 } <rhythm> group-notes [ [ value>> ] map ] map
+    {< f -1 2 3. -4 5 >} group-notes [ [ value>> ] map ] map
 ] unit-test
 
 [ {< 15 >< -1 4 6. -4 10 >} ] [
-    t { -1 2 3. -4 5 } <rhythm> dup <rhythm-transformer>
+    {< t -1 2 3. -4 5 >} dup <rhythm-transformer>
     [ [ [ 2 * ] change-value !rhythm-ref ] each ] each-note-slice
 ] unit-test
 
 [ {< 15 >< -1 4 6. -4 10 >} ] [
-    t { -1 2 3. -4 5 } <rhythm> dup
+    {< t -1 2 3. -4 5 >} dup
     [ [ [ 2 * ] change-value !rhythm-ref ] each ] each-note-slice
 ] unit-test
 
 [ {< 15 >< -1 4 6. -4 10 >} ] [
-    t { -1 2 3. -4 5 } <rhythm>
+    {< t -1 2 3. -4 5 >}
     [ dup [ [ 2 * ] change-value drop ] each ] map-note-slices!
 ] unit-test
 
 [ {< 21 >< 2 4 6. -4 10 -6 >} ] [
-    t { 1 2 3. -4 5 -6 } <rhythm>
+    {< t 1 2 3. -4 5 -6 >}
     [ dup [ [ 2 * ] change-value drop ] each ] map-note-slices
 ] unit-test

@@ -5,19 +5,19 @@ USING: accessors kernel math om.rhythm tools.test ;
 IN: om.rhythm.tests
 
 [ {< 1/4 1/4 1/4 1/4 >} 1 ] [
-    t { 1/4 1/4 1/4 1/4 } <rhythm> dup duration>>
+    t { 1/4 1/4 1/4 1/4 } <rhythm-tree> dup duration>>
 ] unit-test
 
 [ {< 3/4 >< 1/4 1/4 1/4 >} ] [
-    t { 1/4 1/4 1/4 } <rhythm>
+    t { 1/4 1/4 1/4 } <rhythm-tree>
 ] unit-test
 
 [ {< 1 1 1 1 >} ] [
-    1 { 1 1 1 1 } <rhythm>
+    1 { 1 1 1 1 } {< >} <rhythm>
 ] unit-test
 
 [ {< 4//4 1 1 1 1 >} ] [
-    { 4 4 } { 1 1 1 1 } <rhythm>
+    { 4 4 } { 1 1 1 1 } {< >} <rhythm>
 ] unit-test
 
 [ {< 1 1 1 1 >} ] [

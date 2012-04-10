@@ -1,8 +1,32 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors kernel math om.rhythm tools.test ;
+USING: accessors arrays eval io.streams.string kernel macros math om.rhythm
+       prettyprint sequences tools.test ;
 IN: om.rhythm.tests
+
+: parse-unparse-literal ( token vocabs -- token' obj )
+    " " join "USING: " " ; " surround prepend
+    ( -- obj ) eval
+    [ [ pprint ] with-string-writer ] keep ;
+
+: reparse-literal ( token vocabs -- obj ? )
+    over [ parse-unparse-literal swap ] dip = ;
+
+[
+    { { {< >} t } { {< >} f } { {< >} f }
+      { {< -2 >} t } { {< 1 >} t } { {< 2 >} t } { {< 3//4 >} t }
+      { {< >} f } { {< 2 >< >} t } { {< 3//4 >} f }
+      { {< >} f } { {< -2 >} f } { {< 1 >} f } { {< 2 >} f }
+    }
+] [
+    { "{< >}" "{< >< >}" "{< -1 >}"
+      "{< -2 >}" "{< 1 >}" "{< 2 >}" "{< 3//4 >}"
+      "{< 1 >< >}" "{< 2 >< >}" "{< 3//4 >< >}"
+      "{< >< -1 >}" "{< >< -2 >}" "{< >< 1 >}" "{< >< 2 >}"
+    }
+    [ { "om.rhythm" } reparse-literal 2array ] map
+] unit-test
 
 [ {< 1/4 1/4 1/4 1/4 >} 1 ] [
     t { 1/4 1/4 1/4 1/4 } <rhythm-tree> dup duration>>

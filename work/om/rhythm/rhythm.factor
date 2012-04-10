@@ -454,19 +454,17 @@ SYMBOLS: (SEE) (SEP) (DIV) ;
 : (parse-state?) ( obj -- ? )
     { (SEE) (SEP) (DIV) } member? ; inline
 
-: (parse-left-brace) ( -- relt/* state' )
+: (parse-left-brace) ( -- relt/* )
     V{ } clone \ {< execute-parsing ?first
-    [ "inner syntax" invalid-input ] unless* (DIV) ; inline
+    [ "inner syntax" invalid-input ] unless* ; inline
 
-: (parse-separator) ( state -- relt/* state' )
-    dup (DIV) = [
-        drop "unexpected \"><\"" invalid-input
-    ] when (DIV) ; inline
+: (?keep-state) ( state -- state/* )
+    dup (DIV) = [ drop "unexpected \"><\"" invalid-input ] when ; inline
 
 : (element-or-meter) ( token -- relt/dur/* state )
     {
-        { [ dup "{<" = ] [ drop (parse-left-brace) ] }
-        { [ dup "><" = ] [ drop t (DIV) ] }
+        { [ dup "{<" = ] [ drop (parse-left-brace) (DIV) ] }
+        { [ dup "><" = ] [ drop (SEP) (DIV) ] }
         { [ dup "f" = ] [ drop f (SEP) ] }
         { [ dup "t" = ] [ drop t (SEP) ] }
         [ dup string>number [ nip (SEE) ] [ >meter (SEP) ] if* ]
@@ -475,20 +473,27 @@ SYMBOLS: (SEE) (SEP) (DIV) ;
 : (element-or-error) ( state token -- state' relt/* )
     {
         { [ dup "{<" = ] [ 2drop (parse-left-brace) ] }
-        { [ dup "><" = ] [ drop (parse-separator) ] }
-        [ nip dup string>number [ nip ] [ invalid-input ] if* (DIV) ]
-    } cond swap ; inline
+        { [ dup "><" = ] [ drop (?keep-state) ] }
+        [ nip dup string>number [ nip ] [ invalid-input ] if* ]
+    } cond (DIV) swap ; inline
 
-: (empty-postprocess) ( car -- car' cdr )
-    dup meter? [ -1 ] [ 1 swap ] if 1array ; inline
+: (empty-tail) ( car -- car' cdr )
+    {
+        { [ dup meter? ] [ -1 ] }
+        { [ dup (parse-state?) ] [ drop 1 -1 ] }
+        [ 1 swap ]
+    } cond 1array ; inline
+
+: (empty-head) ( car -- car' ) drop 1 ; inline
+
+: (deferred-tail) ( cdr -- cdr' ) rest [ -1 1array ] when-empty ; inline
 
 : (parse-postprocess) ( car cdr -- car' cdr' )
-    [ (empty-postprocess) ] [
-        dup first (parse-state?) [
-            rest [ -1 1array ] when-empty
-        ] [
+    [ (empty-tail) ] [
+        dup first (parse-state?) [ (deferred-tail) ] [
             over rhythm-element? [ swap prefix 1 swap ] when
         ] if
+        [ dup (parse-state?) [ (empty-head) ] when ] dip
     ] if-empty ;
 
 : (parse-rhythm) ( accum -- accum )
@@ -533,8 +538,7 @@ SYNTAX: {< (parse-rhythm) ;
 
 : (pprint-division) ( rtree -- )
     division>> dup (pprint-unit-rest?)
-    [ drop -1 pprint* ]
-    [ pprint-elements ] if ;
+    [ drop ] [ pprint-elements ] if ;
 PRIVATE>
 
 M: rhythm-tree pprint* ( rtree -- )

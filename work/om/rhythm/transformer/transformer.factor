@@ -32,6 +32,13 @@ M: rhythm-ref get-ref ( ref -- relt/f )
 M: rhythm-ref set-ref ( relt/f ref -- )
     over [ value<< ] [ parent<< ] if ;
 
+GENERIC# fit-ref 1 ( relt ref -- )
+
+M: rhythm-element fit-ref ( relt ref -- ) set-ref ;
+
+M: rhythm-tree fit-ref ( rtree ref -- )
+    [ value>> get-duration >>duration ] keep value<< ;
+
 <PRIVATE
 : (co-refs?) ( ref2 ref1 parent -- ref2 ? )
     [ [ parent>> ] dip eq? ]
@@ -297,7 +304,21 @@ M: rhythm-tree group-notes ( rtree -- slices )
 : map-note-slices ( ... rhm quot: ( ... slice -- ... seq ) -- ... rhm' )
     [ clone-rhythm ] dip map-note-slices! ; inline
 
-! substreeall
+! __________________
+! rhythm-change-nths
 
-: rhythm-change-nths ( rhm places atoms -- )
-    3drop ;
+GENERIC# rhythm-change-nths 2 ( rhm places values -- rhm )
+
+<PRIVATE
+: (rtf-change-nth) ( place value rtf -- )
+    [ swap ] [ refs>> ] bi* nth fit-ref ; inline
+
+: (rtf-change-nths) ( places values rtf -- )
+    [ [ nth ] dip (rtf-change-nth) ] 2curry each-index ; inline
+PRIVATE>
+
+M: rhythm-transformer rhythm-change-nths ( rtf places values -- rtf )
+    rot [ (rtf-change-nths) ] keep ;
+
+M: rhythm-tree rhythm-change-nths ( rtree places values -- rtree )
+    rot <rhythm-transformer> [ (rtf-change-nths) ] keep >rhythm-transformer< ;

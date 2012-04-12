@@ -140,3 +140,11 @@ CONSTANT: rhythmD {< f {< -1 {< 1 -1 >} 1 >} {< 1 >} >}
     {< t 1 2 3. -4 5 -6 >}
     [ dup [ [ 2 * ] change-value drop ] each ] map-note-slices
 ] unit-test
+
+[ {< -1 1 2. >} ] [
+    {< 1 -2 1 >} { 0 1 2 } { -1 1 2. } rhythm-change-nths
+] unit-test
+
+[ {< 1 {< 2 >< 1 1 1 >} 1 >} ] [
+    {< 1 -2 1 >} { 1 } { {< 1 1 1 >} } rhythm-change-nths
+] unit-test

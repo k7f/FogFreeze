@@ -28,14 +28,7 @@ HELP: !rhythm-ref
 }
 { $description "Updates the element referred to by a " { $link rhythm-ref } "." } ;
 
-HELP: get-ref
-{ $values
-  { "ref" rhythm-ref }
-  { "relt/f" { $maybe rhythm-element } }
-}
-{ $description "" } ;
-
-HELP: set-ref
+HELP: fit-ref
 { $values
   { "relt/f" { $maybe rhythm-element } }
   { "ref" rhythm-ref }
@@ -177,6 +170,15 @@ HELP: map-note-slices!
   "The rhythm may be provided directly or wrapped in a rhythm-handling type." }
 { $see-also map-note-slices } ;
 
+HELP: rhythm-change-nths
+{ $values
+  { "rhm" rhythm }
+  { "places" { $sequence-of integer } }
+  { "values" { $sequence-of rhythm-element } }
+  { "rhm" rhythm }
+}
+{ $description "" } ;
+
 OM-REFERENCE:
 "projects/02-musicproject/functions/trees.lisp"
 { "treeobj" rhythm-ref "type" }
@@ -185,7 +187,8 @@ OM-REFERENCE:
 { "trans-obj" >rhythm-transformer< }
 { "transform-rests" map-rests>notes! }
 { "transform-notes-flt" submap-notes>rests! }
-{ "trans-note-index" make-note-transformer } ;
+{ "trans-note-index" make-note-transformer }
+{ "substreeall" rhythm-change-nths } ;
 
 ARTICLE: "om.rhythm.transformer" "om.rhythm.transformer"
 { $aux-vocab-intro "om.rhythm.transformer" "om.trees" } ;

@@ -29,6 +29,13 @@ GENERIC: clone-rhythm ( rhm -- cloned )
 
 GENERIC: <rhythm> ( dur dvn exemplar -- rhm )
 
+GENERIC: get-duration ( rhm -- dur )
+
+M: rational    get-duration ( num -- dur ) abs ; inline
+M: float       get-duration ( num -- dur ) abs round >integer ; inline
+M: sequence    get-duration ( seq -- dur ) first >rational abs ; inline
+M: rhythm-tree get-duration ( rtree -- dur ) duration>> >rational ; inline
+
 ! ________________
 ! >rhythm-duration
 
@@ -49,19 +56,12 @@ M: object >rhythm-duration ( obj -- dur ) >meter ;
 ! <rhythm-tree>
 
 <PRIVATE
-GENERIC: (subtree-extent) ( obj -- dur )
-
-M: rational    (subtree-extent) ( num -- dur ) abs ; inline
-M: float       (subtree-extent) ( num -- dur ) abs round >integer ; inline
-M: sequence    (subtree-extent) ( seq -- dur ) first >rational abs ; inline
-M: rhythm-tree (subtree-extent) ( rtree -- dur ) duration>> >rational ; inline
-
 : (create-rhythm) ( dur dvn -- rtree )
     [ -1 1array ] [
         [ >rhythm-element ] map
     ] if-empty
     over t eq? [
-        nip [ 0 [ (subtree-extent) + ] reduce ] keep
+        nip [ 0 [ get-duration + ] reduce ] keep
     ] [
         over [ [ >rhythm-duration ] dip ] when
     ] if rhythm-tree boa ; inline
@@ -448,7 +448,7 @@ M: rhythm-tree rhythm-atoms ( rtree -- atoms )
 
 DEFER: {<
 
-PRIVATE>
+<PRIVATE
 SYMBOLS: (SEE) (SEP) (DIV) ;
 
 : (parse-state?) ( obj -- ? )

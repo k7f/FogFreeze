@@ -50,11 +50,10 @@ M: tuple deep-pprint* deep-pprint-tuple ;
 : .tuple ( tuple -- ) [ deep-pprint-tuple ] with-pprint nl ;
 
 : unparse-tuple ( tuple -- string )
-    [ .tuple ] with-string-writer
+    [ [ deep-pprint-tuple ] with-pprint ] with-string-writer
     dup length <vector> [
         dup CHAR: \n = [ drop CHAR: space ] when
         dup CHAR: space = [
             over ?last CHAR: space = [ drop ] [ suffix! ] if
         ] [ suffix! ] if
-    ] reduce
-    dup last CHAR: space = [ but-last-slice ] when >string ;
+    ] reduce >string ;

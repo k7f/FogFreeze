@@ -1,61 +1,32 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors kernel math om.rhythm om.rhythm.transformer sequences
-       tools.test ;
+USING: accessors kernel math om.rhythm om.rhythm.dealers om.rhythm.transformer
+       sequences tools.test ;
 IN: om.rhythm.transformer.tests
 
-[ T{ rhythm-ref f 2 {< f 1 2 3 >} 3 0 } ] [
-    2 {< f 1 2 3 >} f <rhythm-ref>
-] unit-test
-
-[ T{ rhythm-ref f 0 f {< f 1 2 3 >} 0 } ] [
-    {< f 1 2 3 >} dup
-    [ [ 0 f ] dip <rhythm-ref> ] bi@ co-refs?
-] unit-test
-
-[ f ] [
-    {< f 1 2 3 >} dup clone-rhythm
-    [ [ 0 f ] dip <rhythm-ref> ] bi@ co-refs?
-] unit-test
-
-[ f ] [
-    {< f 1 2 3 >} dup clone-rhythm
-    [ 2 swap f <rhythm-ref> ] bi@ co-refs?
-] unit-test
-
-[ f ] [
-    {< f 1 2 3 >}
-    1 2 [ swap f <rhythm-ref> ] bi-curry@ bi co-refs?
-] unit-test
-
-[ T{ rhythm-ref f 2 {< f 1 2 3 >} 3 0 } ] [
-    {< f 1 2 3 >}
-    2 2 [ swap f <rhythm-ref> ] bi-curry@ bi co-refs?
-] unit-test
-
 : indices&places ( rtf -- indices places )
-    refs>> [ [ index>> ] map ] [ [ place>> ] map ] bi ;
+    [ refs>> [ index>> ] map ] [ event-indices>> ] bi ;
 
 CONSTANT: rhythmA {< f {< 3//4 -1 {< 1 -1 >} 1 >} {< 3//4 -1 >} >}
 CONSTANT: rhythmB {< f {< 3//4 -1 {< 1 1. >} 1 >} {< 3//4 -1 >} >}
 CONSTANT: rhythmC {< f {< -1 {< 1 -1 >} 1 >} {< -1 >} >}
 CONSTANT: rhythmD {< f {< -1 {< 1 -1 >} 1 >} {< 1 >} >}
 
-[ { 0 0 1 2 0 } { 0 1 2 3 4 } ] [
+[ { 0 0 1 2 0 } T{ iota f 5 } ] [
     rhythmA <rhythm-transformer> indices&places
 ] unit-test
 
 [ { 0 0 1 2 0 } { 0 1 1 2 3 } ] [
-    rhythmB -1 [ integer? ] make-rhythm-transformer nip indices&places
+    rhythmB -1 [ integer? ] make-rhythm-transformer* indices&places
 ] unit-test
 
 [ { 0 0 1 2 0 } { -1 0 0 1 2 } ] [
-    rhythmD -1 make-note-transformer nip indices&places
+    rhythmD -1 make-note-transformer* indices&places
 ] unit-test
 
 [ { 0 1 2 } { 0 0 1 } ] [
-    rhythmB -1 make-note-transformer* nip indices&places
+    rhythmB -1 make-note-transformer indices&places
 ] unit-test
 
 [ f t ] [
@@ -103,10 +74,6 @@ CONSTANT: rhythmD {< f {< -1 {< 1 -1 >} 1 >} {< 1 >} >}
     rhythmD { 0 2 } submap-notes>rests
 ] unit-test
 
-[ { -1 1 1.0 1 -1 } ] [
-    rhythmB rhythm-atoms
-] unit-test
-
 [ { { 1 } { 2 3.0 } { 5 } } ] [
     {< f 1 2 3. -4 5 -6 >} <rhythm-transformer>
     group-notes [ [ value>> ] map ] map
@@ -117,28 +84,9 @@ CONSTANT: rhythmD {< f {< -1 {< 1 -1 >} 1 >} {< 1 >} >}
     group-notes [ [ value>> ] map ] map
 ] unit-test
 
-[ { { 2 3.0 } { 5 } } ] [
-    {< f -1 2 3. -4 5 >} group-notes [ [ value>> ] map ] map
-] unit-test
-
 [ {< 15 >< -1 4 6. -4 10 >} ] [
     {< t -1 2 3. -4 5 >} dup <rhythm-transformer>
     [ [ [ 2 * ] change-value !rhythm-ref ] each ] each-note-slice
-] unit-test
-
-[ {< 15 >< -1 4 6. -4 10 >} ] [
-    {< t -1 2 3. -4 5 >} dup
-    [ [ [ 2 * ] change-value !rhythm-ref ] each ] each-note-slice
-] unit-test
-
-[ {< 15 >< -1 4 6. -4 10 >} ] [
-    {< t -1 2 3. -4 5 >}
-    [ dup [ [ 2 * ] change-value drop ] each ] map-note-slices!
-] unit-test
-
-[ {< 21 >< 2 4 6. -4 10 -6 >} ] [
-    {< t 1 2 3. -4 5 -6 >}
-    [ dup [ [ 2 * ] change-value drop ] each ] map-note-slices
 ] unit-test
 
 [ {< -1 1 2. >} ] [
@@ -147,4 +95,9 @@ CONSTANT: rhythmD {< f {< -1 {< 1 -1 >} 1 >} {< 1 >} >}
 
 [ {< 1 {< 2 >< 1 1 1 >} 1 >} ] [
     {< 1 -2 1 >} { 1 } { {< 1 1 1 >} } rhythm-change-nths
+] unit-test
+
+[ {< f {< -1 {< 1 -1 >} {< 1 1 1 >} >} {< 1 >} >} ] [
+    rhythmD -1 make-note-transformer*
+    { 1 } { {< 1 1 1 >} } rhythm-change-nths >rhythm-transformer<
 ] unit-test

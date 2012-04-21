@@ -23,8 +23,9 @@ PRIVATE>
 
 OM-VOCABS:
     bpf combinatorial conversions functions functions.auxiliary graphics
-    kernel kernel.private lists rhythm rhythm.meter rhythm.onsets
-    rhythm.private rhythm.transformer series sets trees trees.private ;
+    kernel kernel.private lists rhythm rhythm.dealer rhythm.meter
+    rhythm.onsets rhythm.private rhythm.transformer series sets trees
+    trees.private ;
 
 ARTICLE: "om-words" "OM words"
 { $ref-tables } ;

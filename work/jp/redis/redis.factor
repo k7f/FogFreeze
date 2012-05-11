@@ -1,60 +1,87 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: accessors concurrency.promises io io.encodings.utf8 io.sockets
-       jp.redis.formatter jp.redis.reader kernel macros namespaces parser
-       sequences ;
+USING: accessors concurrency.promises io io.encodings.binary io.sockets
+       jp.redis.formatter jp.redis.reader kernel namespaces threads ;
 IN: jp.redis
+
+! use the 2.x protocol by default, 1.x on demand
+<< use-new-protocol >>
 
 : commit ( request -- ) write flush ; inline
 
-: status\ ( request -- status/f ) commit f pull-status ;
-: OK\ ( request -- ? ) commit pull-OK ;
-: string\ ( request -- string/f ) commit pull-string ;
-: integer\ ( request -- int/f ) commit pull-integer ;
-: bulk\ ( request -- string/f ? ) commit pull-bulk ;
-: multi\ ( request -- seq/f ? ) commit pull-multi ;
+: status\  ( request -- status/f )      commit f pull-status ;
+: OK\      ( request -- ? )             commit pull-OK ;
+: bytes\   ( request -- byte-vector/f ) commit pull-bytes ;
+: string\  ( request -- string/f )      commit pull-string ;
+: integer\ ( request -- int/f )         commit pull-integer ;
+: bulk\    ( request -- string/f ? )    commit pull-bulk ;
+: multi\   ( request -- seq/f ? )       commit pull-multi ;
+
+ALIAS: b\ bytes\
+ALIAS: s\ string\
+ALIAS: i\ integer\
 
 SYMBOL: current-redis
 
-TUPLE: redis inet encoding password ;
+TUPLE: redis inet password ;
 
 <PRIVATE
 CONSTANT: (default-port) 6379
 
 ERROR: (bad-login) ;
 
-MACRO: (request) ( req -- quot: ( redis -- req' ) )
-    [
-        swap password>> [
-            [
-                \auth OK\ [ (bad-login) ] unless
-            ] curry prepose
-        ] when*
-    ] curry ;
+: (session) ( redis quot -- session )
+    swap password>> [
+        [ \auth OK\ [ (bad-login) ] unless drop ] when*
+    ] curry prepose ; inline
 PRIVATE>
-
-: <local-redis> ( -- redis )
-    "127.0.0.1" (default-port) <inet>
-    utf8 f redis boa ;
 
 ! __________________
 ! blocking interface
 
+: with-redis* ( redis quot -- )
+    [ [ inet>> binary ] keep ]
+    [ (session) with-client ] bi* ; inline
+
 : with-redis ( redis quot -- )
-    [ [ inet>> ] [ encoding>> ] [ ] tri ]
-    [ (request) with-client ] bi* ; inline
+    [ inet>> binary ] [ with-client ] bi* ; inline
 
 : with-current-redis ( quot -- )
     current-redis get-global swap with-redis ; inline
 
-SYNTAX: [R
-    parse-quotation suffix! \ with-current-redis suffix! ;
+! ______________________
+! non-blocking interface
 
-! FIXME
-! : detach ( request -- promise )
-! : promise-with-redis ( redis quot -- promise )
-! : promise-with-current-redis ( quot -- promise )
-! SYNTAX:
+: (detach-worker) ( request quot: ( request -- response ) promise -- )
+    [ with-current-redis ] [ fulfill ] bi* ; inline
+
+: detach ( request quot: ( request -- response ) -- thread promise )
+    swap <promise> [
+        swapd [ (detach-worker) ] 3curry
+    ] 2keep [ spawn ] dip ; inline
+
+: (redis-worker) ( redis quot: ( -- response ) promise -- )
+    [ with-redis ] [ fulfill ] bi* ; inline
+ 
+: promise-with-redis ( redis quot: ( -- response ) -- thread promise )
+    <promise> [
+        [ (redis-worker) ] 3curry
+        "promise-with-redis" spawn
+    ] keep ; inline
+
+: (current-redis-worker) ( quot: ( -- response ) promise -- )
+    [ with-current-redis ] [ fulfill ] bi* ; inline
+ 
+: promise-with-current-redis ( quot: ( -- response ) -- thread promise )
+    <promise> [
+        [ (current-redis-worker) ] 2curry
+        "promise-with-current-redis" spawn
+    ] keep ; inline
+
+: <redis> ( host -- redis )
+    (default-port) <inet> f redis boa ;
+
+: <local-redis> ( -- redis ) "127.0.0.1" <redis> ;
 
 <local-redis> current-redis set-global

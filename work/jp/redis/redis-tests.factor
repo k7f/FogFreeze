@@ -1,7 +1,10 @@
 ! Copyright (C) 2012 krzYszcz.
 ! See http://factorcode.org/license.txt for BSD license.
 
-USING: jp.redis.formatter strings tools.test ;
+USING: jp.redis.formatter kernel strings tools.test ;
+
+! ____________
+! old protocol
 
 IN: jp.redis
 << use-old-protocol >>
@@ -47,6 +50,9 @@ IN: jp.redis.tests
 [ "LSET pqr 45 4\r\n6789\r\n" ] [
     "pqr" 45 6789 >\lset >string
 ] unit-test
+
+! ____________
+! new protocol
 
 IN: jp.redis
 << use-new-protocol >>
@@ -94,5 +100,20 @@ IN: jp.redis.tests
 ] unit-test
 
 [ "*5\r\n$7\r\nLINSERT\r\n$3\r\npqr\r\n$5\r\nAFTER\r\n$4\r\n6789\r\n$4\r\n7890\r\n" ] [
+    \linsert pqr AFTER 6789 7890 >string
+] unit-test
+
+[ "*5\r\n$7\r\nLINSERT\r\n$3\r\npqr\r\n$5\r\nAFTER\r\n$4\r\n6789\r\n$4\r\n7890\r\n" ] [
     "pqr" "AFTER" 6789 7890 >\linsert >string
+] unit-test
+
+! _____________
+! mocking tests
+
+[ "OK" ] [
+    redis new [ \set x 123 OK\ ] with-redis
+] unit-test
+
+[ 123 ] [
+    redis new [ \get x 123 ?\ ] with-redis
 ] unit-test

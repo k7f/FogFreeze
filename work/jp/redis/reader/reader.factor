@@ -6,6 +6,7 @@ IN: jp.redis.reader
 
 <PRIVATE
 TUPLE: (error-reply) expected { got string } ;
+
 : (error-reply) ( expected got -- * )
     >string \ (error-reply) boa throw ;
 
@@ -14,21 +15,23 @@ TUPLE: (error-reply) expected { got string } ;
         >byte-vector dup pop*
     ] [ drop f ] if ; inline
 
-: (status-reply) ( expected byte-vector -- str/? )
+: (status-reply) ( expected/f byte-vector -- string/? )
     >string swap [ = ] when* ; inline
 
-: (integer-reply) ( expected byte-vector -- num )
+: (integer-reply) ( expected/f byte-vector -- num )
     nip >string string>number ; inline
 
-: (bulk-reply) ( expected byte-vector -- byte-array/f )
+: (bulk-reply) ( expected/f byte-vector -- byte-array/f )
     nip >string string>number dup 0 < [ drop f ] [
         read 2 read drop
     ] if ;
 
-: (multi-reply) ( expected byte-vector -- seq/f )
+: (multi-reply) ( expected/f byte-vector -- seq/f )
     nip >string string>number dup 0 < [ drop f ] [
         iota [ (readln) rest (bulk-reply) ] map
     ] if ;
+
+: (mock-reply) ( expected/f byte-vector -- expected/f ) drop ;
 
 : (pull-anything) ( expected/f -- response selector )
     (readln) unclip [
@@ -38,11 +41,16 @@ TUPLE: (error-reply) expected { got string } ;
             { CHAR: $ [ (bulk-reply) ] }
             { CHAR: * [ (multi-reply) ] }
             { CHAR: - [ (error-reply) ] }
+            { CHAR: # [ (mock-reply) ] }
         } case
     ] keep ;
 PRIVATE>
 
 : pull-anything ( -- response ) f (pull-anything) drop ;
+
+! FIXME redundant comparison if status
+: pull-? ( expected -- expected/f )
+    dup (pull-anything) drop [ = ] keep f ? ;
 
 : pull-status ( expected/f -- response/? )
     [ (pull-anything) ] [

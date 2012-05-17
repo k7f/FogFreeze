@@ -60,10 +60,14 @@ PRIVATE>
 : pull-OK ( -- ? ) "OK" (pull-anything) drop ;
 
 : pull-bytes ( -- byte-array/f )
-    f (pull-anything) CHAR: $ = [ drop f ] unless ;
+    B{ } clone (pull-anything) dup CHAR: $ = [ drop ] [
+        CHAR: # = [ drop f ] unless
+    ] if ;
 
 : pull-string ( -- string/f )
-    f (pull-anything) CHAR: $ = [ >string ] [ drop f ] if ;
+    B{ } clone (pull-anything) dup CHAR: $ = [ drop >string ] [
+        CHAR: # = [ >string ] [ drop f ] if
+    ] if ;
 
 : pull-integer ( -- int/f )
     f (pull-anything) {

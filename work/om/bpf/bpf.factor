@@ -18,7 +18,7 @@ TUPLE: internal-bpf { points vector } ;
 
 : <internal-bpf> ( n -- ibpf ) (new-points) internal-bpf boa ;
 
-TUPLE: bpf < internal-bpf { xs maybe: array } { ys maybe: array } ;
+TUPLE: bpf < internal-bpf { xs maybe{ array } } { ys maybe{ array } } ;
 
 : <bpf> ( n -- bpf ) (new-points) f f bpf boa ;
 

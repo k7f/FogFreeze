@@ -10,8 +10,8 @@ FROM: io.sockets => <inet4> with-client ;
 IN: fudi.peers
 
 ! A symbol created with the FUDIN: syntax is bound, permanently, to a fudin
-! tuple.  The worker field points to a fudin's parser thread.
-! The validity of that field should be guaranteed, i.e. its non-nil value is
+! tuple.  The worker slot holds a fudin's parser thread.
+! The validity of that slot should be guaranteed, i.e. its non-nil value is
 ! expected to last precisely for the thread's lifetime.
 SYNTAX: FUDIN:
     scan-new-word [
@@ -19,8 +19,8 @@ SYNTAX: FUDIN:
     ] keep set-global ;
 
 ! A symbol created with the FUDOUT: syntax is bound, permanently, to a fudout
-! tuple.  The worker field points to a fudout's feeder thread.
-! The validity of that field should be guaranteed, i.e. its non-nil value is
+! tuple.  The worker slot holds a fudout's feeder thread.
+! The validity of that slot should be guaranteed, i.e. its non-nil value is
 ! expected to last precisely for the thread's lifetime.
 SYNTAX: FUDOUT:
     scan-new-word [

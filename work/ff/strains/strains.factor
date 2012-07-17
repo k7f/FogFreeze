@@ -13,17 +13,17 @@ GENERIC: check ( state new-value strain -- state new-value strain/f )
 
 TUPLE: strain
     { failure# fixnum }
-    { max-failures maybe: fixnum }
-    { push-quotation maybe: callable }
-    { drop-quotation maybe: callable } ;
+    { max-failures maybe{ fixnum } }
+    { push-quotation maybe{ callable } }
+    { drop-quotation maybe{ callable } } ;
 
 : new-strain ( class -- strain )
     new 0 >>failure# f >>max-failures f >>push-quotation f >>drop-quotation ;
 
 <PRIVATE
 : (validate-strain-updates) ( push-quot drop-quot -- push-quot drop-quot )
-     [ ( hitstack value strain -- ) validate-effect ]
-     [ ( strain -- ) validate-effect ] bi* ;
+    [ ( hitstack value strain -- ) validate-effect ]
+    [ ( strain -- ) validate-effect ] bi* ;
 PRIVATE>
 
 : new-stateful-strain ( push-quot drop-quot class -- strain )

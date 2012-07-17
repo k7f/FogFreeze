@@ -11,12 +11,12 @@ IN: fudi.types
 ! requests and queries, ff obeys and responds -- the two should never act
 ! the other way.
 
-TUPLE: (fudi) { id string } { info string } { port maybe: fixnum } { worker maybe: thread } ;
+TUPLE: (fudi) { id string } { info string } { port maybe{ fixnum } } { worker maybe{ thread } } ;
 
 TUPLE: fudout < (fudi) ;
 
 : <fudout> ( id info -- fudi ) f f fudout boa ;
 
-TUPLE: fudin  < (fudi) { responder maybe: fudout } ;
+TUPLE: fudin  < (fudi) { responder maybe{ fudout } } ;
 
 : <fudin> ( id info -- fudi ) f f f fudin boa ;

@@ -2,7 +2,8 @@
 ! See http://factorcode.org/license.txt for BSD license.
 
 USING: accessors addenda.sequences arrays kernel math math.functions om.lists
-       om.rhythm om.rhythm.meter om.rhythm.transformer om.series sequences ;
+       om.rhythm om.rhythm.dealers om.rhythm.meter om.rhythm.transformer
+       om.series sequences ;
 IN: om.trees
 
 ! ______

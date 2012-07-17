@@ -6,7 +6,7 @@ IN: ff.commands
 
 :: add-listener-command ( word gesture -- )
     word H{ { +nullary+ t } { +listener+ t } } define-command
-    "ff" listener-gadget command-map [
+    "ff" listener-gadget get-command-at [
         dup commands>> dup [ second word = ] find [
             swap [ { gesture word } ] 2dip set-nth drop
         ] [

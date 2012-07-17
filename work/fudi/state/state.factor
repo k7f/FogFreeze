@@ -8,7 +8,7 @@ IN: fudi.state
 <PRIVATE
 SYMBOLS: (locals) (remotes) ;
 
-TUPLE: (cell) { value vector } { callback maybe: callable } ;
+TUPLE: (cell) { value vector } { callback maybe{ callable } } ;
 
 : (touch) ( cell -- )
     dup callback>> [
@@ -43,7 +43,7 @@ TUPLE: (cell) { value vector } { callback maybe: callable } ;
     [ (touch-value) ] [ value<< ] 2bi ;
 
 : (hook-replace) ( callback cell -- )
-    over maybe: callable instance? [ callback<< ] [
+    over maybe{ callable } instance? [ callback<< ] [
         drop unparse \ (hook-replace) fudi-ERROR
     ] if ;
 

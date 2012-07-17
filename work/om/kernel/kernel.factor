@@ -36,8 +36,8 @@ M: sequence om^ ( obj seq -- result ) [ ^ ] om-binop-sequence ;
 
 GENERIC: om-e ( obj -- result )
 
-M: number   om-e ( num -- num' ) exp ; inline
-M: sequence om-e ( seq -- seq' ) [ exp ] map ; inline
+M: number   om-e ( num -- num' ) e^ ; inline
+M: sequence om-e ( seq -- seq' ) [ e^ ] map ; inline
 
 ! ______
 ! om-log
@@ -390,7 +390,7 @@ MACRO: reduce-tree ( fun &optionals -- quot: ( obj -- result ) )
 <PRIVATE
 ! FIXME >float is a hack against (a bug of?) ^ returning a fixnum for base equal 0
 : (interpolation-point) ( begin end curve loc -- num )
-    swap exp ^ >float [ over - ] dip * + ; inline
+    swap e^ ^ >float [ over - ] dip * + ; inline
 
 : (interpolation-samples) ( begin end curve num-samples -- seq )
     dup 1 > [

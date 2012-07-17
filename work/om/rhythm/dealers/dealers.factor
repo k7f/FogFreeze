@@ -10,7 +10,7 @@ IN: om.rhythm.dealers
 
 TUPLE: rhythm-ref
     { index integer }
-    { parent maybe: rhythm-tree }
+    { parent maybe{ rhythm-tree } }
     { value rhythm-element initial: 1 } ;
 
 INSTANCE: rhythm-ref ref

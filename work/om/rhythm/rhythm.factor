@@ -13,7 +13,7 @@ MIXIN: rhythm
 UNION: rhythm-duration number meter ;
 
 TUPLE: rhythm-tree
-    { duration maybe: rhythm-duration }
+    { duration maybe{ rhythm-duration } }
     { division sequence } ;
 
 UNION: rhythm-element number rhythm-tree ;

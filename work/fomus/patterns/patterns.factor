@@ -17,7 +17,7 @@ M: number add-tenor
     '[ fomus-set-pitch fomus-set-staff fomus-add-note _ fomus-inc-time ] with each ;
 
 M: sequence add-tenor
-    2dup shorter? [ [ length repeated ] keep ] [ over length repeated ] if
+    2dup shorter? [ [ length cycle ] keep ] [ over length cycle ] if
     rot [
         fomus-set-staff [ fomus-set-dur fomus-set-pitch ] keep
         fomus-add-note fomus-inc-time
